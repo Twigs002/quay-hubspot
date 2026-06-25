@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-25T15:06:02.495227+00:00",
+  "generated": "2026-06-25T15:31:57.570667+00:00",
   "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 72582 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
@@ -27,13 +27,16 @@
           "inbound": 1,
           "reconv": 0,
           "rental": 0,
-          "nurture": 16,
-          "warm": 1,
+          "nurture": 17,
+          "warm": 2,
           "hot": 2,
-          "outdated": 22,
+          "outdated": 24,
           "upToHot": 426,
-          "pctUpdated": 0.9483568075117371
-        }
+          "pctUpdated": 0.9436619718309859
+        },
+        "ownerIds": [
+          "61989266"
+        ]
       },
       {
         "team": "Assassins",
@@ -60,7 +63,10 @@
           "outdated": 20,
           "upToHot": 627,
           "pctUpdated": 0.9681020733652312
-        }
+        },
+        "ownerIds": [
+          "61949424"
+        ]
       },
       {
         "team": "Avengers",
@@ -87,7 +93,10 @@
           "outdated": 70,
           "upToHot": 107,
           "pctUpdated": 0.34579439252336447
-        }
+        },
+        "ownerIds": [
+          "61949593"
+        ]
       },
       {
         "team": "Babes",
@@ -114,7 +123,10 @@
           "outdated": 60,
           "upToHot": 747,
           "pctUpdated": 0.9196787148594378
-        }
+        },
+        "ownerIds": [
+          "61715183"
+        ]
       },
       {
         "team": "Ballers",
@@ -141,7 +153,10 @@
           "outdated": 266,
           "upToHot": 536,
           "pctUpdated": 0.503731343283582
-        }
+        },
+        "ownerIds": [
+          "60766526"
+        ]
       },
       {
         "team": "Bergscape",
@@ -168,7 +183,10 @@
           "outdated": 73,
           "upToHot": 75,
           "pctUpdated": 0.02666666666666667
-        }
+        },
+        "ownerIds": [
+          "79270572"
+        ]
       },
       {
         "team": "Betties",
@@ -195,7 +213,10 @@
           "outdated": 23,
           "upToHot": 26,
           "pctUpdated": 0.11538461538461539
-        }
+        },
+        "ownerIds": [
+          "87888060"
+        ]
       },
       {
         "team": "Blitz",
@@ -222,7 +243,10 @@
           "outdated": 65,
           "upToHot": 123,
           "pctUpdated": 0.4715447154471545
-        }
+        },
+        "ownerIds": [
+          "87801132"
+        ]
       },
       {
         "team": "Boets",
@@ -249,7 +273,10 @@
           "outdated": 54,
           "upToHot": 205,
           "pctUpdated": 0.7365853658536585
-        }
+        },
+        "ownerIds": [
+          "142837528"
+        ]
       },
       {
         "team": "Bulls",
@@ -276,7 +303,10 @@
           "outdated": 591,
           "upToHot": 954,
           "pctUpdated": 0.3805031446540881
-        }
+        },
+        "ownerIds": [
+          "61988813"
+        ]
       },
       {
         "team": "Cavaliers",
@@ -303,7 +333,10 @@
           "outdated": 9,
           "upToHot": 426,
           "pctUpdated": 0.9788732394366197
-        }
+        },
+        "ownerIds": [
+          "84018278"
+        ]
       },
       {
         "team": "Chargers",
@@ -330,7 +363,10 @@
           "outdated": 56,
           "upToHot": 393,
           "pctUpdated": 0.8575063613231552
-        }
+        },
+        "ownerIds": [
+          "254689367"
+        ]
       },
       {
         "team": "City Sunsets",
@@ -357,7 +393,10 @@
           "outdated": 0,
           "upToHot": 930,
           "pctUpdated": 1.0
-        }
+        },
+        "ownerIds": [
+          "253761461"
+        ]
       },
       {
         "team": "Dealers",
@@ -384,7 +423,10 @@
           "outdated": 508,
           "upToHot": 1010,
           "pctUpdated": 0.497029702970297
-        }
+        },
+        "ownerIds": [
+          "192141162"
+        ]
       },
       {
         "team": "Dealmakers",
@@ -411,7 +453,10 @@
           "outdated": 10,
           "upToHot": 597,
           "pctUpdated": 0.983249581239531
-        }
+        },
+        "ownerIds": [
+          "221066166"
+        ]
       },
       {
         "team": "Dragons",
@@ -432,13 +477,17 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 6,
-          "warm": 3,
+          "nurture": 0,
+          "warm": 0,
           "hot": 0,
-          "outdated": 9,
+          "outdated": 0,
           "upToHot": 781,
-          "pctUpdated": 0.9884763124199744
-        }
+          "pctUpdated": 1.0
+        },
+        "ownerIds": [
+          "84022188",
+          "114444403"
+        ]
       },
       {
         "team": "Dutchmen",
@@ -465,7 +514,10 @@
           "outdated": 79,
           "upToHot": 1149,
           "pctUpdated": 0.9312445604873804
-        }
+        },
+        "ownerIds": [
+          "142837416"
+        ]
       },
       {
         "team": "Falcons",
@@ -492,7 +544,10 @@
           "outdated": 150,
           "upToHot": 358,
           "pctUpdated": 0.5810055865921788
-        }
+        },
+        "ownerIds": [
+          "289663897"
+        ]
       },
       {
         "team": "Farmers",
@@ -519,7 +574,10 @@
           "outdated": 24,
           "upToHot": 286,
           "pctUpdated": 0.916083916083916
-        }
+        },
+        "ownerIds": [
+          "571004737"
+        ]
       },
       {
         "team": "Furys",
@@ -546,7 +604,10 @@
           "outdated": 43,
           "upToHot": 527,
           "pctUpdated": 0.9184060721062619
-        }
+        },
+        "ownerIds": [
+          "512880424"
+        ]
       },
       {
         "team": "Gladiators",
@@ -573,7 +634,10 @@
           "outdated": 34,
           "upToHot": 208,
           "pctUpdated": 0.8365384615384616
-        }
+        },
+        "ownerIds": [
+          "84683538"
+        ]
       },
       {
         "team": "Goal Diggers",
@@ -600,7 +664,10 @@
           "outdated": 3,
           "upToHot": 871,
           "pctUpdated": 0.9965556831228473
-        }
+        },
+        "ownerIds": [
+          "112213784"
+        ]
       },
       {
         "team": "Gunslingers",
@@ -627,7 +694,10 @@
           "outdated": 14,
           "upToHot": 597,
           "pctUpdated": 0.9765494137353434
-        }
+        },
+        "ownerIds": [
+          "85377840"
+        ]
       },
       {
         "team": "Hawks",
@@ -654,7 +724,10 @@
           "outdated": 28,
           "upToHot": 387,
           "pctUpdated": 0.9276485788113695
-        }
+        },
+        "ownerIds": [
+          "342583654"
+        ]
       },
       {
         "team": "Headbangers",
@@ -681,7 +754,10 @@
           "outdated": 64,
           "upToHot": 207,
           "pctUpdated": 0.6908212560386473
-        }
+        },
+        "ownerIds": [
+          "195736166"
+        ]
       },
       {
         "team": "Hoekers",
@@ -708,7 +784,11 @@
           "outdated": 62,
           "upToHot": 474,
           "pctUpdated": 0.869198312236287
-        }
+        },
+        "ownerIds": [
+          "90886933",
+          "503406359"
+        ]
       },
       {
         "team": "Hooligans",
@@ -735,7 +815,10 @@
           "outdated": 54,
           "upToHot": 424,
           "pctUpdated": 0.8726415094339622
-        }
+        },
+        "ownerIds": [
+          "142837780"
+        ]
       },
       {
         "team": "Hout Baes",
@@ -762,7 +845,10 @@
           "outdated": 90,
           "upToHot": 322,
           "pctUpdated": 0.7204968944099379
-        }
+        },
+        "ownerIds": [
+          "1763468269"
+        ]
       },
       {
         "team": "Hustlers",
@@ -789,7 +875,10 @@
           "outdated": 31,
           "upToHot": 430,
           "pctUpdated": 0.9279069767441861
-        }
+        },
+        "ownerIds": [
+          "142508407"
+        ]
       },
       {
         "team": "Invincibles",
@@ -816,7 +905,10 @@
           "outdated": 11,
           "upToHot": 452,
           "pctUpdated": 0.9756637168141593
-        }
+        },
+        "ownerIds": [
+          "551111272"
+        ]
       },
       {
         "team": "Knights",
@@ -843,7 +935,10 @@
           "outdated": 4,
           "upToHot": 820,
           "pctUpdated": 0.9951219512195122
-        }
+        },
+        "ownerIds": [
+          "61213531"
+        ]
       },
       {
         "team": "Koeksisters",
@@ -870,7 +965,10 @@
           "outdated": 103,
           "upToHot": 794,
           "pctUpdated": 0.8702770780856424
-        }
+        },
+        "ownerIds": [
+          "142835358"
+        ]
       },
       {
         "team": "Komorants",
@@ -897,7 +995,10 @@
           "outdated": 35,
           "upToHot": 102,
           "pctUpdated": 0.6568627450980392
-        }
+        },
+        "ownerIds": [
+          "87790103"
+        ]
       },
       {
         "team": "Lions",
@@ -924,7 +1025,11 @@
           "outdated": 199,
           "upToHot": 986,
           "pctUpdated": 0.7981744421906694
-        }
+        },
+        "ownerIds": [
+          "61022342",
+          "114452804"
+        ]
       },
       {
         "team": "Llamas",
@@ -951,7 +1056,10 @@
           "outdated": 145,
           "upToHot": 1404,
           "pctUpdated": 0.8967236467236467
-        }
+        },
+        "ownerIds": [
+          "2141538252"
+        ]
       },
       {
         "team": "Musketeers",
@@ -978,7 +1086,10 @@
           "outdated": 112,
           "upToHot": 870,
           "pctUpdated": 0.871264367816092
-        }
+        },
+        "ownerIds": [
+          "371434880"
+        ]
       },
       {
         "team": "Panthers",
@@ -1005,7 +1116,10 @@
           "outdated": 0,
           "upToHot": 330,
           "pctUpdated": 1.0
-        }
+        },
+        "ownerIds": [
+          "487152396"
+        ]
       },
       {
         "team": "Pirates",
@@ -1032,7 +1146,10 @@
           "outdated": 2,
           "upToHot": 745,
           "pctUpdated": 0.9973154362416108
-        }
+        },
+        "ownerIds": [
+          "57438698"
+        ]
       },
       {
         "team": "Power Rangers",
@@ -1059,7 +1176,10 @@
           "outdated": 61,
           "upToHot": 688,
           "pctUpdated": 0.9113372093023255
-        }
+        },
+        "ownerIds": [
+          "182959417"
+        ]
       },
       {
         "team": "Prom Queens",
@@ -1086,7 +1206,8 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": []
       },
       {
         "team": "Proteas",
@@ -1113,7 +1234,10 @@
           "outdated": 11,
           "upToHot": 466,
           "pctUpdated": 0.9763948497854077
-        }
+        },
+        "ownerIds": [
+          "445668165"
+        ]
       },
       {
         "team": "Raccoons",
@@ -1140,7 +1264,10 @@
           "outdated": 48,
           "upToHot": 351,
           "pctUpdated": 0.8632478632478633
-        }
+        },
+        "ownerIds": [
+          "61698092"
+        ]
       },
       {
         "team": "Rockets",
@@ -1167,7 +1294,10 @@
           "outdated": 183,
           "upToHot": 242,
           "pctUpdated": 0.24380165289256198
-        }
+        },
+        "ownerIds": [
+          "1752588073"
+        ]
       },
       {
         "team": "Samurais",
@@ -1194,7 +1324,10 @@
           "outdated": 85,
           "upToHot": 640,
           "pctUpdated": 0.8671875
-        }
+        },
+        "ownerIds": [
+          "84021524"
+        ]
       },
       {
         "team": "Slayers",
@@ -1221,7 +1354,10 @@
           "outdated": 14,
           "upToHot": 595,
           "pctUpdated": 0.9764705882352941
-        }
+        },
+        "ownerIds": [
+          "61951340"
+        ]
       },
       {
         "team": "Soccer Moms",
@@ -1248,7 +1384,10 @@
           "outdated": 30,
           "upToHot": 733,
           "pctUpdated": 0.9590723055934516
-        }
+        },
+        "ownerIds": [
+          "142516092"
+        ]
       },
       {
         "team": "Spartans",
@@ -1275,7 +1414,10 @@
           "outdated": 11,
           "upToHot": 468,
           "pctUpdated": 0.9764957264957265
-        }
+        },
+        "ownerIds": [
+          "61951607"
+        ]
       },
       {
         "team": "Surfers",
@@ -1302,7 +1444,10 @@
           "outdated": 64,
           "upToHot": 319,
           "pctUpdated": 0.799373040752351
-        }
+        },
+        "ownerIds": [
+          "223928394"
+        ]
       },
       {
         "team": "Swesties",
@@ -1329,7 +1474,10 @@
           "outdated": 118,
           "upToHot": 151,
           "pctUpdated": 0.2185430463576159
-        }
+        },
+        "ownerIds": [
+          "735062128"
+        ]
       },
       {
         "team": "Targaryens",
@@ -1356,7 +1504,10 @@
           "outdated": 174,
           "upToHot": 576,
           "pctUpdated": 0.6979166666666666
-        }
+        },
+        "ownerIds": [
+          "84878181"
+        ]
       },
       {
         "team": "Tigers",
@@ -1383,7 +1534,10 @@
           "outdated": 7,
           "upToHot": 427,
           "pctUpdated": 0.9836065573770492
-        }
+        },
+        "ownerIds": [
+          "290480467"
+        ]
       },
       {
         "team": "TNT",
@@ -1405,12 +1559,15 @@
           "reconv": 0,
           "rental": 0,
           "nurture": 0,
-          "warm": 5,
+          "warm": 3,
           "hot": 0,
-          "outdated": 5,
+          "outdated": 3,
           "upToHot": 854,
-          "pctUpdated": 0.9941451990632318
-        }
+          "pctUpdated": 0.9964871194379391
+        },
+        "ownerIds": [
+          "155292230"
+        ]
       },
       {
         "team": "Tornadoes",
@@ -1437,7 +1594,10 @@
           "outdated": 29,
           "upToHot": 338,
           "pctUpdated": 0.9142011834319527
-        }
+        },
+        "ownerIds": [
+          "570999348"
+        ]
       },
       {
         "team": "Vipers",
@@ -1464,7 +1624,10 @@
           "outdated": 39,
           "upToHot": 221,
           "pctUpdated": 0.8235294117647058
-        }
+        },
+        "ownerIds": [
+          "87800852"
+        ]
       },
       {
         "team": "Warriors",
@@ -1491,7 +1654,11 @@
           "outdated": 5,
           "upToHot": 998,
           "pctUpdated": 0.9949899799599199
-        }
+        },
+        "ownerIds": [
+          "61983888",
+          "114452786"
+        ]
       },
       {
         "team": "Weasels",
@@ -1518,7 +1685,10 @@
           "outdated": 22,
           "upToHot": 662,
           "pctUpdated": 0.9667673716012085
-        }
+        },
+        "ownerIds": [
+          "61983137"
+        ]
       },
       {
         "team": "Wizards",
@@ -1545,7 +1715,10 @@
           "outdated": 9,
           "upToHot": 841,
           "pctUpdated": 0.9892984542211652
-        }
+        },
+        "ownerIds": [
+          "61986989"
+        ]
       },
       {
         "team": "Wolves",
@@ -1572,7 +1745,10 @@
           "outdated": 28,
           "upToHot": 466,
           "pctUpdated": 0.9399141630901288
-        }
+        },
+        "ownerIds": [
+          "61187980"
+        ]
       },
       {
         "team": "Wombats",
@@ -1599,7 +1775,10 @@
           "outdated": 38,
           "upToHot": 525,
           "pctUpdated": 0.9276190476190476
-        }
+        },
+        "ownerIds": [
+          "142837564"
+        ]
       }
     ],
     "2": [
@@ -1628,7 +1807,10 @@
           "outdated": 165,
           "upToHot": 549,
           "pctUpdated": 0.6994535519125683
-        }
+        },
+        "ownerIds": [
+          "85888183"
+        ]
       },
       {
         "team": "Beeg Mahns",
@@ -1655,7 +1837,8 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": []
       },
       {
         "team": "D-Ville Devils",
@@ -1682,7 +1865,10 @@
           "outdated": 2,
           "upToHot": 133,
           "pctUpdated": 0.9849624060150376
-        }
+        },
+        "ownerIds": [
+          "558150440"
+        ]
       },
       {
         "team": "Eagles",
@@ -1709,7 +1895,10 @@
           "outdated": 1096,
           "upToHot": 1189,
           "pctUpdated": 0.0782169890664424
-        }
+        },
+        "ownerIds": [
+          "157985896"
+        ]
       },
       {
         "team": "Gucci Girls",
@@ -1736,7 +1925,8 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": []
       },
       {
         "team": "Huntsman",
@@ -1763,7 +1953,10 @@
           "outdated": 240,
           "upToHot": 567,
           "pctUpdated": 0.5767195767195767
-        }
+        },
+        "ownerIds": [
+          "218996490"
+        ]
       },
       {
         "team": "Koalas",
@@ -1790,7 +1983,10 @@
           "outdated": 20,
           "upToHot": 20,
           "pctUpdated": 0.0
-        }
+        },
+        "ownerIds": [
+          "77631572"
+        ]
       },
       {
         "team": "Leopards",
@@ -1817,7 +2013,10 @@
           "outdated": 143,
           "upToHot": 504,
           "pctUpdated": 0.7162698412698413
-        }
+        },
+        "ownerIds": [
+          "153958216"
+        ]
       },
       {
         "team": "Marines",
@@ -1844,7 +2043,8 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": []
       },
       {
         "team": "Mavericks",
@@ -1871,7 +2071,10 @@
           "outdated": 40,
           "upToHot": 275,
           "pctUpdated": 0.8545454545454545
-        }
+        },
+        "ownerIds": [
+          "460723833"
+        ]
       },
       {
         "team": "Navy Seals",
@@ -1898,7 +2101,10 @@
           "outdated": 1009,
           "upToHot": 1436,
           "pctUpdated": 0.29735376044568246
-        }
+        },
+        "ownerIds": [
+          "105191217"
+        ]
       },
       {
         "team": "Peninsula Pelicans",
@@ -1925,7 +2131,10 @@
           "outdated": 13,
           "upToHot": 53,
           "pctUpdated": 0.7547169811320755
-        }
+        },
+        "ownerIds": [
+          "558149446"
+        ]
       },
       {
         "team": "Rebels",
@@ -1952,7 +2161,10 @@
           "outdated": 203,
           "upToHot": 596,
           "pctUpdated": 0.6593959731543624
-        }
+        },
+        "ownerIds": [
+          "80218721"
+        ]
       },
       {
         "team": "Salty Seadogs",
@@ -1979,7 +2191,8 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": []
       },
       {
         "team": "Saucy Centurions",
@@ -2006,7 +2219,8 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": []
       },
       {
         "team": "Stormers",
@@ -2033,17 +2247,20 @@
           "outdated": 793,
           "upToHot": 1140,
           "pctUpdated": 0.3043859649122807
-        }
+        },
+        "ownerIds": [
+          "144435377"
+        ]
       },
       {
         "team": "Young Bloods",
         "total": {
-          "deals": 191,
+          "deals": 190,
           "calling": 1,
           "external": 2,
           "inbound": 0,
           "reconv": 0,
-          "rental": 174,
+          "rental": 173,
           "nurture": 14,
           "warm": 0,
           "hot": 0
@@ -2053,14 +2270,17 @@
           "external": 0,
           "inbound": 0,
           "reconv": 0,
-          "rental": 53,
+          "rental": 50,
           "nurture": 3,
           "warm": 0,
           "hot": 0,
-          "outdated": 56,
-          "upToHot": 191,
-          "pctUpdated": 0.7068062827225131
-        }
+          "outdated": 53,
+          "upToHot": 190,
+          "pctUpdated": 0.7210526315789474
+        },
+        "ownerIds": [
+          "105191306"
+        ]
       },
       {
         "team": "Zoltans",
@@ -2087,7 +2307,10 @@
           "outdated": 11,
           "upToHot": 13,
           "pctUpdated": 0.15384615384615385
-        }
+        },
+        "ownerIds": [
+          "212187727"
+        ]
       }
     ],
     "3": [
@@ -2116,7 +2339,8 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": []
       },
       {
         "team": "Vikings",
@@ -2143,7 +2367,10 @@
           "outdated": 547,
           "upToHot": 549,
           "pctUpdated": 0.0036429872495446266
-        }
+        },
+        "ownerIds": [
+          "85635359"
+        ]
       },
       {
         "team": "Scorpions",
@@ -2170,7 +2397,10 @@
           "outdated": 219,
           "upToHot": 219,
           "pctUpdated": 0.0
-        }
+        },
+        "ownerIds": [
+          "85636748"
+        ]
       },
       {
         "team": "Beluga Whales",
@@ -2197,7 +2427,8 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": []
       },
       {
         "team": "Blue Whales",
@@ -2224,7 +2455,8 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": []
       },
       {
         "team": "Killer Whales",
@@ -2251,7 +2483,8 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": []
       },
       {
         "team": "Mischiefs",
@@ -2278,7 +2511,10 @@
           "outdated": 12,
           "upToHot": 12,
           "pctUpdated": 0.0
-        }
+        },
+        "ownerIds": [
+          "270821717"
+        ]
       },
       {
         "team": "Pioneers",
@@ -2305,7 +2541,10 @@
           "outdated": 9,
           "upToHot": 9,
           "pctUpdated": 0.0
-        }
+        },
+        "ownerIds": [
+          "149757604"
+        ]
       },
       {
         "team": "Shakas",
@@ -2332,7 +2571,10 @@
           "outdated": 0,
           "upToHot": 0,
           "pctUpdated": null
-        }
+        },
+        "ownerIds": [
+          "85636455"
+        ]
       },
       {
         "team": "Sperm Whales",
@@ -2359,8 +2601,36 @@
           "outdated": 2,
           "upToHot": 2,
           "pctUpdated": 0.0
-        }
+        },
+        "ownerIds": [
+          "106125976"
+        ]
       }
     ]
+  },
+  "portalId": "8870419",
+  "kpi": {
+    "1": {
+      "totalDeals": 31267,
+      "outdatedLeads": 4095,
+      "pctOutdated": 0.13096875299836888,
+      "avgPctUpdated": 0.8100183833138088
+    },
+    "2": {
+      "totalDeals": 6665,
+      "outdatedLeads": 3788,
+      "pctOutdated": 0.5683420855213803,
+      "avgPctUpdated": 0.5231476372768018
+    },
+    "3": {
+      "totalDeals": 791,
+      "outdatedLeads": 789,
+      "pctOutdated": 0.9974715549936789,
+      "avgPctUpdated": 0.0007285974499089253
+    }
+  },
+  "_prev": {
+    "generated": "2026-06-25T15:06:02.495227+00:00",
+    "kpi": {}
   }
 }
