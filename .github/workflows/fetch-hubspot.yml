@@ -1,0 +1,73 @@
+name: Fetch HubSpot Deals
+
+# Manual trigger only for now — once we've mapped the field schema we'll
+# add a daily cron at 03:00 SAST (01:00 UTC).
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'discover (safe sample · uploads artifact, no commit) | aggregate (full pull · commits JSON)'
+        required: true
+        default: 'discover'
+        type: choice
+        options:
+          - discover
+          - aggregate
+      max_deals:
+        description: 'Cap on deals fetched (0 = unlimited; default 50 for a safe test)'
+        required: false
+        default: '50'
+      throttle_ms:
+        description: 'Sleep between API calls in ms (higher = gentler. Default 350 ≈ 3 req/s, way under HubSpot 10 req/s burst)'
+        required: false
+        default: '350'
+
+concurrency:
+  group: fetch-hubspot
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch from HubSpot
+        env:
+          HUBSPOT_TOKEN: ${{ secrets.HUBSPOT_TOKEN }}
+          MAX_DEALS:    ${{ github.event.inputs.max_deals }}
+          THROTTLE_MS:  ${{ github.event.inputs.throttle_ms }}
+          MODE:         ${{ github.event.inputs.mode }}
+        run: python scripts/fetch_hubspot.py
+
+      # In discover mode the script writes hubspot_discovery.json — upload it
+      # so we can inspect the field schema without committing to the repo.
+      - name: Upload discovery artifact
+        if: ${{ github.event.inputs.mode == 'discover' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: hubspot-discovery
+          path: hubspot_discovery.json
+          retention-days: 7
+
+      # In aggregate mode the script writes data/hubspot_outdated.json — commit
+      # and push it back so GH Pages picks it up automatically.
+      - name: Commit + push updated JSON
+        if: ${{ github.event.inputs.mode == 'aggregate' }}
+        run: |
+          git config --local user.name  "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/hubspot_outdated.json
+          git diff --staged --quiet && echo "No changes to commit" || \
+            git commit -m "auto-update HubSpot deals $(date -u +'%Y-%m-%d')"
+          git pull --rebase origin main
+          git push
