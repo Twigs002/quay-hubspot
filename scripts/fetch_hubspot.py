@@ -292,11 +292,12 @@ OUTDATED_DAYS = int(os.environ.get("OUTDATED_DAYS") or "30")  # legacy; no longe
 def _build_owner_to_team(owners, teams_by_group):
     """Map HubSpot owner_id -> canonical team name. Owner display names
     in this portal are formatted '<TeamName> <TeamName>' (e.g. 'Bulls
-    Bulls' or 'City Sunsets City Sunsets'). We match by substring against
-    the canonical team list in data/hubspot_outdated.json, picking the
-    longest match when an owner name contains multiple team strings
-    (e.g. 'Sperm Whales Sperm Whales' should match 'Sperm Whales', not
-    'Whales')."""
+    Bulls' or 'City Sunsets City Sunsets'). Returns:
+      owner_to_team       : { owner_id: team_name }
+      team_to_owner_ids   : { team_name: [owner_id, ...] }  (for deep-links)
+      unmatched_sample    : list of up-to-5 unmatched owner names (anonymised
+                            by the caller before display).
+    """
     canonical = []  # list of (team_name, group_id, lowercased_team)
     for gid, teams in teams_by_group.items():
         for t in teams:
@@ -304,6 +305,7 @@ def _build_owner_to_team(owners, teams_by_group):
     # Sort by team-name length desc so the longest match wins.
     canonical.sort(key=lambda x: -len(x[2]))
     owner_to_team = {}
+    team_to_owner_ids = {}
     unmatched_sample = []
     for oid, info in owners.items():
         nm = (info.get("name") or "").lower()
@@ -316,9 +318,23 @@ def _build_owner_to_team(owners, teams_by_group):
                 break
         if hit:
             owner_to_team[str(oid)] = hit[0]
+            team_to_owner_ids.setdefault(hit[0], []).append(str(oid))
         elif len(unmatched_sample) < 5:
             unmatched_sample.append(info.get("name"))
-    return owner_to_team, unmatched_sample
+    return owner_to_team, team_to_owner_ids, unmatched_sample
+
+
+def fetch_portal_id():
+    """Best-effort lookup so we can build deep-link URLs into HubSpot
+    (the per-team 'Open in HubSpot' action). The /integrations/v1/me
+    endpoint usually returns hub-id without needing extra scopes; if
+    not, we just omit the deep-link."""
+    try:
+        data = safe_get(f"{API}/integrations/v1/me")
+        return str(data.get("portalId") or data.get("hubId") or "") or None
+    except Exception as e:
+        print(f"  [portal] lookup failed: {e} — deep-links will be omitted", flush=True)
+        return None
 
 
 def _parse_iso(ts):
@@ -345,11 +361,15 @@ def run_aggregate():
     print("=== AGGREGATE · outdated = no next-activity date OR next-activity < today ===", flush=True)
     print("[1/3] fetching owners …", flush=True)
     owners = fetch_owners()
-    owner_to_team, unmatched = _build_owner_to_team(owners, teams_by_group)
+    owner_to_team, team_to_owner_ids, unmatched = _build_owner_to_team(owners, teams_by_group)
     print(f"      -> {len(owners)} owners total, {len(owner_to_team)} matched to a roster team", flush=True)
     if unmatched:
         print(f"      sample of unmatched owner-name shapes: "
               f"{[_anonymise_owner_name(n) for n in unmatched]}", flush=True)
+
+    print("[1.5/3] looking up portal id (for deep-links) …", flush=True)
+    portal_id = fetch_portal_id()
+    print(f"      -> portal_id = {portal_id or '(unknown — deep links disabled)'}", flush=True)
 
     print("[2/3] paginating deals …", flush=True)
 
@@ -431,10 +451,38 @@ def run_aggregate():
                 # "outdated/total" cells (e.g. "3/10 warm").
                 "total":    {"deals": sum_total, **total_per_stage},
                 "outdated": outdated_row,
+                # Owner IDs for this team — drives the "Open in HubSpot"
+                # deep-link. Multiple owners can map to one team.
+                "ownerIds": team_to_owner_ids.get(name, []),
             })
         new_groups[gid] = new_teams
 
+    # Group-level KPI snapshot used by the dashboard's delta-vs-last-run
+    # indicator (no rolling history yet; just "vs previous run").
+    def _kpi_for_group(teams):
+        sum_total    = sum((t["total"].get("deals") or 0) for t in teams)
+        sum_outdated = sum((t["outdated"].get("outdated") or 0) for t in teams)
+        pct_rows = [t for t in teams if (t["outdated"].get("pctUpdated") is not None)]
+        avg_pct = (sum(t["outdated"]["pctUpdated"] for t in pct_rows) / len(pct_rows)) if pct_rows else None
+        return {
+            "totalDeals":     sum_total,
+            "outdatedLeads":  sum_outdated,
+            "pctOutdated":    (sum_outdated / sum_total) if sum_total > 0 else None,
+            "avgPctUpdated":  avg_pct,
+        }
+    new_kpi = {gid: _kpi_for_group(teams) for gid, teams in new_groups.items()}
+
+    # Snapshot the OUTGOING totals into _prev so the next render can
+    # show "vs last refresh" deltas. Carry the timestamp too.
+    prev_block = {
+        "generated": existing.get("generated"),
+        "kpi":       existing.get("kpi") or {},
+    }
+
     existing["groups"]    = new_groups
+    existing["portalId"]  = portal_id
+    existing["kpi"]       = new_kpi
+    existing["_prev"]     = prev_block
     existing["generated"] = _dt.datetime.now(_dt.timezone.utc).isoformat()
     existing["source"]    = ("fetch_hubspot.py aggregate · "
                              "outdated = next_activity_date is null OR in the past · "

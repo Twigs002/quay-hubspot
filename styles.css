@@ -73,6 +73,9 @@ button { font-family: inherit; cursor: pointer; }
   margin: 2px 0 0; font-size: 13px;
   color: rgba(255,255,255,.78);
 }
+.topbar { justify-content: space-between; }
+.topbar-right { display: flex; align-items: center; gap: 8px; flex: none; }
+.topbar-right .pill { font-size: 11px; padding: 3px 10px; }
 
 /* ─── Main ──────────────────────────────────────────────────── */
 .main { padding: 26px 36px 60px; max-width: 1500px; margin: 0 auto; }
@@ -172,18 +175,131 @@ button { font-family: inherit; cursor: pointer; }
 /* ─── Banner ────────────────────────────────────────────────── */
 .banner { font-weight: 600; }
 
+/* ─── Hero KPI (% Outdated visual emphasis) ─────────────────── */
+.kpi.kpi--hero-ok   { background: var(--green-tint); }
+.kpi.kpi--hero-warn { background: var(--amber-tint); }
+.kpi.kpi--hero-bad  { background: var(--red-tint); }
+.kpi.kpi--hero-bad  .kpi-val { color: var(--red); }
+.kpi.kpi--hero-warn .kpi-val { color: var(--amber); }
+.kpi.kpi--hero-ok   .kpi-val { color: var(--green); }
+
+/* ─── KPI delta vs previous run ─────────────────────────────── */
+.kpi-delta {
+  display: inline-block;
+  padding: 3px 9px; border-radius: 999px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .03em;
+}
+.kpi-delta--up   { background: var(--green-tint); color: var(--green); }
+.kpi-delta--down { background: var(--red-tint);   color: var(--red); }
+
+/* ─── Group seg control metadata ────────────────────────────── */
+.seg-with-meta button { font-size: 13px; gap: 8px; }
+.seg.seg-with-meta button { padding: 8px 14px; }
+.seg-meta { font-weight: 600; font-size: 11.5px; color: var(--muted); }
+.seg button.active .seg-meta { color: rgba(255,255,255,.78); }
+.seg-stale-ok   { color: var(--green) !important; font-weight: 700; }
+.seg-stale-warn { color: var(--amber) !important; font-weight: 700; }
+.seg-stale-bad  { color: var(--red) !important;   font-weight: 700; }
+.seg button.active .seg-stale-ok,
+.seg button.active .seg-stale-warn,
+.seg button.active .seg-stale-bad { color: #fff !important; }
+
+/* ─── Top-3 callout ─────────────────────────────────────────── */
+.t3-grid {
+  display: grid; gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+}
+.t3-card {
+  display: flex; gap: 12px; align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  text-decoration: none;
+  color: inherit;
+  transition: transform .12s, border-color .12s, box-shadow .12s;
+}
+.t3-card:hover { transform: translateY(-1px); border-color: var(--blue-800); box-shadow: var(--shadow-sm); }
+.t3-card--static:hover { transform: none; border-color: var(--line); box-shadow: none; }
+.t3-rank {
+  flex: 0 0 28px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--blue-800); color: #fff;
+  display: grid; place-items: center;
+  font-family: var(--serif); font-weight: 800; font-size: 14px;
+}
+.t3-body { flex: 1 1 auto; min-width: 0; }
+.t3-name { font-weight: 700; font-size: 14px; color: var(--ink); }
+.t3-stats { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--slate); margin-top: 2px; }
+.t3-stat { white-space: nowrap; }
+.t3-stat b { color: var(--ink); }
+.t3-pct { font-weight: 700; }
+.t3-go {
+  flex: 0 0 auto;
+  font-size: 18px; color: var(--blue-800); font-weight: 800;
+  margin-left: 4px;
+}
+
+/* ─── Filter chips ──────────────────────────────────────────── */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--slate);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12.5px; font-weight: 700;
+  display: inline-flex; gap: 6px; align-items: center;
+  transition: all .12s;
+}
+.chip:hover { border-color: var(--blue-800); color: var(--blue-800); }
+.chip.active {
+  background: var(--blue-800); color: #fff; border-color: var(--blue-800);
+}
+.chip-count {
+  background: var(--paper); color: var(--slate);
+  padding: 1px 7px; border-radius: 999px;
+  font-size: 10.5px;
+}
+.chip.active .chip-count { background: rgba(255,255,255,.18); color: #fff; }
+
+/* ─── Sort indicators ───────────────────────────────────────── */
+.tbl-sortable th { user-select: none; }
+.tbl-sortable th:hover { background: #DDE4F0; }
+.sort-ind { color: var(--muted); font-size: 11px; }
+.sort-ind--active { color: var(--blue-800); }
+
+/* ─── Row-level go-to-HubSpot icon ──────────────────────────── */
+.row-go {
+  display: inline-grid; place-items: center;
+  width: 28px; height: 28px; border-radius: 6px;
+  color: var(--blue-800);
+  text-decoration: none;
+  font-size: 16px; font-weight: 800;
+  transition: background .12s;
+}
+.row-go:hover { background: var(--sky-tint); }
+
+.cell-slash { color: var(--muted); margin: 0 1px; font-weight: 500; }
+
 /* ─── Mobile ────────────────────────────────────────────────── */
 @media (max-width: 1180px) {
   .row.kpis { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .t3-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {
   .topbar { padding: 14px 16px; }
   .brand { font-size: 20px; }
   .topbar-titles h1 { font-size: 16px; }
+  .topbar-right .pill { display: none; }   /* badge mirrored in title card, save space */
   .main { padding: 16px 14px 40px; }
   .row.kpis { grid-template-columns: 1fr; }
   .kpi { padding: 14px 16px; }
   .kpi-val { font-size: 26px; }
   .card-pad { padding: 14px; }
   .tbl th, .tbl td { padding: 9px 11px; font-size: 12.5px; }
+  .chip { font-size: 11.5px; padding: 5px 10px; }
 }
