@@ -90,6 +90,31 @@ def list_deal_properties():
     return [p.get("name") for p in data.get("results", []) if p.get("name")]
 
 
+def fetch_pipelines():
+    """Return all deal pipelines with their stages. Each pipeline is a
+    {label, id, stages: [{label, id, displayOrder}]} dict — this is
+    schema, not customer data, so safe to dump in full."""
+    data = safe_get(f"{API}/crm/v3/pipelines/deals")
+    out = []
+    for pl in data.get("results", []):
+        out.append({
+            "id":     pl.get("id"),
+            "label":  pl.get("label"),
+            "stages": sorted(
+                [
+                    {
+                        "id":           st.get("id"),
+                        "label":        st.get("label"),
+                        "displayOrder": st.get("displayOrder"),
+                    }
+                    for st in (pl.get("stages") or [])
+                ],
+                key=lambda s: s.get("displayOrder") or 0,
+            ),
+        })
+    return out
+
+
 def fetch_owners():
     """Map hubspot_owner_id -> display name + email. Owners are likely
     how teams are surfaced ("wombats wombats", "Bulls Bulls", etc.)."""
@@ -178,8 +203,15 @@ def run_discover():
             break
     sample_props = sample_props[:cap]
 
+    print("[3.5/3] fetching pipelines + stages …", flush=True)
+    pipelines = fetch_pipelines()
+    print(f"      -> {len(pipelines)} pipelines", flush=True)
+
     # Stage labels are metadata (pipeline definitions), not customer data.
     dealstages = sorted({p.get("dealstage") for p in sample_props if p.get("dealstage")})
+    # Distinct pipeline / dealtype values seen in sample — both schema, not PII.
+    pipelines_in_sample = sorted({p.get("pipeline") for p in sample_props if p.get("pipeline")})
+    dealtypes_in_sample = sorted({p.get("dealtype") for p in sample_props if p.get("dealtype")})
 
     # Find any candidate "lead category" property — fields whose values look
     # like the spreadsheet's Calling/External/Inbound/Reconverted/Rental
@@ -221,6 +253,10 @@ def run_discover():
         "deal_property_names":         props,
         # Pipeline stage labels — schema, not customer data
         "unique_dealstages_in_sample": dealstages,
+        "pipelines_in_sample":         pipelines_in_sample,
+        "dealtypes_in_sample":         dealtypes_in_sample,
+        # Full pipeline schema with stage labels
+        "pipelines":                   pipelines,
         # Categorical custom-field candidates (distinct value labels only)
         "candidate_lead_props":        candidate_lead_props,
         # Anonymised owner-name shape patterns (5 max, no real names)
