@@ -269,14 +269,166 @@ def run_discover():
           f"{len(props)} properties listed (schema only, no raw CRM data).", flush=True)
 
 
+import datetime as _dt
+
+# Stage IDs → spreadsheet column key. Confirmed from the discover-mode
+# pipelines fetch on 2026-06-25 — Sales Pipeline (id=default).
+STAGE_TO_COL = {
+    "contractsent": "calling",   # Calling Lead
+    "22157097":     "external",  # External Lead
+    "10990605":     "inbound",   # Inbound Lead
+    "14369456":     "rental",    # Rental Lead
+    "44489375":     "reconv",    # Reconverted Lead
+    "7545337":      "nurture",   # Contacted - Lead to Nurture
+    "10827872":     "warm",      # Contacted - Warm Lead (Courtesy)
+    "7545338":      "hot",       # Contacted - Hot Lead
+}
+COL_KEYS = ["calling", "external", "inbound", "reconv", "rental",
+            "nurture", "warm", "hot"]
+
+OUTDATED_DAYS = int(os.environ.get("OUTDATED_DAYS") or "30")
+
+
+def _build_owner_to_team(owners, teams_by_group):
+    """Map HubSpot owner_id -> canonical team name. Owner display names
+    in this portal are formatted '<TeamName> <TeamName>' (e.g. 'Bulls
+    Bulls' or 'City Sunsets City Sunsets'). We match by substring against
+    the canonical team list in data/hubspot_outdated.json, picking the
+    longest match when an owner name contains multiple team strings
+    (e.g. 'Sperm Whales Sperm Whales' should match 'Sperm Whales', not
+    'Whales')."""
+    canonical = []  # list of (team_name, group_id, lowercased_team)
+    for gid, teams in teams_by_group.items():
+        for t in teams:
+            canonical.append((t["team"], gid, t["team"].lower()))
+    # Sort by team-name length desc so the longest match wins.
+    canonical.sort(key=lambda x: -len(x[2]))
+    owner_to_team = {}
+    unmatched_sample = []
+    for oid, info in owners.items():
+        nm = (info.get("name") or "").lower()
+        if not nm:
+            continue
+        hit = None
+        for team_name, gid, lc in canonical:
+            if lc in nm:
+                hit = (team_name, gid)
+                break
+        if hit:
+            owner_to_team[str(oid)] = hit[0]
+        elif len(unmatched_sample) < 5:
+            unmatched_sample.append(info.get("name"))
+    return owner_to_team, unmatched_sample
+
+
+def _parse_iso(ts):
+    if not ts:
+        return None
+    try:
+        return _dt.datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
+    except Exception:
+        return None
+
+
 def run_aggregate():
-    # Implemented after the discovery pass tells us which fields map to the
-    # spreadsheet's columns. For now this is a guard so the daily action
-    # can't accidentally overwrite the JSON before we've mapped the schema.
-    print("AGGREGATE mode not yet enabled — run MODE=discover first, share "
-          "hubspot_discovery.json with Claude to map the fields, then I'll "
-          "wire this branch.", flush=True)
-    sys.exit(0)
+    json_path = ROOT / "data" / "hubspot_outdated.json"
+    existing = json.loads(json_path.read_text())
+    teams_by_group = existing.get("groups") or {}
+
+    print(f"=== AGGREGATE · outdated threshold = {OUTDATED_DAYS} days ===", flush=True)
+    print("[1/3] fetching owners …", flush=True)
+    owners = fetch_owners()
+    owner_to_team, unmatched = _build_owner_to_team(owners, teams_by_group)
+    print(f"      -> {len(owners)} owners total, {len(owner_to_team)} matched to a roster team", flush=True)
+    if unmatched:
+        print(f"      sample of unmatched owner-name shapes: "
+              f"{[_anonymise_owner_name(n) for n in unmatched]}", flush=True)
+
+    print("[2/3] paginating deals (only the 4 properties we need) …", flush=True)
+    threshold = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=OUTDATED_DAYS)
+
+    # team -> col_key -> { total, outdated }
+    tallies = {}
+    cap = MAX_DEALS if MAX_DEALS > 0 else None
+    seen = 0
+    skipped_no_team = 0
+    skipped_other_stage = 0
+    after = None
+    page = 0
+    while True:
+        page += 1
+        data = fetch_deals_page(after=after, properties=[
+            "dealstage", "hubspot_owner_id", "hs_lastmodifieddate", "createdate",
+        ])
+        results = data.get("results", [])
+        if not results:
+            break
+        for d in results:
+            seen += 1
+            p = d.get("properties") or {}
+            col = STAGE_TO_COL.get(str(p.get("dealstage") or ""))
+            if not col:
+                skipped_other_stage += 1
+                continue
+            team = owner_to_team.get(str(p.get("hubspot_owner_id") or ""))
+            if not team:
+                skipped_no_team += 1
+                continue
+            lmod = _parse_iso(p.get("hs_lastmodifieddate"))
+            is_outdated = bool(lmod and lmod < threshold)
+            tally = tallies.setdefault(team, {})
+            cell  = tally.setdefault(col, {"total": 0, "outdated": 0})
+            cell["total"] += 1
+            if is_outdated:
+                cell["outdated"] += 1
+            if cap is not None and seen >= cap:
+                break
+        print(f"      page {page}: cumulative {seen} deals processed "
+              f"({skipped_other_stage} non-funnel · {skipped_no_team} no-team)", flush=True)
+        if cap is not None and seen >= cap:
+            break
+        after = (data.get("paging") or {}).get("next", {}).get("after")
+        if not after:
+            break
+
+    print(f"[3/3] writing data/hubspot_outdated.json …", flush=True)
+    new_groups = {}
+    for gid, teams in teams_by_group.items():
+        new_teams = []
+        for t in teams:
+            name = t["team"]
+            tally = tallies.get(name, {})
+            outdated_row = {}
+            sum_outdated = 0
+            sum_total    = 0
+            for col_key in COL_KEYS:
+                cell = tally.get(col_key, {"total": 0, "outdated": 0})
+                outdated_row[col_key] = cell["outdated"]
+                sum_outdated += cell["outdated"]
+                sum_total    += cell["total"]
+            outdated_row["outdated"]   = sum_outdated
+            outdated_row["upToHot"]    = sum_total
+            outdated_row["pctUpdated"] = (
+                ((sum_total - sum_outdated) / sum_total) if sum_total > 0 else None
+            )
+            # aveLogged / aveAns / aveNA stay absent — Dialfire overlay later.
+            new_teams.append({
+                "team":     name,
+                "total":    {"deals": sum_total},
+                "outdated": outdated_row,
+            })
+        new_groups[gid] = new_teams
+
+    existing["groups"]    = new_groups
+    existing["generated"] = _dt.datetime.now(_dt.timezone.utc).isoformat()
+    existing["source"]    = (f"fetch_hubspot.py aggregate · {OUTDATED_DAYS}-day "
+                             f"outdated threshold · {seen} deals processed")
+    json_path.write_text(json.dumps(existing, indent=2))
+
+    rostered = sum(len(v) for v in teams_by_group.values())
+    teams_with_data = sum(1 for t in tallies if any(v["total"] for v in tallies[t].values()))
+    print(f"\nDone — {seen} deals processed, "
+          f"{teams_with_data}/{rostered} roster teams ended up with at least one deal.", flush=True)
 
 
 # ---------------------------------------------------------------------------
