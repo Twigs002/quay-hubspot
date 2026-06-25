@@ -286,7 +286,7 @@ STAGE_TO_COL = {
 COL_KEYS = ["calling", "external", "inbound", "reconv", "rental",
             "nurture", "warm", "hot"]
 
-OUTDATED_DAYS = int(os.environ.get("OUTDATED_DAYS") or "30")
+OUTDATED_DAYS = int(os.environ.get("OUTDATED_DAYS") or "30")  # legacy; no longer used
 
 
 def _build_owner_to_team(owners, teams_by_group):
@@ -335,7 +335,14 @@ def run_aggregate():
     existing = json.loads(json_path.read_text())
     teams_by_group = existing.get("groups") or {}
 
-    print(f"=== AGGREGATE · outdated threshold = {OUTDATED_DAYS} days ===", flush=True)
+    # Outdated rule: a deal is out-of-date if it has NO next activity date
+    # scheduled, OR if its next activity date is in the past (today or
+    # earlier in SAST). 'Today' is captured at UTC start-of-day for a
+    # stable cutoff during the run.
+    today_utc = _dt.datetime.now(_dt.timezone.utc).replace(
+        hour=0, minute=0, second=0, microsecond=0)
+
+    print("=== AGGREGATE · outdated = no next-activity date OR next-activity < today ===", flush=True)
     print("[1/3] fetching owners …", flush=True)
     owners = fetch_owners()
     owner_to_team, unmatched = _build_owner_to_team(owners, teams_by_group)
@@ -344,8 +351,7 @@ def run_aggregate():
         print(f"      sample of unmatched owner-name shapes: "
               f"{[_anonymise_owner_name(n) for n in unmatched]}", flush=True)
 
-    print("[2/3] paginating deals (only the 4 properties we need) …", flush=True)
-    threshold = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=OUTDATED_DAYS)
+    print("[2/3] paginating deals …", flush=True)
 
     # team -> col_key -> { total, outdated }
     tallies = {}
@@ -358,7 +364,8 @@ def run_aggregate():
     while True:
         page += 1
         data = fetch_deals_page(after=after, properties=[
-            "dealstage", "hubspot_owner_id", "hs_lastmodifieddate", "createdate",
+            "dealstage", "hubspot_owner_id",
+            "notes_next_activity_date", "hs_next_activity_date",
         ])
         results = data.get("results", [])
         if not results:
@@ -374,8 +381,11 @@ def run_aggregate():
             if not team:
                 skipped_no_team += 1
                 continue
-            lmod = _parse_iso(p.get("hs_lastmodifieddate"))
-            is_outdated = bool(lmod and lmod < threshold)
+            # Try the standard "notes_next_activity_date" first; some portals
+            # surface it as "hs_next_activity_date" instead — accept either.
+            next_act = _parse_iso(p.get("notes_next_activity_date")
+                                   or p.get("hs_next_activity_date"))
+            is_outdated = (next_act is None) or (next_act < today_utc)
             tally = tallies.setdefault(team, {})
             cell  = tally.setdefault(col, {"total": 0, "outdated": 0})
             cell["total"] += 1
@@ -399,11 +409,13 @@ def run_aggregate():
             name = t["team"]
             tally = tallies.get(name, {})
             outdated_row = {}
+            total_per_stage = {}
             sum_outdated = 0
             sum_total    = 0
             for col_key in COL_KEYS:
                 cell = tally.get(col_key, {"total": 0, "outdated": 0})
-                outdated_row[col_key] = cell["outdated"]
+                outdated_row[col_key]   = cell["outdated"]
+                total_per_stage[col_key] = cell["total"]
                 sum_outdated += cell["outdated"]
                 sum_total    += cell["total"]
             outdated_row["outdated"]   = sum_outdated
@@ -414,15 +426,19 @@ def run_aggregate():
             # aveLogged / aveAns / aveNA stay absent — Dialfire overlay later.
             new_teams.append({
                 "team":     name,
-                "total":    {"deals": sum_total},
+                # `total.deals` is the headline total (sum across stages),
+                # plus the per-stage totals so the dashboard can render
+                # "outdated/total" cells (e.g. "3/10 warm").
+                "total":    {"deals": sum_total, **total_per_stage},
                 "outdated": outdated_row,
             })
         new_groups[gid] = new_teams
 
     existing["groups"]    = new_groups
     existing["generated"] = _dt.datetime.now(_dt.timezone.utc).isoformat()
-    existing["source"]    = (f"fetch_hubspot.py aggregate · {OUTDATED_DAYS}-day "
-                             f"outdated threshold · {seen} deals processed")
+    existing["source"]    = ("fetch_hubspot.py aggregate · "
+                             "outdated = next_activity_date is null OR in the past · "
+                             f"{seen} deals processed")
     json_path.write_text(json.dumps(existing, indent=2))
 
     rostered = sum(len(v) for v in teams_by_group.values())

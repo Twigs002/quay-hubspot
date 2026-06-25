@@ -21,14 +21,14 @@
 
   // ─── HubSpot Out-of-Date Deals view ──────────────────────────────────
   const HUBSPOT_COLS = [
-    { k: 'calling',    label: 'Calling',      tip: 'Calling leads' },
-    { k: 'external',   label: 'External',     tip: 'External leads' },
-    { k: 'inbound',    label: 'Inbound',      tip: 'Inbound leads' },
-    { k: 'reconv',     label: 'Reconv',       tip: 'Reconverted leads' },
-    { k: 'rental',     label: 'Rental',       tip: 'Rental leads' },
-    { k: 'nurture',    label: 'Nurture',      tip: 'Leads to nurture' },
-    { k: 'warm',       label: 'Warm',         tip: 'Warm leads' },
-    { k: 'hot',        label: 'Hot',          tip: 'Hot leads' },
+    { k: 'calling',    label: 'Calling',      tip: 'Calling leads — outdated/total',  isStage: true },
+    { k: 'external',   label: 'External',     tip: 'External leads — outdated/total', isStage: true },
+    { k: 'inbound',    label: 'Inbound',      tip: 'Inbound leads — outdated/total',  isStage: true },
+    { k: 'reconv',     label: 'Reconv',       tip: 'Reconverted leads — outdated/total', isStage: true },
+    { k: 'rental',     label: 'Rental',       tip: 'Rental leads — outdated/total',   isStage: true },
+    { k: 'nurture',    label: 'Nurture',      tip: 'Leads to nurture — outdated/total', isStage: true },
+    { k: 'warm',       label: 'Warm',         tip: 'Warm leads — outdated/total',     isStage: true },
+    { k: 'hot',        label: 'Hot',          tip: 'Hot leads — outdated/total',      isStage: true },
     { k: 'outdated',   label: 'Outdated',     tip: 'Total outdated leads' },
     { k: 'upToHot',    label: 'Up to Hot',    tip: 'HubSpot leads up to hot' },
     { k: 'pctUpdated', label: '% Updated',    tip: '% of leads updated', isPct: true },
@@ -126,6 +126,19 @@
       const n = Number(v);
       return isFinite(n) ? n.toFixed(n % 1 === 0 ? 0 : 1) : escapeHtml(String(v));
     };
+    // Stage cell: "outdated/total" (e.g. "3/10"). Tinted red if any are
+    // outdated, muted '—' when the team has no deals in this stage.
+    const stageCell = (outdatedN, totalN) => {
+      if (!totalN) return '<td class="num"><span class="muted">—</span></td>';
+      const out = Number(outdatedN || 0);
+      const tot = Number(totalN);
+      const allStale = tot > 0 && out === tot;
+      const noneStale = out === 0;
+      const colour = allStale  ? 'color:var(--red);font-weight:700'
+                   : noneStale ? 'color:var(--green);font-weight:700'
+                               : 'color:var(--ink);font-weight:600';
+      return `<td class="num tnum" style="${colour}">${out}/${tot}</td>`;
+    };
     const pctClass = (frac) => {
       if (frac == null) return '';
       const p = Number(frac) * 100;
@@ -205,6 +218,11 @@
                 ${HUBSPOT_COLS.map(c => {
                   if (c.k === 'pctUpdated') return pctCell(r.outdated ? r.outdated[c.k] : null);
                   if (c.k === 'outdated')   return outdatedCell(outdated, tot);
+                  if (c.isStage) {
+                    const o = r.outdated ? r.outdated[c.k] : null;
+                    const t = r.total    ? r.total[c.k]    : null;
+                    return stageCell(o, t);
+                  }
                   return `<td class="num tnum">${fmtCell(r.outdated ? r.outdated[c.k] : null, c.isPct)}</td>`;
                 }).join('')}
               </tr>`;
@@ -214,6 +232,11 @@
               <td class="num tnum">${fmt(totalDeals)}</td>
               ${HUBSPOT_COLS.map(c => {
                 if (c.isPct) return `<td class="num"><span class="muted">—</span></td>`;
+                if (c.isStage) {
+                  const oSum = rows.reduce((s, r) => s + num(r.outdated && r.outdated[c.k]), 0);
+                  const tSum = rows.reduce((s, r) => s + num(r.total && r.total[c.k]), 0);
+                  return `<td class="num tnum">${fmt(oSum)}/${fmt(tSum)}</td>`;
+                }
                 return `<td class="num tnum">${fmt(sumCol(c.k))}</td>`;
               }).join('')}
             </tr>` : ''}
