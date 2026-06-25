@@ -1,6 +1,6 @@
 {
-  "generated": null,
-  "source": "placeholder — replaced by .github/workflows/fetch-hubspot.yml on first run",
+  "generated": "2026-06-25T14:15:12.625727+00:00",
+  "source": "fetch_hubspot.py aggregate \u00b7 30-day outdated threshold \u00b7 200 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
     "2": "HubSpot Deals | Rentals",
@@ -8,97 +8,1663 @@
   },
   "groups": {
     "1": [
-      { "team": "Amigos",        "total": {}, "outdated": {} },
-      { "team": "Assassins",     "total": {}, "outdated": {} },
-      { "team": "Avengers",      "total": {}, "outdated": {} },
-      { "team": "Babes",         "total": {}, "outdated": {} },
-      { "team": "Ballers",       "total": {}, "outdated": {} },
-      { "team": "Bergscape",     "total": {}, "outdated": {} },
-      { "team": "Betties",       "total": {}, "outdated": {} },
-      { "team": "Blitz",         "total": {}, "outdated": {} },
-      { "team": "Boets",         "total": {}, "outdated": {} },
-      { "team": "Bulls",         "total": {}, "outdated": {} },
-      { "team": "Cavaliers",     "total": {}, "outdated": {} },
-      { "team": "Chargers",      "total": {}, "outdated": {} },
-      { "team": "City Sunsets",  "total": {}, "outdated": {} },
-      { "team": "Dealers",       "total": {}, "outdated": {} },
-      { "team": "Dealmakers",    "total": {}, "outdated": {} },
-      { "team": "Dragons",       "total": {}, "outdated": {} },
-      { "team": "Dutchmen",      "total": {}, "outdated": {} },
-      { "team": "Falcons",       "total": {}, "outdated": {} },
-      { "team": "Farmers",       "total": {}, "outdated": {} },
-      { "team": "Furys",         "total": {}, "outdated": {} },
-      { "team": "Gladiators",    "total": {}, "outdated": {} },
-      { "team": "Goal Diggers",  "total": {}, "outdated": {} },
-      { "team": "Gunslingers",   "total": {}, "outdated": {} },
-      { "team": "Hawks",         "total": {}, "outdated": {} },
-      { "team": "Headbangers",   "total": {}, "outdated": {} },
-      { "team": "Hoekers",       "total": {}, "outdated": {} },
-      { "team": "Hooligans",     "total": {}, "outdated": {} },
-      { "team": "Hout Baes",     "total": {}, "outdated": {} },
-      { "team": "Hustlers",      "total": {}, "outdated": {} },
-      { "team": "Invincibles",   "total": {}, "outdated": {} },
-      { "team": "Knights",       "total": {}, "outdated": {} },
-      { "team": "Koeksisters",   "total": {}, "outdated": {} },
-      { "team": "Komorants",     "total": {}, "outdated": {} },
-      { "team": "Lions",         "total": {}, "outdated": {} },
-      { "team": "Llamas",        "total": {}, "outdated": {} },
-      { "team": "Musketeers",    "total": {}, "outdated": {} },
-      { "team": "Panthers",      "total": {}, "outdated": {} },
-      { "team": "Pirates",       "total": {}, "outdated": {} },
-      { "team": "Power Rangers", "total": {}, "outdated": {} },
-      { "team": "Prom Queens",   "total": {}, "outdated": {} },
-      { "team": "Proteas",       "total": {}, "outdated": {} },
-      { "team": "Raccoons",      "total": {}, "outdated": {} },
-      { "team": "Rockets",       "total": {}, "outdated": {} },
-      { "team": "Samurais",      "total": {}, "outdated": {} },
-      { "team": "Slayers",       "total": {}, "outdated": {} },
-      { "team": "Soccer Moms",   "total": {}, "outdated": {} },
-      { "team": "Spartans",      "total": {}, "outdated": {} },
-      { "team": "Surfers",       "total": {}, "outdated": {} },
-      { "team": "Swesties",      "total": {}, "outdated": {} },
-      { "team": "Targaryens",    "total": {}, "outdated": {} },
-      { "team": "Tigers",        "total": {}, "outdated": {} },
-      { "team": "TNT",           "total": {}, "outdated": {} },
-      { "team": "Tornadoes",     "total": {}, "outdated": {} },
-      { "team": "Vipers",        "total": {}, "outdated": {} },
-      { "team": "Warriors",      "total": {}, "outdated": {} },
-      { "team": "Weasels",       "total": {}, "outdated": {} },
-      { "team": "Wizards",       "total": {}, "outdated": {} },
-      { "team": "Wolves",        "total": {}, "outdated": {} },
-      { "team": "Wombats",       "total": {}, "outdated": {} }
+      {
+        "team": "Amigos",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Assassins",
+        "total": {
+          "deals": 4
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 4,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 4,
+          "upToHot": 4,
+          "pctUpdated": 0.0
+        }
+      },
+      {
+        "team": "Avengers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Babes",
+        "total": {
+          "deals": 10
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 9,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 9,
+          "upToHot": 10,
+          "pctUpdated": 0.1
+        }
+      },
+      {
+        "team": "Ballers",
+        "total": {
+          "deals": 4
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 3,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 3,
+          "upToHot": 4,
+          "pctUpdated": 0.25
+        }
+      },
+      {
+        "team": "Bergscape",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Betties",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Blitz",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Boets",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Bulls",
+        "total": {
+          "deals": 1
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 1,
+          "pctUpdated": 1.0
+        }
+      },
+      {
+        "team": "Cavaliers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Chargers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "City Sunsets",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Dealers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Dealmakers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Dragons",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Dutchmen",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Falcons",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Farmers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Furys",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Gladiators",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Goal Diggers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Gunslingers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Hawks",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Headbangers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Hoekers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Hooligans",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Hout Baes",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Hustlers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Invincibles",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Knights",
+        "total": {
+          "deals": 5
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 4,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 4,
+          "upToHot": 5,
+          "pctUpdated": 0.2
+        }
+      },
+      {
+        "team": "Koeksisters",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Komorants",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Lions",
+        "total": {
+          "deals": 12
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 9,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 9,
+          "upToHot": 12,
+          "pctUpdated": 0.25
+        }
+      },
+      {
+        "team": "Llamas",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Musketeers",
+        "total": {
+          "deals": 1
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 1,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 1,
+          "upToHot": 1,
+          "pctUpdated": 0.0
+        }
+      },
+      {
+        "team": "Panthers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Pirates",
+        "total": {
+          "deals": 2
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 2,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 2,
+          "upToHot": 2,
+          "pctUpdated": 0.0
+        }
+      },
+      {
+        "team": "Power Rangers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Prom Queens",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Proteas",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Raccoons",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Rockets",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Samurais",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Slayers",
+        "total": {
+          "deals": 1
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 1,
+          "pctUpdated": 1.0
+        }
+      },
+      {
+        "team": "Soccer Moms",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Spartans",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Surfers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Swesties",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Targaryens",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Tigers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "TNT",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Tornadoes",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Vipers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Warriors",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Weasels",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Wizards",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Wolves",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Wombats",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      }
     ],
     "2": [
-      { "team": "Bandits",            "total": {}, "outdated": {} },
-      { "team": "Beeg Mahns",         "total": {}, "outdated": {} },
-      { "team": "D-Ville Devils",     "total": {}, "outdated": {} },
-      { "team": "Eagles",             "total": {}, "outdated": {} },
-      { "team": "Gucci Girls",        "total": {}, "outdated": {} },
-      { "team": "Huntsman",           "total": {}, "outdated": {} },
-      { "team": "Koalas",             "total": {}, "outdated": {} },
-      { "team": "Leopards",           "total": {}, "outdated": {} },
-      { "team": "Marines",            "total": {}, "outdated": {} },
-      { "team": "Mavericks",          "total": {}, "outdated": {} },
-      { "team": "Navy Seals",         "total": {}, "outdated": {} },
-      { "team": "Peninsula Pelicans", "total": {}, "outdated": {} },
-      { "team": "Rebels",             "total": {}, "outdated": {} },
-      { "team": "Salty Seadogs",      "total": {}, "outdated": {} },
-      { "team": "Saucy Centurions",   "total": {}, "outdated": {} },
-      { "team": "Stormers",           "total": {}, "outdated": {} },
-      { "team": "Young Bloods",       "total": {}, "outdated": {} },
-      { "team": "Zoltans",            "total": {}, "outdated": {} }
+      {
+        "team": "Bandits",
+        "total": {
+          "deals": 1
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 1,
+          "pctUpdated": 1.0
+        }
+      },
+      {
+        "team": "Beeg Mahns",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "D-Ville Devils",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Eagles",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Gucci Girls",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Huntsman",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Koalas",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Leopards",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Marines",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Mavericks",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Navy Seals",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Peninsula Pelicans",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Rebels",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Salty Seadogs",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Saucy Centurions",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Stormers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Young Bloods",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Zoltans",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      }
     ],
     "3": [
-      { "team": "Cobras",        "total": {}, "outdated": {} },
-      { "team": "Vikings",       "total": {}, "outdated": {} },
-      { "team": "Scorpions",     "total": {}, "outdated": {} },
-      { "team": "Beluga Whales", "total": {}, "outdated": {} },
-      { "team": "Blue Whales",   "total": {}, "outdated": {} },
-      { "team": "Killer Whales", "total": {}, "outdated": {} },
-      { "team": "Mischiefs",     "total": {}, "outdated": {} },
-      { "team": "Pioneers",      "total": {}, "outdated": {} },
-      { "team": "Shakas",        "total": {}, "outdated": {} },
-      { "team": "Sperm Whales",  "total": {}, "outdated": {} }
+      {
+        "team": "Cobras",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Vikings",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Scorpions",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Beluga Whales",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Blue Whales",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Killer Whales",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Mischiefs",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Pioneers",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Shakas",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      },
+      {
+        "team": "Sperm Whales",
+        "total": {
+          "deals": 0
+        },
+        "outdated": {
+          "calling": 0,
+          "external": 0,
+          "inbound": 0,
+          "reconv": 0,
+          "rental": 0,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
+          "upToHot": 0,
+          "pctUpdated": null
+        }
+      }
     ]
   }
 }
