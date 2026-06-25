@@ -126,8 +126,31 @@ def fetch_deals_page(after=None, properties=None):
 # ---------------------------------------------------------------------------
 # Modes
 # ---------------------------------------------------------------------------
+def _anonymise_owner_name(name):
+    """Replace each word with a token of the same length so the *shape* of
+    the name is visible (length, word count, casing) without leaking the
+    actual identifier. Used so the schema-mapping step can confirm e.g.
+    'two-word repeated team token' patterns without exposing real names."""
+    if not name:
+        return ""
+    out = []
+    for w in name.split():
+        if w.isupper():
+            out.append("X" * len(w))
+        elif w[:1].isupper():
+            out.append("X" + ("x" * (len(w) - 1)))
+        else:
+            out.append("x" * len(w))
+    return " ".join(out)
+
+
 def run_discover():
-    print(f"=== DISCOVER · sampling up to {MAX_DEALS or 50} deals ===", flush=True)
+    """Schema-only discovery. The artifact written here intentionally contains
+    NO raw CRM data — no deal records, no contact info, no monetary fields,
+    no owner emails or IDs, no real owner names. Only metadata strings and
+    counts so the dashboard's column-to-field mapping can be wired safely
+    via the conversation."""
+    print(f"=== DISCOVER · sampling up to {MAX_DEALS or 50} deals (schema only) ===", flush=True)
     cap = MAX_DEALS if MAX_DEALS > 0 else 50
 
     print("[1/3] listing deal properties …", flush=True)
@@ -138,47 +161,76 @@ def run_discover():
     owners = fetch_owners()
     print(f"      -> {len(owners)} owners", flush=True)
 
-    print(f"[3/3] sampling deals (cap {cap}) with first ~100 properties …", flush=True)
-    sample = []
+    print(f"[3/3] sampling deals (cap {cap}) for schema only …", flush=True)
+    sample_props = []  # list of property dicts only — no record IDs
     after = None
     page = 0
-    while len(sample) < cap:
+    while len(sample_props) < cap:
         page += 1
         data = fetch_deals_page(after=after, properties=props)
         results = data.get("results", [])
-        sample.extend(results)
+        for d in results:
+            sample_props.append(d.get("properties") or {})
         print(f"      page {page} -> {len(results)} deals "
-              f"(total {len(sample)})", flush=True)
+              f"(total {len(sample_props)})", flush=True)
         after = (data.get("paging") or {}).get("next", {}).get("after")
         if not after or not results:
             break
-    sample = sample[:cap]
+    sample_props = sample_props[:cap]
 
-    # Derive a handful of useful summaries directly so we don't have to
-    # eyeball every property.
-    dealstages = sorted({(d.get("properties") or {}).get("dealstage")
-                         for d in sample
-                         if (d.get("properties") or {}).get("dealstage")})
-    owner_names_in_sample = sorted({owners.get(str((d.get("properties") or {}).get("hubspot_owner_id")), {}).get("name", "")
-                                    for d in sample
-                                    if (d.get("properties") or {}).get("hubspot_owner_id")})
-    owner_names_in_sample = [n for n in owner_names_in_sample if n]
+    # Stage labels are metadata (pipeline definitions), not customer data.
+    dealstages = sorted({p.get("dealstage") for p in sample_props if p.get("dealstage")})
+
+    # Find any candidate "lead category" property — fields whose values look
+    # like the spreadsheet's Calling/External/Inbound/Reconverted/Rental
+    # categories. We only dump the *distinct value strings* (schema), never
+    # individual deal contents.
+    LEAD_HINTS = ("lead", "category", "type", "source", "status")
+    candidate_lead_props = {}
+    for key in props:
+        if any(h in key.lower() for h in LEAD_HINTS):
+            vals = sorted({str(p.get(key)) for p in sample_props if p.get(key)})
+            if 1 <= len(vals) <= 30:  # categorical fields only
+                candidate_lead_props[key] = vals[:30]
+
+    # Anonymised owner-name pattern: lets me confirm the "two-word repeated
+    # token" shape that the existing data hints at, without revealing real
+    # names. Only 5 distinct shapes returned, max.
+    owner_name_shapes = sorted({_anonymise_owner_name(o.get("name", ""))
+                                for o in owners.values()
+                                if o.get("name")})[:5]
+
+    # Property-name suggestions for the standard fields we'll need by name.
+    expected = {
+        "dealstage":              "dealstage" in props,
+        "hubspot_owner_id":       "hubspot_owner_id" in props,
+        "hs_lastmodifieddate":    "hs_lastmodifieddate" in props,
+        "createdate":             "createdate" in props,
+        "closedate":              "closedate" in props,
+        "hs_lastactivitydate":    "hs_lastactivitydate" in props,
+    }
 
     out = {
         "mode":          "discover",
         "fetched_at":    time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "throttle_ms":   int(THROTTLE_S * 1000),
-        "deals_sampled": len(sample),
-        "deal_property_names": props,
-        "unique_dealstages_in_sample":   dealstages,
+        # Schema-only counts
+        "deals_sampled": len(sample_props),
         "owner_count":   len(owners),
-        "owner_sample":  {k: v for k, v in list(owners.items())[:30]},
-        "owner_names_in_deal_sample":    owner_names_in_sample,
-        "deals_first_5_raw":             sample[:5],
+        # Pure metadata: property name strings — no values
+        "deal_property_names":         props,
+        # Pipeline stage labels — schema, not customer data
+        "unique_dealstages_in_sample": dealstages,
+        # Categorical custom-field candidates (distinct value labels only)
+        "candidate_lead_props":        candidate_lead_props,
+        # Anonymised owner-name shape patterns (5 max, no real names)
+        "owner_name_shapes":           owner_name_shapes,
+        # Yes/no checks for the standard properties we'll read
+        "standard_properties_present": expected,
     }
     (ROOT / "hubspot_discovery.json").write_text(json.dumps(out, indent=2, default=str))
-    print(f"\nWrote hubspot_discovery.json — {len(sample)} deals sampled, "
-          f"{len(props)} properties listed", flush=True)
+    print(f"\nWrote hubspot_discovery.json — {len(sample_props)} deals sampled, "
+          f"{len(props)} properties listed (schema only, no raw CRM data).", flush=True)
 
 
 def run_aggregate():
