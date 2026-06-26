@@ -1,9 +1,16 @@
 name: Fetch HubSpot Deals
 
-# Manual trigger only for now — once we've mapped the field schema we'll
-# add a daily cron at 03:00 SAST (01:00 UTC).
+# Scheduled refresh: 3× daily at 03:00 / 11:00 / 13:00 SAST so the
+# dashboard reflects deal staleness across the working day (morning
+# stand-up, mid-shift, just-after-lunch checkpoint). SAST is UTC+2 with
+# no DST, so the UTC times are 01:00 / 09:00 / 11:00.
+# Manual dispatch still available for discovery + ad-hoc reruns.
 
 on:
+  schedule:
+    - cron: '0 1 * * *'    # 03:00 SAST
+    - cron: '0 9 * * *'    # 11:00 SAST
+    - cron: '0 11 * * *'   # 13:00 SAST
   workflow_dispatch:
     inputs:
       mode:
@@ -44,13 +51,16 @@ jobs:
       - name: Fetch from HubSpot
         env:
           HUBSPOT_TOKEN: ${{ secrets.HUBSPOT_TOKEN }}
-          MAX_DEALS:    ${{ github.event.inputs.max_deals }}
-          THROTTLE_MS:  ${{ github.event.inputs.throttle_ms }}
-          MODE:         ${{ github.event.inputs.mode }}
+          # Cron runs have no `inputs.*` — fall back to aggregate-mode
+          # full pull so the scheduled refresh always commits real data.
+          MAX_DEALS:    ${{ github.event.inputs.max_deals    || '0' }}
+          THROTTLE_MS:  ${{ github.event.inputs.throttle_ms  || '350' }}
+          MODE:         ${{ github.event.inputs.mode         || 'aggregate' }}
         run: python scripts/fetch_hubspot.py
 
       # In discover mode the script writes hubspot_discovery.json — upload it
       # so we can inspect the field schema without committing to the repo.
+      # Cron runs never hit this (mode defaults to aggregate above).
       - name: Upload discovery artifact
         if: ${{ github.event.inputs.mode == 'discover' }}
         uses: actions/upload-artifact@v4
@@ -60,9 +70,11 @@ jobs:
           retention-days: 7
 
       # In aggregate mode the script writes data/hubspot_outdated.json — commit
-      # and push it back so GH Pages picks it up automatically.
+      # and push it back so GH Pages picks it up automatically. Fires for
+      # scheduled runs (mode falls back to aggregate) and manual aggregate
+      # dispatches.
       - name: Commit + push updated JSON
-        if: ${{ github.event.inputs.mode == 'aggregate' }}
+        if: ${{ (github.event.inputs.mode || 'aggregate') == 'aggregate' }}
         run: |
           git config --local user.name  "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
