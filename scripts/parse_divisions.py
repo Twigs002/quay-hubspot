@@ -49,8 +49,30 @@ from pathlib import Path
 import openpyxl
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC  = ROOT / "data" / "divisions_source.xlsx"
 OUT  = ROOT / "data" / "divisions.json"
+
+# The xlsx is gitignored — keep it local. Look in data/ first, then fall
+# back to the most recent ~/Downloads/Divisions* the user has, so the
+# typical flow ("download, run script") works without a manual move.
+def _resolve_source() -> Path:
+    explicit = ROOT / "data" / "divisions_source.xlsx"
+    if explicit.exists():
+        return explicit
+    downloads = Path.home() / "Downloads"
+    candidates = sorted(
+        downloads.glob("Divisions*.xlsx"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    if candidates:
+        return candidates[0]
+    sys.exit(
+        "No source xlsx found. Either:\n"
+        "  - drop the file at data/divisions_source.xlsx, or\n"
+        f"  - export Divisions Area Breakdown.xlsx into {downloads}"
+    )
+
+SRC = _resolve_source()
 
 EMAIL_RX = re.compile(r"^[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}$")
 PHONE_RX = re.compile(r"[\d\s+()\-/]{7,}")

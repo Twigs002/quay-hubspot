@@ -150,16 +150,39 @@
     if (topbarSlot && _hubspot && _hubspot.generated) {
       const d = new Date(_hubspot.generated);
       const hrs = (Date.now() - d.getTime()) / 3600000;
-      const cls = hrs < 30 ? 'ok' : hrs < 72 ? 'warn' : 'bad';
+      // Threshold tuned to the 3× daily cadence (03:00 / 11:00 / 13:00
+      // SAST). Anything older than ~9h between expected refreshes is
+      // warn-worthy; anything past a full day is bad.
+      const cls = hrs < 9 ? 'ok' : hrs < 24 ? 'warn' : 'bad';
       const mins = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
       const rel = mins < 60 ? mins + 'm ago'
                 : hrs  < 24 ? Math.round(hrs) + 'h ago'
                 : Math.round(hrs / 24) + 'd ago';
       const abs = d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Johannesburg' }) + ' SAST';
-      topbarSlot.innerHTML = `<span class="pill ${cls}" title="${escapeHtml(abs)}">Refreshed ${escapeHtml(rel)}</span>`;
+      const nextRun = _nextRefreshSAST();
+      const tip = `Last refresh: ${abs}${nextRun ? `\nNext scheduled: ${nextRun} SAST` : ''}`;
+      topbarSlot.innerHTML = `<span class="pill ${cls}" title="${escapeHtml(tip)}">Refreshed ${escapeHtml(rel)}</span>`;
     } else if (topbarSlot) {
       topbarSlot.innerHTML = '';
     }
+  }
+
+  // The fetch-hubspot workflow runs at 03:00 / 11:00 / 13:00 SAST. Pick
+  // the next one ahead of now in local-SAST terms — used in the refresh
+  // pill tooltip so the operator sees when fresh data is due.
+  function _nextRefreshSAST() {
+    const SCHEDULE_H = [3, 11, 13];
+    // SAST is UTC+2, no DST. Compute "now" in SAST by adding 2h to UTC.
+    const utc = new Date();
+    const sast = new Date(utc.getTime() + 2 * 3600 * 1000);
+    const hourNow = sast.getUTCHours();
+    const minNow  = sast.getUTCMinutes();
+    const todayRunsAhead = SCHEDULE_H.filter(h => h > hourNow || (h === hourNow && minNow === 0));
+    if (todayRunsAhead.length) {
+      const h = todayRunsAhead[0];
+      return String(h).padStart(2, '0') + ':00 today';
+    }
+    return String(SCHEDULE_H[0]).padStart(2, '0') + ':00 tomorrow';
   }
 
   // ─── Helpers shared across the render ──────────────────────────────
@@ -278,9 +301,9 @@
       return `<span class="${cls}" title="vs previous refresh">${arrow} ${txt}</span>`;
     };
     const kpiCard = (icon, label, val, foot, delta, heroClass) => `<div class="card kpi ${heroClass || ''}">
-      <div class="kpi-top"><div class="kpi-ic">${icon}</div>${delta || ''}</div>
+      <div class="kpi-top"><div class="kpi-ic">${icon}</div></div>
       <div class="kpi-label">${escapeHtml(label)}</div>
-      <div class="kpi-val tnum">${val}</div>
+      <div class="kpi-valrow"><span class="kpi-val tnum">${val}</span>${delta || ''}</div>
       <div class="kpi-foot">${escapeHtml(foot)}</div>
     </div>`;
 
@@ -299,9 +322,11 @@
       const stale = gk.totalDeals > 0 ? (gk.outdatedLeads / gk.totalDeals) * 100 : 0;
       const staleClass = stale >= 60 ? 'seg-stale-bad' : stale >= 30 ? 'seg-stale-warn' : 'seg-stale-ok';
       const name  = groupNames[k] || ('Group ' + k);
-      return `<button class="${k === _hubspotGroup ? 'active' : ''}" data-hs-group="${k}">
+      // Drop the team count from the button — it's already in the table
+      // header below. Keep just `name · X% stale` so the segment header
+      // does one thing: signal which group is hottest.
+      return `<button class="${k === _hubspotGroup ? 'active' : ''}" data-hs-group="${k}" aria-pressed="${k === _hubspotGroup ? 'true' : 'false'}">
         ${escapeHtml(name)}
-        <span class="seg-meta">· ${gRows.length} teams</span>
         ${gk.totalDeals > 0 ? `<span class="seg-meta ${staleClass}">· ${stale.toFixed(0)}% stale</span>` : ''}
       </button>`;
     };
@@ -344,8 +369,11 @@
     // ── Filter chips ────────────────────────────────────────────────
     const filterChips = HUBSPOT_FILTERS.map(f => {
       const count = allRows.filter(r => r._tot > 0).filter(f.test).length;
-      return `<button class="chip ${f.k === _hubspotFilter ? 'active' : ''}" data-hs-filter="${f.k}">
-        ${escapeHtml(f.label)}<span class="chip-count">${count}</span>
+      // Always show the count — even 0 — so the user sees the filter is
+      // empty BEFORE clicking it. Mute zero counts so they recede.
+      const zero = count === 0 ? ' chip-count--zero' : '';
+      return `<button class="chip ${f.k === _hubspotFilter ? 'active' : ''}" data-hs-filter="${f.k}" aria-pressed="${f.k === _hubspotFilter ? 'true' : 'false'}">
+        ${escapeHtml(f.label)}<span class="chip-count${zero}">${count}</span>
       </button>`;
     }).join('');
 
@@ -410,22 +438,28 @@
 
     // Sort indicator on the active column header.
     const sortIndic = (k) => {
-      if (k !== _hubspotSortBy) return '<span class="sort-ind"> ⇅</span>';
+      if (k !== _hubspotSortBy) return '<span class="sort-ind" aria-hidden="true"> ⇅</span>';
       return _hubspotSortDir === 'asc'
-        ? '<span class="sort-ind sort-ind--active"> ▲</span>'
-        : '<span class="sort-ind sort-ind--active"> ▼</span>';
+        ? '<span class="sort-ind sort-ind--active" aria-hidden="true"> ▲</span>'
+        : '<span class="sort-ind sort-ind--active" aria-hidden="true"> ▼</span>';
     };
+    // aria-sort lets assistive tech announce sort state without relying
+    // on the glyph alone (WCAG 1.3.1).
+    const ariaSort = (k) => k === _hubspotSortBy
+      ? (_hubspotSortDir === 'asc' ? 'ascending' : 'descending')
+      : 'none';
 
     const headerCellForStage = (c) =>
-      `<th class="num" style="min-width:${c.k === 'pctUpdated' ? 96 : 78}px" title="${escapeHtml(c.tip)}" data-hs-sort="${c.k}">${escapeHtml(c.label)}${sortIndic(c.k)}</th>`;
+      `<th class="num" style="min-width:${c.k === 'pctUpdated' ? 96 : 78}px" title="${escapeHtml(c.tip)}" data-hs-sort="${c.k}" aria-sort="${ariaSort(c.k)}" scope="col">${escapeHtml(c.label)}${sortIndic(c.k)}</th>`;
     const headerNumeric = (k, label, tip, w) =>
-      `<th class="num" style="min-width:${w}px" title="${escapeHtml(tip)}" data-hs-sort="${k}">${escapeHtml(label)}${sortIndic(k)}</th>`;
-    const teamHeader = `<th style="${STK_TH};min-width:180px;text-align:left" data-hs-sort="team">Team${sortIndic('team')}</th>`;
+      `<th class="num" style="min-width:${w}px" title="${escapeHtml(tip)}" data-hs-sort="${k}" aria-sort="${ariaSort(k)}" scope="col">${escapeHtml(label)}${sortIndic(k)}</th>`;
+    const teamHeader = `<th style="${STK_TH};min-width:180px;text-align:left" data-hs-sort="team" aria-sort="${ariaSort('team')}" scope="col">Team${sortIndic('team')}</th>`;
     const totalHeader = headerNumeric('total', 'Total', 'Total deals for this team', 74);
 
     const emptyRow = `<tr><td colspan="${HUBSPOT_COLS.length + 2}" class="muted" style="text-align:center;padding:36px 20px;line-height:1.55">
-      No data yet — generate a HubSpot Private App token and run the<br>
-      <code style="background:var(--paper);padding:2px 6px;border-radius:4px;font-size:12px">fetch-hubspot</code> workflow to populate this view.
+      No data loaded yet — the dashboard refresh hasn't run.<br>
+      Trigger it from the repo's <b>Actions → Fetch HubSpot Deals</b> tab,
+      or wait for the next scheduled run (03:00 / 11:00 / 13:00 SAST).
     </td></tr>`;
     const noVisibleRow = `<tr><td colspan="${HUBSPOT_COLS.length + 2}" class="muted" style="text-align:center;padding:36px 20px;line-height:1.55">
       No teams match the current filter / hidden-empties setting.
@@ -517,7 +551,7 @@
                   }
                   return `<td class="num tnum">${fmtCell(r.outdated ? r.outdated[c.k] : null, c.isPct)}</td>`;
                 }).join('')}
-                ${portalId ? `<td class="num">${link ? `<a class="row-go" href="${link}" target="_blank" rel="noopener" title="Open in HubSpot" aria-label="Open ${escapeHtml(r.team || '')} deals in HubSpot">↗</a>` : '<span class="muted">—</span>'}</td>` : ''}
+                ${portalId ? `<td class="num">${link ? `<a class="row-go" href="${link}" target="_blank" rel="noopener" title="Open in HubSpot" aria-label="Open ${escapeHtml(r.team || '')} deals in HubSpot"><span class="row-go-text">HubSpot</span><span class="row-go-arrow" aria-hidden="true">↗</span></a>` : '<span class="muted">—</span>'}</td>` : ''}
               </tr>`;
             }).join(''))}
             ${visible.length > 0 ? `<tr style="background:#F7F8FC;font-weight:700">

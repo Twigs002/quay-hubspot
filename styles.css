@@ -211,10 +211,10 @@ button { font-family: inherit; cursor: pointer; }
   grid-template-columns: repeat(3, 1fr);
 }
 .t3-card {
-  display: flex; gap: 12px; align-items: center;
-  padding: 12px 14px;
+  display: flex; gap: 14px; align-items: center;
+  padding: 16px 18px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--paper);
   text-decoration: none;
   color: inherit;
@@ -223,15 +223,15 @@ button { font-family: inherit; cursor: pointer; }
 .t3-card:hover { transform: translateY(-1px); border-color: var(--blue-800); box-shadow: var(--shadow-sm); }
 .t3-card--static:hover { transform: none; border-color: var(--line); box-shadow: none; }
 .t3-rank {
-  flex: 0 0 28px;
-  width: 28px; height: 28px; border-radius: 50%;
+  flex: 0 0 32px;
+  width: 32px; height: 32px; border-radius: 50%;
   background: var(--blue-800); color: #fff;
   display: grid; place-items: center;
-  font-family: var(--serif); font-weight: 800; font-size: 14px;
+  font-family: var(--serif); font-weight: 800; font-size: 15px;
 }
 .t3-body { flex: 1 1 auto; min-width: 0; }
-.t3-name { font-weight: 700; font-size: 14px; color: var(--ink); }
-.t3-stats { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--slate); margin-top: 2px; }
+.t3-name { font-weight: 700; font-size: 15px; color: var(--ink); line-height: 1.25; }
+.t3-stats { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12.5px; color: var(--slate); margin-top: 6px; }
 .t3-stat { white-space: nowrap; }
 .t3-stat b { color: var(--ink); }
 .t3-pct { font-weight: 700; }
@@ -303,6 +303,63 @@ button { font-family: inherit; cursor: pointer; }
   .tbl th, .tbl td { padding: 9px 11px; font-size: 12.5px; }
   .chip { font-size: 11.5px; padding: 5px 10px; }
 }
+
+/* ─── Polish pass overrides (UI review items applied) ────────────────── */
+
+/* Zebra-stripe the deals table so the eye stays on a row across the
+   13-metric width. Keep hover stronger than the stripe so the active
+   row still pops. */
+.tbl tbody tr:nth-child(even):not(.row-team:hover) td { background: var(--paper-2, #F7F8FC); }
+.tbl tbody tr:hover td { background: rgba(61, 91, 166, .05) !important; }
+
+/* Sticky team column gets a permanent right-edge shadow so the user
+   knows the column will hold its position when the table scrolls. */
+.tbl tbody td:first-child,
+.tbl thead th:first-child { box-shadow: inset -1px 0 0 var(--line-2, #EDF1F8); }
+
+/* KPI row: value + delta inline so the delta visually belongs to the
+   number it qualifies. Was previously parked up next to the icon. */
+.kpi-valrow {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  margin-top: 4px;
+}
+.kpi-valrow .kpi-val { margin: 0; }
+.kpi-valrow .kpi-delta { font-size: 12px; }
+
+/* Row-go button (HubSpot link in the last col): labelled tap target,
+   ≥44px so it's comfortable on mobile. */
+.row-go {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 10px;
+  font-family: var(--sans); font-size: 11.5px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--blue-800); background: var(--card);
+  border: 1px solid var(--line); border-radius: 6px;
+  text-decoration: none;
+  transition: background .12s, border-color .12s;
+}
+.row-go:hover { background: var(--paper); border-color: var(--blue-800); }
+.row-go:focus-visible {
+  outline: 2px solid var(--blue-800);
+  outline-offset: 1px;
+}
+.row-go-arrow { font-size: 14px; line-height: 1; }
+@media (max-width: 520px) {
+  .row-go-text { display: none; }
+  .row-go { padding: 8px 10px; }
+}
+
+/* Filter chip zero-count: mute the badge so the user can see the
+   filter is empty before clicking. */
+.chip-count--zero {
+  background: transparent !important;
+  color: var(--muted, #8893A8) !important;
+  border: 1px solid var(--line, #EDF1F8);
+}
+
+/* Filter row: keep show-empty toggle hugging the right edge so it
+   doesn't strand alone on medium widths. */
+.card-pad > .chips + label { margin-left: auto; flex: 0 0 auto; }
 
 /* ─── Tab navigation ─────────────────────────────────────────────────── */
 .tab-nav {
