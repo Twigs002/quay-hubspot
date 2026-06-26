@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quay 1 · HubSpot Insights</title>
+  <title>Quay 1 · Team Insights</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
@@ -14,13 +14,18 @@
     <div class="topbar-left">
       <div class="brand">QUAY <span>1</span></div>
       <div class="topbar-titles">
-        <h1>HubSpot · Out-of-Date Deals</h1>
-        <p>Per-team aged-deal counts · refreshed daily from HubSpot</p>
+        <h1>Team Insights</h1>
+        <p>HubSpot deals · division directory · refreshed 3× daily</p>
       </div>
     </div>
     <div class="topbar-right" id="topbarRefresh"></div>
   </header>
+  <nav class="tab-nav" id="tabNav" aria-label="Dashboard sections">
+    <button class="tab-btn active" data-tab="deals">Deals</button>
+    <button class="tab-btn" data-tab="directory">Directory</button>
+  </nav>
   <main id="content" class="main"></main>
+  <div id="modalHost"></div>
   <script src="app.js"></script>
 </body>
 </html>

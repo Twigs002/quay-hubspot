@@ -6,3 +6,9 @@
 node_modules/
 __pycache__/
 *.pyc
+
+# Source spreadsheets stay local — only the parsed JSON is committed,
+# so the repo doesn't bloat with binary xlsx versions on every re-export.
+# Put fresh xlsx exports in data/ (or ~/Downloads) and re-run
+# scripts/parse_divisions.py to update data/divisions.json.
+data/*.xlsx
