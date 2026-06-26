@@ -1,0 +1,2293 @@
+{
+  "generated": "2026-06-26T12:55:06.879001+00:00",
+  "source": "scripts/parse_divisions.py · data/divisions_source.xlsx",
+  "stats": {
+    "sections": 9,
+    "teams": 95,
+    "brokers": 185,
+    "specialists": 46,
+    "teams_with_hubspot": 79
+  },
+  "sections": [
+    {
+      "name": "RESI SALES - CITY BOWL & ATLANTIC SEABOARD (EXCLUSIVE AREAS)",
+      "teams": [
+        {
+          "name": "Assassins",
+          "type": "Sales",
+          "suburbs": "Vredehoek ST, Oranjezicht ST , Vredehoek FT- (All FT under 300 sqm), Highcape FT/ST, Devils Peak FT/ST (All Ft under 300 sqm), Devil's Peak Estate FT/ST, Devils Peak Estate FT/ST",
+          "hubspot_email": "assassins@greeffcity.co.za",
+          "hubspot_owner_id": "61949424",
+          "hubspot_division": "Assassins",
+          "brokers": [
+            {
+              "name": "Christine Marsh",
+              "email": "christine@quay1.co.za",
+              "phone": "083 452 9568"
+            },
+            {
+              "name": "Jonah Anderson",
+              "email": "jonah@quay1.co.za",
+              "phone": "072 590 7618"
+            },
+            {
+              "name": "Bhavir Kooverjee",
+              "email": "Bhavir@quay1.co.za",
+              "phone": null
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 124",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Amigos",
+          "type": "Sales",
+          "suburbs": "Gardens ST, Zonnebloem FT/ST, District Six FT/ST, De Waterkant ST",
+          "hubspot_email": "amigos@greeffcity.co.za",
+          "hubspot_owner_id": "61989266",
+          "hubspot_division": "Amigos",
+          "brokers": [
+            {
+              "name": "Dino Moulopoulos",
+              "email": "dino@quay1.co.za",
+              "phone": "072 200 5292"
+            },
+            {
+              "name": "Raoul Hasselerarm",
+              "email": "raoul@quay1.co.za",
+              "phone": "082 745 2373"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 2",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Avengers",
+          "type": "Sales",
+          "suburbs": "Bantry Bay ST, Fresnaye ST",
+          "hubspot_email": "avengers@greeffcity.co.za",
+          "hubspot_owner_id": "61949593",
+          "hubspot_division": "Avengers",
+          "brokers": [
+            {
+              "name": "Jonathan Weinberg",
+              "email": "jonathan@quay1.co.za",
+              "phone": "072 213 1440"
+            },
+            {
+              "name": "Dino Moulopoulos",
+              "email": "dino@quay1.co.za",
+              "phone": "dino@quay1.co.za"
+            },
+            {
+              "name": "Liam Stewart",
+              "email": "liam.stewart@quay1.co.za",
+              "phone": "071 561 7293"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 21",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Prom Queens",
+          "type": "Sales",
+          "suburbs": "Sea Point West ST, Sea Point ST, Sea Point East ST",
+          "hubspot_email": "promqueens@quay1.co.za",
+          "hubspot_owner_id": "209260894",
+          "hubspot_division": "Queens",
+          "brokers": [
+            {
+              "name": "Jonathan Weinberg",
+              "email": "jonathan@quay1.co.za",
+              "phone": "072 213 1440"
+            },
+            {
+              "name": "Sergio Texiera",
+              "email": "sergio@quay1.co.za",
+              "phone": "079 421 1097"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Gladiators",
+          "type": "Sales",
+          "suburbs": "Three Anchor Bay ST, Green Point ST, Mouille Point ST",
+          "hubspot_email": "gladiators@greeffcity.co.za",
+          "hubspot_owner_id": "84683538",
+          "hubspot_division": "Gladiators",
+          "brokers": [
+            {
+              "name": "Jonathan Weinberg",
+              "email": "jonathan@quay1.co.za",
+              "phone": "072 213 1440"
+            },
+            {
+              "name": "Sergio Texiera",
+              "email": "sergio@quay1.co.za",
+              "phone": "079 421 1097"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Goal Diggers",
+          "type": "Sales",
+          "suburbs": "Camps Bay FT/ST, Bakoven FT/ST, Clifton FT/ST, Bantry Bay FT, Fresnaye FT, Sea Point East FT, Sea Point West FT, Sea Point FT, Three Anchor Bay FT, Green Point FT, Llandudno FT/ST",
+          "hubspot_email": "goaldiggers@quay1.co.za",
+          "hubspot_owner_id": "112213784",
+          "hubspot_division": "Goal_Diggers",
+          "brokers": [
+            {
+              "name": "Gaelle Van Goethem",
+              "email": "gaelle@quay1.co.za",
+              "phone": "083 630 6976"
+            },
+            {
+              "name": "Jonah Anderson",
+              "email": "jonah@quay1.co.za",
+              "phone": "072 590 7618"
+            },
+            {
+              "name": "Christine Marsh",
+              "email": "christine@quay1.co.za",
+              "phone": "083 452 9568"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Wizards",
+          "type": "Sales",
+          "suburbs": "Observatory FT/ST, Salt River FT/ST, Mowbray FT/ST",
+          "hubspot_email": "wizards@greeffcity.co.za",
+          "hubspot_owner_id": "61986989",
+          "hubspot_division": "Wizards",
+          "brokers": [
+            {
+              "name": "Shaylin Blount",
+              "email": "shaylin@quay1.co.za",
+              "phone": "068 663 2402"
+            },
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Bulls",
+          "type": "Sales",
+          "suburbs": "Brooklyn FT/ST, Rugby, FT/ST, Maitland FT/ST, Kensington FT/ST",
+          "hubspot_email": "bulls@greeffcity.co.za",
+          "hubspot_owner_id": "61988813",
+          "hubspot_division": "Bulls",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Schaughn Van Greunen",
+              "email": "Schaughn@quay1.co.za",
+              "phone": "065 995 9570"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Raccoons",
+          "type": "Sales",
+          "suburbs": "Pinelands FT/ST",
+          "hubspot_email": "raccoons@greeffcity.co.za",
+          "hubspot_owner_id": "61698092",
+          "hubspot_division": "Raccoons",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Schaughn Van Greunen",
+              "email": "Schaughn@quay1.co.za",
+              "phone": "065 995 9570"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Wolves",
+          "type": "Sales",
+          "suburbs": "Woodstock FT/ST, Walmer Estate FT/ST, University Estate FT/ST, Lagoon Beach ST, Zonnebloem FT/ST (only below Nelson Mandela Blvd)",
+          "hubspot_email": "wolves@greeffcity.co.za",
+          "hubspot_owner_id": "61187980",
+          "hubspot_division": "Wolves",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Storm Balchin",
+              "email": "storm@quay1.co.za",
+              "phone": "073 968 4858"
+            },
+            {
+              "name": "Logan Du Plessis",
+              "email": "logan@quay1.co.za",
+              "phone": "073 644 9934"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 7",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "City Sunsets",
+          "type": "Sales",
+          "suburbs": "Oranjezicht FT, Bo Kaap FT/ST AKA Schotsche Kloof FT/ST, Higgovale FT/ST, Tamboerskloof FT, Gardens FT",
+          "hubspot_email": "citysunsets@quay1.co.za",
+          "hubspot_owner_id": "253761461",
+          "hubspot_division": "City_Sunsets",
+          "brokers": [
+            {
+              "name": "Christine Marsh",
+              "email": "christine@quay1.co.za",
+              "phone": "083 452 9568"
+            },
+            {
+              "name": "Ryan McGladdery",
+              "email": "ryanmcgladdery@quay1.co.za",
+              "phone": "082 303 0850"
+            },
+            {
+              "name": "Bhavir Kooverjee",
+              "email": "Bhavir@quay1.co.za",
+              "phone": null
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 124",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Musketeers",
+          "type": "Sales",
+          "suburbs": "Cape Town City Centre ST, City Centre ST, Foreshore ST, Tamboerskloof ST",
+          "hubspot_email": "musketeers@quay1.co.za",
+          "hubspot_owner_id": "371434880",
+          "hubspot_division": "Musketeers",
+          "brokers": [
+            {
+              "name": "Dino Moulopoulos",
+              "email": "dino@quay1.co.za",
+              "phone": "072 20 5292"
+            },
+            {
+              "name": "Timothy Wishart",
+              "email": "timothy@quay1.co.za",
+              "phone": "072 251 6868"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 101",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Hout Baes",
+          "type": "Sales",
+          "suburbs": "Hout Bay FT/ST, Hanging Meadow FT/ST, Baviaanskloof FT/ST, Tierboskloof FT/ST, Scott Estate FT/ST, Berg-en-dal FT/ST, Beach Estate FT/ST, Northshore FT/ST, Harbour FT/ST, Penzance Estate FT/ST, Kronenzicht FT/ST, Helgarda FT/ST, Leeukop FT/ST, Mt Rhodes FT/ST, Nooitegdacht FT/ST, Hughenden FT/ST, Valley FT/ST, Victorskloof FT/ST, Ruyterplaats FT/ST, Avignon FT/ST, Stoney Brook FT/ST, Oakhurst FT/ST, Kenroxk FT/ST, Tarragona FT/ST, Bokkemanskloof FT/ST, Longkloof FT/ST, Overkloof FT/ST, Northoaks FT/ST.",
+          "hubspot_email": "houtbaes@quay1.co.za",
+          "hubspot_owner_id": "1763468269",
+          "hubspot_division": "Hout_Baes",
+          "brokers": [
+            {
+              "name": "Gaelle Van Goethem",
+              "email": "gaelle@quay1.co.za",
+              "phone": "083 630 6976"
+            }
+          ],
+          "specialists": []
+        }
+      ]
+    },
+    {
+      "name": "RESI SALES - WESTERN SEABOARD (OPEN BOARDER POLICY WITHIN WSB)",
+      "teams": [
+        {
+          "name": "Babes",
+          "type": "Sales",
+          "suburbs": "All FT/ST: Big Bay, West Beach, Blouberg Sands, Bloubergstrand,  Blouberg Rise, Bloubergrant, The Hill, Blouberg Village, Blaauwbergstrand",
+          "hubspot_email": "babes@greeffcity.co.za",
+          "hubspot_owner_id": "61715183",
+          "hubspot_division": "Babes",
+          "brokers": [
+            {
+              "name": "Nic Morkel",
+              "email": "nic@quay1.co.za",
+              "phone": "082 468 6490"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Weasels",
+          "type": "Sales",
+          "suburbs": "Sunningdale FT/ST, Melkbosstrand ST/FT, Melkbosch Village ST/FT, Van Riebeeckstrand ST/FT, Duynefontein ST/FT, Atlantic Beach FT/ST, Atlantic Beach Golf Estate FT/ST",
+          "hubspot_email": "weasels@greeffcity.co.za",
+          "hubspot_owner_id": "61983137",
+          "hubspot_division": "Weasels",
+          "brokers": [
+            {
+              "name": "Nic Morkel",
+              "email": "nic@quay1.co.za",
+              "phone": "082 468 6490"
+            },
+            {
+              "name": "Genevieve Janodien",
+              "email": "genevieve@quay1.co.za",
+              "phone": "076 186 2145"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Warriors",
+          "type": "Sales",
+          "suburbs": "Royal Ascot FT/ST, Milnerton FT/ST, Milnerton Ridge FT/ST, Sunset Beach FT,  Flamingo Vlei FT/ST, Woodbridge Island ST, Sunset Links FT,  Cape Farms FT/ST",
+          "hubspot_email": "warriors@greeffcity.co.za",
+          "hubspot_owner_id": "61983888",
+          "hubspot_division": "Warriors",
+          "brokers": [
+            {
+              "name": "Nelio Mendes",
+              "email": "nelio@quay1.co.za",
+              "phone": "082 868 3539"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Spartans",
+          "type": "Sales",
+          "suburbs": "Table View FT/ST, Sunridge FT/ST, West Riding FT/ST, Waves Edge FT/ST",
+          "hubspot_email": "spartans@greeffcity.co.za",
+          "hubspot_owner_id": "61951607",
+          "hubspot_division": "Spartans",
+          "brokers": [
+            {
+              "name": "Nelio Mendes",
+              "email": "nelio@quay1.co.za",
+              "phone": "082 868 3539"
+            },
+            {
+              "name": "Gary Lewis",
+              "email": "gary.lewis@quay1.co.za",
+              "phone": "083 334 4554"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Lions",
+          "type": "Sales",
+          "suburbs": "Parklands FT, Parklands North FT, Rivergate FT, Summer greens FT",
+          "hubspot_email": "lions@greeffcity.co.za",
+          "hubspot_owner_id": "61022342",
+          "hubspot_division": "Lions",
+          "brokers": [
+            {
+              "name": "Le-Roy Salimu",
+              "email": "le-roy@quay1.co.za",
+              "phone": "084 968 3951"
+            },
+            {
+              "name": "Leon Salimu",
+              "email": "leon.salimu@quay1.co.za",
+              "phone": null
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Pirates",
+          "type": "Sales",
+          "suburbs": "Parklands ST, Sandown ST, Summer Greens FT/ST, Rivergate ST",
+          "hubspot_email": "pirates@greeffcity.co.za",
+          "hubspot_owner_id": "57438698",
+          "hubspot_division": "Pirates",
+          "brokers": [
+            {
+              "name": "Nomhle Tempi",
+              "email": "nomhle@quay1.co.za",
+              "phone": "073 575 2911"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Knights",
+          "type": "Sales",
+          "suburbs": "Bothasig ST/FT, Burgundy Estate ST/FT, Richwood FT/ST (Cape Rural)",
+          "hubspot_email": "knights@greeffcity.co.za",
+          "hubspot_owner_id": "61213531",
+          "hubspot_division": "Knights",
+          "brokers": [
+            {
+              "name": "Keegan Wolhunter",
+              "email": "keegan@quay1.co.za",
+              "phone": "061 584 6311"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Fran",
+          "type": "Sales",
+          "suburbs": "Western Seaboard",
+          "hubspot_email": "fran@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Fran Barlow",
+              "email": "fran@quay1.co.za",
+              "phone": "076 296 2132"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Slayers",
+          "type": "Sales",
+          "suburbs": "Edgemead FT/ST, Sanddrift FT/ST, Tijgerhof FT/ST, Sandown FT",
+          "hubspot_email": "slayers@quay1.co.za",
+          "hubspot_owner_id": "61951340",
+          "hubspot_division": "Slayers",
+          "brokers": [
+            {
+              "name": "Nic Morkel",
+              "email": "nic@quay1.co.za",
+              "phone": "082 468 6490"
+            },
+            {
+              "name": "Keagan Smith",
+              "email": "keagan.smith@quay1.co.za",
+              "phone": "072 363 3927"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Conquerors",
+          "type": "Sales",
+          "suburbs": "Century City FT/ST",
+          "hubspot_email": "conquerors@greeffcity.co.za",
+          "hubspot_owner_id": "61985705",
+          "hubspot_division": "Conquerors",
+          "brokers": [
+            {
+              "name": "Nelio Mendes",
+              "email": "nelio@quay1.co.za",
+              "phone": "082 868 3539"
+            },
+            {
+              "name": "Gary Lewis",
+              "email": "gary.lewis@quay1.co.za",
+              "phone": "083 334 4554"
+            }
+          ],
+          "specialists": []
+        }
+      ]
+    },
+    {
+      "name": "RESI SALES - NORTHERN SUBURBS  (OPEN BOARDER POLICY WITHIN NS)",
+      "teams": [
+        {
+          "name": "Ballers",
+          "type": "Sales",
+          "suburbs": "Riverton FT, Farm 435 Goodrail FT, Ruyterwacht FT/ST, Valhalla FT, Avon FT, Parow FT/ST Parow East FT/ST, Parow Valley FT/ST, Klipkop FT/ST, Sanlamhof FT/ST, Ravensmead FT/ST",
+          "hubspot_email": "ballers@greeffcity.co.za",
+          "hubspot_owner_id": "60766526",
+          "hubspot_division": "Ballers",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Nicholas Strydom",
+              "email": "nicholasstrydom@quay1.co.za",
+              "phone": "084 569 0206"
+            },
+            {
+              "name": "Angelo Nieuwoudt",
+              "email": "angelo@quay1.co.za",
+              "phone": "084 978 6518"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 35",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Dragons",
+          "type": "Sales",
+          "suburbs": "All FT/ST: Hoogstede, Eden Park, Edenpark, Morgenster Heights , Morgenster, St Michaels, Arauna, Bracken Heights, Ferndale, Springbok Park, NorthPine, Scottsdene, Brackenfell Central, Eikendal, Belmont Park, Bernadino Heights",
+          "hubspot_email": "dragons@greeffcity.co.za",
+          "hubspot_owner_id": "84022188",
+          "hubspot_division": "Dragons",
+          "brokers": [
+            {
+              "name": "Roche Visser",
+              "email": "roche@quay1.co.za",
+              "phone": "084 241 8208"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Cavaliers",
+          "type": "Sales",
+          "suburbs": "All FT/ST: Brackenfell North, Vredekloof, Vredekloof Rand, Vredekloof Glen, Chamonix, Vredekloof East, Vredekloof Heights, De Tuin, Kleinbron Estate, Kleinbron Park, Langeberg Ridge, Sonstraal Heights",
+          "hubspot_email": "cavaliers@greeffcity.co.za",
+          "hubspot_owner_id": "84018278",
+          "hubspot_division": "Cavaliers",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Silas Crawley",
+              "email": "silas@quay1.co.za",
+              "phone": "068 630 6916"
+            },
+            {
+              "name": "Viann Visser",
+              "email": "viann@quay1.co.za",
+              "phone": "076 077 3585"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 38",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 10",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Samurais",
+          "type": "Sales",
+          "suburbs": "All FT/ST: Soneike II, Soneike I, Sonnekuil, Annandale, Brandwag, Elim, Amandelrug, Rouxville, Bosonia, Klipdam, Amandelsig, Mikro Park, Loucharmante, Silver Oaks, St Dumas, Kloofzicht, Bottelary Smallholdings, Haasendal, Jacarandas , Eikenbosch, Jagtershof, Vredelust - Kuilsriver, Kuils River, Lillydale, Turtle Creek, Hunters Retreat, Klein Zevenwacht, Zevenwacht Farm Village, Zevenzicht, Zevendal, Zevenwacht Country Estate, Zevenwacht, Highbury Park FT/ST",
+          "hubspot_email": "samurai@greeffcity.co.za",
+          "hubspot_owner_id": "84021524",
+          "hubspot_division": "Samurais",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Silas Crawley",
+              "email": "silas@quay1.co.za",
+              "phone": "068 630 6916"
+            },
+            {
+              "name": "Reevah Mbaba",
+              "email": "reevah@quay1.co.za",
+              "phone": "082 890 5137"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 38",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 150",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Targaryens",
+          "type": "Sales",
+          "suburbs": "All FT/ST: Mabille Park, Voelvlei, Brantwood, Des Hampden, De Kuilen, Danarand, Oakdene, Highbury, Gersham, Labiance, Glenhaven, Marinda Park, Beroma, Bellville South",
+          "hubspot_email": "targaryens@greeffcity.co.za",
+          "hubspot_owner_id": "84878181",
+          "hubspot_division": "Targaryens",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Headbangers",
+          "type": "Sales",
+          "suburbs": "Uitzicht FT, Pinehurst Durbanville FT",
+          "hubspot_email": "headbangers@quay1.co.za",
+          "hubspot_owner_id": "195736166",
+          "hubspot_division": "Headbangers",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Lecia Long",
+              "email": "lecia@quay1.co.za",
+              "phone": "068 647 9844"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 41",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Gunslingers",
+          "type": "Sales",
+          "suburbs": "All FT/ST: Morgen Gronde, Klaradyn, Protea Hoogte, Ruwari, Normandie, Protea Village, Brackenfell South , De Oude Spruit, Sonkring, Burgundy Brackenfell",
+          "hubspot_email": "gunslingers@greeffcity.co.za",
+          "hubspot_owner_id": "85377840",
+          "hubspot_division": "Gunslingers",
+          "brokers": [
+            {
+              "name": "Roche Visser",
+              "email": "roche@quay1.co.za",
+              "phone": "084 241 8208"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Dealmakers",
+          "type": "Sales",
+          "suburbs": "Panorama ST/FT, Kleinbosch FT Baronetcy FT/ST, Welgelegen FT/ST, Plattekloof FT/ST, Kaapzicht FT/ST De Duin FT, Sonnendal ST/FT, Northgate FT, Parow North FT/ST, Monte Vista FT/ST, Plattekloofglen FT/ST, Plattekloof Glen FT/ST",
+          "hubspot_email": "dealmakers@quay1.co.za",
+          "hubspot_owner_id": "221066166",
+          "hubspot_division": "Dealmakers",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Elaine Ann Mc Dermid",
+              "email": "elaine@quay1.co.za",
+              "phone": "082 458 8093"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Chargers",
+          "type": "Sales",
+          "suburbs": "Durbanville FT/ST, Vergesig FT/ST, Aurora FT/ST, Wairoa FT, Clara Anna Fontein FT, D'urbanvale FT/ST, Nerina FT, Natures Valley Durbanville FT, Schoongezicht FT/ST, Proteaville FT, Ruitershoogte FT/ST, Vierlanden FT, Brentwood Park FT, Wellway Park FT, Wellways Park East FT, Morningstar FT, Die Wingerd Durbanville FT, Klein Nedeburg FT, Langberg Village FT",
+          "hubspot_email": "chargers@quay1.co.za",
+          "hubspot_owner_id": "254689367",
+          "hubspot_division": "Chargers",
+          "brokers": [
+            {
+              "name": "Jonathan Kotze",
+              "email": "JonathanKotze@quay1.co.za",
+              "phone": "076 524 2157"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Hawks",
+          "type": "Sales",
+          "suburbs": "Oakdale FT/ST, Kingston FT, Chrismar FT/ST, Kempenville FT/ST, Belgravia - Bellville FT/ST, De La Haye FT/ST, Blommendal FT, Blomtuin FT/ST, La Rochelle FT/ST, Bellair FT, Oakglen FT/ST, Vredenberg FT/ST, Loumar FT/ST, Meyerhof FT/ST, Shirley Park FT",
+          "hubspot_email": "hawks@quay1.co.za",
+          "hubspot_owner_id": "342583654",
+          "hubspot_division": "Hawks",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Tiaan Gildenhuis",
+              "email": "tiaan@quay1.co.za",
+              "phone": "069 053 8838"
+            },
+            {
+              "name": "Joshua Leonard",
+              "email": "joshua.leonard@quay1.co.za",
+              "phone": "066 017 3342"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 92",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 3",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Falcons",
+          "type": "Sales",
+          "suburbs": "Amanda Glen FT/ST, Bellville Ext 36 FT/ST, Bellville Ext 41 FT, Bethanie FT, Bloemhof FT/ST, Bo Oakdale FT, Chantecler FT, Durbell FT, East Rock FT, Everglen FT/ST, Eversdal Ext 4 FT, Eversdal FT, Eversdal Heights FT, Eversdal ST, O'Kennedyville FT/ST, Ridgeworth FT/ST, Rosendal FT/ST, Sonstraal FT/ST, Stellenberg FT/ST, Stellenridge FT/ST, Stellenryk FT/ST, Valmary Park FT, Vygeboom FT",
+          "hubspot_email": "falcons@quay1.co.za",
+          "hubspot_owner_id": "289663897",
+          "hubspot_division": "Falcons",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Arno van der Merwe",
+              "email": "arno@quay1.co.za",
+              "phone": "071 995 2869"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 4",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Tigers",
+          "type": "Sales",
+          "suburbs": "Kanonberg FT, Oude Westhof FT, Van Riebeekshof FT, Welgedacht FT, Welgemoed FT, Protea Valley  FT, Door De Kraal FT, Blomvlei FT, Selborne FT, Loevenstein FT, Hoheizen FT, Tygervalley Waterfront FT, Tyger Waterfront FT, Kenridge Ext 4 FT, Bellville Ext 43 FT, De Bron FT, Kenridge Ext 3 FT, Kenever FT, Kenridge FT, Kenridge Heights  FT, Durbanville Hills FT, Riebeeckshof FT, B.H.M - Durbanville Hills FT",
+          "hubspot_email": "tigers@quay1.co.za",
+          "hubspot_owner_id": "290480467",
+          "hubspot_division": "Tigers",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Nicholas Strydom",
+              "email": "nicholasstrydom@quay1.co.za",
+              "phone": "084 569 0206"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 35",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Panthers",
+          "type": "Sales",
+          "suburbs": "DeTijger FT, De Tijger FT, Clamhall FT, Oostersee FT/ST, Avondale FT/ST, Fairfield Estate  FT/ST, Vredelust Bellville FT, Boston FT/ST, Bosbell FT, Churchill Estate FT/ST, Glenlilly FT/ST,",
+          "hubspot_email": "panthers@quay1.co.za",
+          "hubspot_owner_id": "487152396",
+          "hubspot_division": "Panthers",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Tiaan Gildenhuis",
+              "email": "tiaan@quay1.co.za",
+              "phone": "069 053 8838"
+            },
+            {
+              "name": "Joshua Leonard",
+              "email": "joshua.leonard@quay1.co.za",
+              "phone": "066 017 3342"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 92",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 3",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Furys",
+          "type": "Sales",
+          "suburbs": "Kraaifontein, Buhrein, Buh rein, Buh Rein, Buh-rein, Viking Village, Bonnie Brae, Bonnie Brook, Windsor Park Estate, Windsor Estate, Zoo Park, Windsor Park, Peerless Park North, Peerless Park East, Le Coste Estate, Stonewood",
+          "hubspot_email": "furys@quay1.co.za",
+          "hubspot_owner_id": "512880424",
+          "hubspot_division": "Furys",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Nicholas Strydom",
+              "email": "nicholasstrydom@quay1.co.za",
+              "phone": "084 569 0206"
+            },
+            {
+              "name": "Richard du Plessis",
+              "email": "Richard@quay1.co.za",
+              "phone": "069 220 1233"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 35",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 64",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Invincibles",
+          "type": "Sales",
+          "suburbs": "Glenwood FT/ST, Tygerdal FT/ST, Townsend Estate FT/ST, Goodwood Park Ext 1 FT/ST, Goodwood Estate FT/ST, Vasco Estate FT/ST, Richmond Estate FT/ST,",
+          "hubspot_email": "invincibles@quay1.co.za",
+          "hubspot_owner_id": "551111272",
+          "hubspot_division": "Invincibles",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Richard du Plessis",
+              "email": "Richard@quay1.co.za",
+              "phone": "069 220 1233"
+            },
+            {
+              "name": "Nicholas Strydom",
+              "email": "nicholasstrydom@quay1.co.za",
+              "phone": "084 569 0206"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 64",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 35",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Blitz",
+          "type": "Sales",
+          "suburbs": "Durmonte FT/ST, Graanendal FT/ST, Welgevonden FT, The Crest FT/ST, Goedemoed FT, Rosedale Durbanville FT/ST, Durbanville Meadows FT/ST, Uitzicht ST, Avalon Estate FT, Pinehurst Durbanville ST, Langeberg Hoogte FT, Langeberg Smallholdings FT/ST",
+          "hubspot_email": "blitz@quay1.co.za",
+          "hubspot_owner_id": "87801132",
+          "hubspot_division": "Blitz",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Nicholas Strydom",
+              "email": "nicholasstrydom@quay1.co.za",
+              "phone": "084 569 0206"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 35",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Jaguars",
+          "type": "",
+          "suburbs": "Welgedacht ST, Protea Valley ST, Door De Kraal ST, Blomvlei ST, Loevenstein ST, Hoheizen ST, Tygervalley Waterfront ST, Tyger Waterfront ST, Kenridge Ext 4 ST, De Bron ST, Kenridge Ext 3 ST, Durbanville Hills ST,  Van Riebeeckshof ST, Amanda Glen ST, Bellville Ext 36 ST, Bloemhof ST, Everglen ST, Eversdal ST, O'Kennedyville ST, Ridgeworth ST, Rosendal ST, Sonstraal ST, Stellenberg ST, Stellenridge ST, Stellenryk ST",
+          "hubspot_email": "jaguars@quay1.co.za",
+          "hubspot_owner_id": "772270706",
+          "hubspot_division": "Jaguars",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            }
+          ],
+          "specialists": []
+        }
+      ]
+    },
+    {
+      "name": "RESI SALES - SOUTHERN SUBURBS (EXCLUSIVE AREAS)",
+      "teams": [
+        {
+          "name": "Hustlers",
+          "type": "Sales",
+          "suburbs": "Claremont FT, Claremont upper FT",
+          "hubspot_email": "hustlers@quay1.co.za",
+          "hubspot_owner_id": "142508407",
+          "hubspot_division": "Hustlers",
+          "brokers": [
+            {
+              "name": "Russell Soffer",
+              "email": "russell@quay1.co.za",
+              "phone": "084 586 1344"
+            },
+            {
+              "name": "Jamie-Lee Smith",
+              "email": "jamie-lee@quay1.co.za",
+              "phone": "072 735 5756"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Soccer Moms",
+          "type": "Sales",
+          "suburbs": "Rondebosch Golden mile FT, Rondebosch Clare Park FT, Rondebosch Park Estate FT, \nRondebosch Silver Mile FT, Rondebosch Sunnybrae FT, Rondebosch Upper FT, \nRondebosch Village FT,  Newlands FT, Fernwood-newlands FT, Westerford FT, Rosebank FT",
+          "hubspot_email": "soccermoms@quay1.co.za",
+          "hubspot_owner_id": "142516092",
+          "hubspot_division": "Soccer_Moms",
+          "brokers": [
+            {
+              "name": "Natalie Parkes",
+              "email": "natalie@quay1.co.za",
+              "phone": "072 723 2247"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Dutchmen",
+          "type": "Sales",
+          "suburbs": "Bergvliet FT, Dennendal FT, Dreyersdal FT, Kirstenhof FT, Tokai FT, Silvertree Estate FT, Steenberg Golf Estate FT, Zwaanswyk FT, Muizenberg FT, Lakeside FT, Marina Da Gama FT, Klein Wassenaar FT, Frogmore Estate FT, Zandvlei FT",
+          "hubspot_email": "dutchmen@quay1.co.za",
+          "hubspot_owner_id": "142837416",
+          "hubspot_division": "Dutchmen",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Claudio Fratini",
+              "email": "claudio@quay1.co.za",
+              "phone": "066 292 0065"
+            },
+            {
+              "name": "Niel Steenkamp",
+              "email": "Niel@quay1.co.za",
+              "phone": "076 300 3011"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 104",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 141",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Boets",
+          "type": "Sales",
+          "suburbs": "Rondebosch Village ST, Rondebosch Upper ST, Rondebosch Clare Park ST, Rondebosch Golden mile ST, Rondebosch Park Estate ST, Rondebosch ST",
+          "hubspot_email": "boets@quay1.co.za",
+          "hubspot_owner_id": "142837528",
+          "hubspot_division": "Boets",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Storm Balchin",
+              "email": "storm@quay1.co.za",
+              "phone": "073 968 4858"
+            },
+            {
+              "name": "Jared Brooks",
+              "email": "jared@quay1.co.za",
+              "phone": "065 045 0934"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 137",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Wombats",
+          "type": "Sales",
+          "suburbs": "Wynberg Upper FT/ST, Wynberg Village FT/ST, Wynberg FT/ST",
+          "hubspot_email": "wombats@quay1.co.za",
+          "hubspot_owner_id": "142837564",
+          "hubspot_division": "Wombats",
+          "brokers": [
+            {
+              "name": "Russell Soffer",
+              "email": "russell@quay1.co.za",
+              "phone": "084 586 1344"
+            },
+            {
+              "name": "Qaasim Lamara",
+              "email": "qaasim@quay1.co.za",
+              "phone": "063 987 5668"
+            },
+            {
+              "name": "Matthew Blow",
+              "email": "matthew.blow@quay1.co.za",
+              "phone": "077 487 5965"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 14",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 129",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Koeksisters",
+          "type": "Sales",
+          "suburbs": "Kenilworth FT/ST, Kenilworth - Upper FT/ST, Kenilworth Park FT/ST, Fernwood - Newlands ST, Rosebank ST, Newlands ST, Westerford ST",
+          "hubspot_email": "koeksisters@quay1.co.za",
+          "hubspot_owner_id": "142835358",
+          "hubspot_division": "Koeksisters",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Storm Balchin",
+              "email": "storm@quay1.co.za",
+              "phone": "073 968 4858"
+            },
+            {
+              "name": "Rudi Africa",
+              "email": "rudi@quay1.co.za",
+              "phone": "066 168 6494"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 49",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 81",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Hooligans",
+          "type": "Sales",
+          "suburbs": "Claremont upper ST, Claremont ST,  Claremont Village FT/ST, Harfield Village FT/ST",
+          "hubspot_email": "hooligans@quay1.co.za",
+          "hubspot_owner_id": "142837780",
+          "hubspot_division": "Hooligans",
+          "brokers": [
+            {
+              "name": "Russell Soffer",
+              "email": "russell@quay1.co.za",
+              "phone": "084 586 1344"
+            },
+            {
+              "name": "Jamie-Lee Smith",
+              "email": "jamie-lee@quay1.co.za",
+              "phone": "072 735 5756"
+            },
+            {
+              "name": "Matthew Blow",
+              "email": "matthew.blow@quay1.co.za",
+              "phone": "077 487 5965"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "TNT",
+          "type": "Sales",
+          "suburbs": "Rondebosch East FT/ST, Athlone FT/ST, Lansdowne FT/ST, Crawford FT/ST, Kenwyn FT/ST",
+          "hubspot_email": "TNT@quay1.co.za",
+          "hubspot_owner_id": "155292230",
+          "hubspot_division": "TNT",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Schaughn Van Greunen",
+              "email": "schaughn@quay1.co.za",
+              "phone": "065 995 9570"
+            },
+            {
+              "name": "Shaylin Blount",
+              "email": "shaylin@quay1.co.za",
+              "phone": "068 663 2402"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 42",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 51",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Power Rangers",
+          "type": "Sales",
+          "suburbs": "Plumstead FT/ST, Diepriver FT",
+          "hubspot_email": "powerrangers@quay1.co.za",
+          "hubspot_owner_id": "182959417",
+          "hubspot_division": "Power_Rangers",
+          "brokers": [
+            {
+              "name": "Kurt Dreyer",
+              "email": "kurt@quay1.co.za",
+              "phone": "082 858 5797"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Dealers",
+          "type": "Sales",
+          "suburbs": "Diepriver ST, Diep River ST, Punts Estate FT/ST, Southfield FT/ST, Elfindale FT/ST, Heathfield FT/ST Ottery FT/ST, Ottery East FT/ST, Thornton FT/ST,",
+          "hubspot_email": "dealers@quay1.co.za",
+          "hubspot_owner_id": "192141162",
+          "hubspot_division": "Dealers",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Schaughn Van Greunen",
+              "email": "schaughn@quay1.co.za",
+              "phone": "065 995 9570"
+            },
+            {
+              "name": "Brian Mbaleki",
+              "email": "brian.mbaleki@quay1.co.za",
+              "phone": null
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Betties",
+          "type": "Sales",
+          "suburbs": "Bishopcourtvillage FT/ST, Bishopscourt",
+          "hubspot_email": "betties@quay1.co.za",
+          "hubspot_owner_id": "87888060",
+          "hubspot_division": "Betties",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Schaughn Van Greunen",
+              "email": "schaughn@quay1.co.za",
+              "phone": "065 995 9570"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Proteas",
+          "type": "Sales",
+          "suburbs": "All FT/ST: Constantia Barbarossa, Constantia Vale, Constantia Deurdrif, Constantia Hills, Constantia Kreupelbosch, Constantia Meadowridge, Constantia Rural, Constantia Rust En Vrede, Constantia Sillery, Constantia Sweet Valley, Constantia The Vines, Constantia Village, Constantia Bel Ombre, Constantia Belombre, Nova Constantia, Constantia Huis-en-bos, Constantia - Alphen, Constantia - Clunie, Constantia - Eagles Nest, Constantia - High Constantia, Constantia - Hohenort, Constantia - Hope of Constantia, Constantia - Pagasvlei, Constantia - Silverhurst, Constantia - Witteboomen",
+          "hubspot_email": "proteas@quay1.co.za",
+          "hubspot_owner_id": "445668165",
+          "hubspot_division": "Proteas",
+          "brokers": [
+            {
+              "name": "Cyndy Minnaar",
+              "email": "cyndy@quay1.co.za",
+              "phone": "082 577 7723"
+            },
+            {
+              "name": "Morgan Minnaar",
+              "email": "morgan@quay1.co.za",
+              "phone": "081 585 0212"
+            }
+          ],
+          "specialists": []
+        }
+      ]
+    },
+    {
+      "name": "RESI SALES - SOUTH PENINSULA (OPEN BOARDER POLICY WITHIN SP)",
+      "teams": [
+        {
+          "name": "Surfers",
+          "type": "Sales",
+          "suburbs": "Bergvliet ST, Dennendal ST, Dreyersdal ST, Kirstenhof ST, Tokai ST, Zwaanswyk ST, Muizenberg ST, Lakeside ST, Marina Da Gama ST, Klein Wassenaar ST, Glencairn ST, Welcome Glen ST, Cairnside ST, Glen Marine  ST, Clovelly ST, Risi View ST, Silver Glade  ST, Peers Hill ST, Sun Valley ST, Sunnydale  ST, Faerie Knowe ST, Capri ST",
+          "hubspot_email": "surfers@quay1.co.za",
+          "hubspot_owner_id": "223928394",
+          "hubspot_division": "Surfers",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Claudio Fratini",
+              "email": "claudio@quay1.co.za",
+              "phone": "079 050 1710"
+            },
+            {
+              "name": "Niel Steenkamp",
+              "email": "Niel@quay1.co.za",
+              "phone": "076 300 3011"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 104",
+              "email": null,
+              "phone": null
+            },
+            {
+              "name": "Quay 1 Property Specialist 141",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Tornadoes",
+          "type": "Sales",
+          "suburbs": "Imhoff's Gift  FT/ST, Misty Cliffs FT/ST, Scarborough  FT/ST, Mount Pleasant FT/ST, Simon's Town  FT/ST, Bay View Village  FT/ST, Pine Haven  FT/ST, Admirals Kloof  FT/ST, Simons Kloof  FT/ST, Harbour Heights  FT/ST, Seaforth FT/ST, Seaforth Sound FT/ST, Boulders FT/ST, Bellvue FT/ST, Murdock Valley  FT/ST, Castle Rock  FT/ST, Smitswinkelbaai FT/ST, Froggy Farm FT/ST, Fish Hoek ST",
+          "hubspot_email": "tornadoes@quay1.co.za",
+          "hubspot_owner_id": "570999348",
+          "hubspot_division": "Tornadoes",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Aden Kleve",
+              "email": "aden@quay1.co.za",
+              "phone": "071 778 3677"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Hoekers",
+          "type": "Sales",
+          "suburbs": "Fish Hoek FT, Risi View FT, Sunnydale FT, Faerie Knowe FT, Capri FT, Glencairn FT, Stoney Place FT",
+          "hubspot_email": "hoekers2@quay1.co.za",
+          "hubspot_owner_id": "90886933",
+          "hubspot_division": "Hoekers",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Lindi Brougham-Cook",
+              "email": "lindi@quay1.co.za",
+              "phone": "071 165 8993"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Farmers",
+          "type": "Sales",
+          "suburbs": "De Goede Hoop  FT/ST, Chapmans Peak  FT/ST, Meadowsteads FT/ST, Crofters Valley  FT/ST, Silvermine Village  FT/ST, Noordhoek Manor FT/ST, San Michel FT/ST, Brookwood FT/ST, Belvedere - Noordhoek  FT/ST, Noordhaven  FT/ST, Lake Michelle FT/ST, Zilvermyn Equestrian Village FT/ST, Kalk Bay FT/ST, St James FT/ST, Stonehaven FT/ST, Harmony Farm FT/ST",
+          "hubspot_email": "farmers@quay1.co.za",
+          "hubspot_owner_id": "571004737",
+          "hubspot_division": "Farmers",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Tamera Lomax",
+              "email": "Tamera@quay1.co.za",
+              "phone": null
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 50",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Vipers",
+          "type": "Sales",
+          "suburbs": "Sun Valley FT, Clovelly FT, Peers Hill FT, Silver Glade FT, Glencairn Heights FT, Glen Ridge FT, Cairnside FT, Welcome Glen FT, Glen Marine FT",
+          "hubspot_email": "vipers@quay1.co.za",
+          "hubspot_owner_id": "87800852",
+          "hubspot_division": "Vipers",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Tanya Moller",
+              "email": "tanya@quay1.co.za",
+              "phone": "082 691 3668"
+            },
+            {
+              "name": "Shaun Gumbrill",
+              "email": "shaun@quay1.co.za",
+              "phone": "060 801 6482"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Komorants",
+          "type": "Sales",
+          "suburbs": "Kommetjie FT/ST",
+          "hubspot_email": "komorants@quay1.co.za",
+          "hubspot_owner_id": "87790103",
+          "hubspot_division": "Komorants",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Aden Kleve",
+              "email": "aden@quay1.co.za",
+              "phone": "071 778 3677"
+            },
+            {
+              "name": "Lindi Brougham-Cook",
+              "email": "lindi@quay1.co.za",
+              "phone": "071 165 8993"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Mosquitoes",
+          "type": "Sales",
+          "suburbs": "Mandalay FT/ST, Weltevreden Valley FT/ST, Woodlands FT/ST, Mitchells Plain FT/ST, Schaap Kraal FT/ST",
+          "hubspot_email": "mozzies@quay1.co.za",
+          "hubspot_owner_id": "90830340",
+          "hubspot_division": "Mozzies",
+          "brokers": [
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Riziaah Adams",
+              "email": "riziaah@quay1.co.za",
+              "phone": "064 067 1075"
+            },
+            {
+              "name": "Matthew Hallett",
+              "email": "matthew.hallett@quay1.co.za",
+              "phone": "071 523 4643"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 89",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Llamas",
+          "type": "Sales",
+          "suburbs": "Costa Da Gama FT/ST, Retreat FT/ST, Grassy Park FT/ST, Zeekoevlei  FT/ST, Pelikan Park FT/ST, Strandfontein  FT/ST, Pelican Heights FT/ST, Schaapkraal FT/ST, Portlands FT/ST",
+          "hubspot_email": "llamas@quay1.co.za",
+          "hubspot_owner_id": "2141538252",
+          "hubspot_division": "Llamas",
+          "brokers": [
+            {
+              "name": "Riziaah Adams",
+              "email": "riziaah@quay1.co.za",
+              "phone": "064 067 1075"
+            },
+            {
+              "name": "Trent Gibbons",
+              "email": "trent@quay1.co.za",
+              "phone": "081 317 9848"
+            },
+            {
+              "name": "Matthew Hallett",
+              "email": "matthew.hallett@quay1.co.za",
+              "phone": "071 523 4643"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 89",
+              "email": null,
+              "phone": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "RESI SALES - SOMERSET WEST (OPEN BOARDER POLICY WITHIN SW)",
+      "teams": [
+        {
+          "name": "Swesties",
+          "type": "Sales",
+          "suburbs": "All FT/ST: Spanish Farm, Parel Vallei Kleinhoewes, World's View, Erinvale Estates, Helderrand, Golden Hill, La Concorde, La Sandra, Nutwood, Highveld, Montchere, Goede Hoop, Briza, Helena Heights, Paarde Vlei, Natures Valley, Monte Sereno, Somerset West, Admirals Park, Audas East",
+          "hubspot_email": "swesties@quay1.co.za",
+          "hubspot_owner_id": "735062128",
+          "hubspot_division": "Swesties",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Annelie Olivier",
+              "email": "annelie@quay1.co.za",
+              "phone": "072 170 9059"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 57",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Rockets",
+          "type": "Sales",
+          "suburbs": "Humanshof FT/ST, Carey Park FT/ST, Garden Village FT/ST, Silvertas FT/ST, Helderzicht FT/ST, Paarde Vlei FT/ST, Victoria Park FT/ST, Lorensia Park FT/ST, De Velde FT/ST, Heartland FT/ST, The Triangle FT/ST, Audus Estate FT/ST, Somerset Country Club FT/ST, Westridge - Somerset West FT/ST, Somerset Ridge FT/ST, Schonenberg FT/ST, The Links FT/ST",
+          "hubspot_email": "rockets@quay1.co.za",
+          "hubspot_owner_id": "1752588073",
+          "hubspot_division": "Rockets",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            },
+            {
+              "name": "Denise Muniz",
+              "email": "denise@quay1.co.za",
+              "phone": "084 775 9823"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Bergscape",
+          "type": "Sales",
+          "suburbs": "Heldervue FT/ST, Die Wingerd - Somerset West FT/ST, Helderberg Estate FT/ST, Bel'aire FT/ST, Steenbras View FT/ST, Jonkers Hoogte FT/ST,\nFraaigelegen FT/ST, Steynsrust FT/ST, Helderberg Village FT/ST, Firgrove FT/ST, Firgrove Rural FT/ST, Croydon FT/ST, Kelderhof Estate FT/ST, Illaire FT/ST",
+          "hubspot_email": "bergscape@quay1.co.za",
+          "hubspot_owner_id": "79270572",
+          "hubspot_division": "Bergscape",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Retrievers",
+          "type": "Sales",
+          "suburbs": "",
+          "hubspot_email": "",
+          "hubspot_owner_id": "91462678",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            }
+          ],
+          "specialists": []
+        }
+      ]
+    },
+    {
+      "name": "RESI SALES - GEORGE  (OPEN BOARDER POLICY)",
+      "teams": [
+        {
+          "name": "Donkeys",
+          "type": "",
+          "suburbs": "Bersig  FT/ST, Blanco FT/ST, Denneoord FT/ST, Denvar Park FT/ST, Eden George FT, Fancourt Golf Estate FT/ST, George Central  FT/ST, George South  FT/ST, Glenwood AH FT, Heather Park ST, Heatherlands FT/ST, King George Park FT, Loerie Park FT/ST, Oubaai Golf Estate FT/ST, Rooiriver-Rif ST, Twee Rivieren FT/ST, George FT/ST",
+          "hubspot_email": "donkeys@quay1.co.za",
+          "hubspot_owner_id": "1836157930",
+          "hubspot_division": "Donkeys",
+          "brokers": [
+            {
+              "name": "Justin Nortier",
+              "email": "justin@quay1.co.za",
+              "phone": "082 789 1821"
+            }
+          ],
+          "specialists": []
+        }
+      ]
+    },
+    {
+      "name": "RESI RENTALS (EXCLUSIVE AREAS)",
+      "teams": [
+        {
+          "name": "Salty Seadogs",
+          "type": "Rentals",
+          "suburbs": "Sea Point West, Bantry Bay, Fresnaye, Camps Bay, Clifton, Bakoven",
+          "hubspot_email": "seadogs@quay1.co.za",
+          "hubspot_owner_id": "106681926",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Nicholas Carr",
+              "email": "nicholas@quay1.co.za",
+              "phone": "083 444 5926"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 32",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Gucci Girls",
+          "type": "Rentals",
+          "suburbs": "CBD,  Bo Kaap, Zonnebloem, Foreshore, Schotsche Kloof",
+          "hubspot_email": "phoenixsuns@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Peter Njoroge",
+              "email": "peter@quay1.co.za",
+              "phone": "724338623"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "The Bandits",
+          "type": "Rentals",
+          "suburbs": "Tamboerskloof, Vredehoek, Higgovale, High Cape, Devil's Peak Estate, Oranjezicht, Gardens",
+          "hubspot_email": "bandits@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Onchene Moila",
+              "email": "onchene@quay1.co.za",
+              "phone": "061 541 6859"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 105",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Huntsmen",
+          "type": "Rentals",
+          "suburbs": "Blouberg Sands, Blouberg Rise, Bloubergrant, Bloubergstrand, West Beach, Sunningdale, Flamingo Vlei, Big Bay",
+          "hubspot_email": "huntsmen@quay1.co.za",
+          "hubspot_owner_id": "218996490",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Sebastian Messens",
+              "email": "sebastian@quay1.co.za",
+              "phone": "064 657 5742"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 100",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Navy Seals",
+          "type": "Rentals",
+          "suburbs": "Brackenfell, Kraaifontein, Buh Rein",
+          "hubspot_email": "navyseals@quay1.co.za",
+          "hubspot_owner_id": "105191217",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Keanu Forbes",
+              "email": "keanu@quay1.co.za",
+              "phone": "061 706 0299"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Mavericks",
+          "type": "Rentals",
+          "suburbs": "Claremont, Westerford, Mowbray, Rosebank, University Estate, Walmer Estate, Observatory, Harfield Village, Pinelands, Thornton, Salt River",
+          "hubspot_email": "mavericks@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Liam Page-Lee",
+              "email": "liam.p@quay1.co.za",
+              "phone": "071 152 7301"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 20",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Beeg Mahns",
+          "type": "Rentals",
+          "suburbs": "Green Point, Three Anchor Bay, Mouille Point, V&A, De Waterkant, Sea Point East",
+          "hubspot_email": "beegmahns@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Liam Stewart",
+              "email": "liam.stewart@quay1.co.za",
+              "phone": "071 561 7293"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 21",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Eagles",
+          "type": "Rentals",
+          "suburbs": "Bothasig, Richwood, Edgemead, Panarama, Burgundy, Tijgerhof, Milnerton, Welgelegen, Century City, Lagoon Beach, Royal Ascot, Sunset Beach, Sunset Links, Woodbrige Island",
+          "hubspot_email": "eagles@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Sebastian Messens",
+              "email": "sebastian@quay1.co.za",
+              "phone": "064 657 5742"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Peninsula Pelicans",
+          "type": "Rentals",
+          "suburbs": "Cairnside, Glen Marine, Glencairn, Hout Bay, Kalk Bay, Peers Hill, Risi View, St James, Westlake, Lakeside, Kommetjie, Simons Town",
+          "hubspot_email": "peninsula@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Daniel Ellis-Brown",
+              "email": "dan@quay1.co.za",
+              "phone": "072 541 7761"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 9",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "D-Ville Devils",
+          "type": "Rentals",
+          "suburbs": "Durbanville, Eversdall, Plattekloof",
+          "hubspot_email": "devils@quay1.co.za",
+          "hubspot_owner_id": "157985896",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Declan Grant",
+              "email": "declan@quay1.co.za",
+              "phone": "064 252 8708"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 121",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Rebels",
+          "type": "Rentals",
+          "suburbs": "Newlands, Rondebosch, Tokai, Constantia, Bishops Court, Zwaanswyk, Westerford, Kirstenhof",
+          "hubspot_email": "rebels@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Kerry-Anne Bradley",
+              "email": "kerryanne@quay1.co.za",
+              "phone": "074 892 6483"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Koalas",
+          "type": "Rentals",
+          "suburbs": "Capri, Fish Hoek, Sun Valley, Sunnydale, Muizenberg, Marina Da Gama",
+          "hubspot_email": "koalas@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Mario Geyser",
+              "email": "mario@quay1.co.za",
+              "phone": "072 257 4832"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Stormers",
+          "type": "Rentals",
+          "suburbs": "Plumstead, Diep River, Bergvliet, Wynberg, Kenilworth, Ottery",
+          "hubspot_email": "stormers@quay1.co.za",
+          "hubspot_owner_id": "108141212",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Corey Nefdt",
+              "email": "corey@quay1.co.za",
+              "phone": "0825654117"
+            }
+          ],
+          "specialists": [
+            {
+              "name": "Quay 1 Property Specialist 94",
+              "email": null,
+              "phone": null
+            }
+          ]
+        },
+        {
+          "name": "Young Bloods",
+          "type": "Rentals",
+          "suburbs": "Somerset West",
+          "hubspot_email": "youngbloods@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Leopards",
+          "type": "Rentals",
+          "suburbs": "Table View, Sandown, Parklands, Parklands North, West Riding, Sunridge, Melkbos, The Hill, Blouberg Vilage, Atlantic Beach",
+          "hubspot_email": "leopards@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Monique Shortt",
+              "email": "monique.shortt@quay1.co.za",
+              "phone": "083 229 1542"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Marines",
+          "type": "Rentals",
+          "suburbs": "Bellville, Kuils River",
+          "hubspot_email": "",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Thaakir Miller",
+              "email": "thaakir@quay1.co.za",
+              "phone": "078 242 6545"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Burros",
+          "type": "Rentals",
+          "suburbs": "Bersig  FT/ST, Blanco FT/ST, Denneoord FT/ST, Denvar Park FT/ST, Eden George FT, Fancourt Golf Estate FT/ST, George Central  FT/ST, George South  FT/ST, Glenwood AH FT, Heather Park ST, Heatherlands FT/ST, King George Park FT, Loerie Park FT/ST, Oubaai Golf Estate FT/ST, Rooiriver-Rif ST, Twee Rivieren FT/ST",
+          "hubspot_email": "burro@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Saucy Centurions",
+          "type": "Rentals",
+          "suburbs": "Parklands ST",
+          "hubspot_email": "saucycenturions@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Zesty Zoltans",
+          "type": "Rentals",
+          "suburbs": "",
+          "hubspot_email": "zoltans@quay1.co.za",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Wild West",
+          "type": "Rentals",
+          "suburbs": "Western Seaboard",
+          "hubspot_email": "",
+          "hubspot_owner_id": "",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Daniel Wentzel",
+              "email": "daniel@quay1.co.za",
+              "phone": "076 791 8489"
+            },
+            {
+              "name": "Nic Morkel",
+              "email": "nic@quay1.co.za",
+              "phone": "082 468 6490"
+            }
+          ],
+          "specialists": []
+        }
+      ]
+    },
+    {
+      "name": "COMMERCIAL (EXCLUSIVE AREAS)",
+      "teams": [
+        {
+          "name": "Vikings",
+          "type": "",
+          "suburbs": "Mowbray, Observatory, Salt River, Woodstock, Walmer Estate, Foreshore",
+          "hubspot_email": "vikings@greeffcity.co.za",
+          "hubspot_owner_id": "85635359",
+          "hubspot_division": "Vikings",
+          "brokers": [
+            {
+              "name": "Kurt Dreyer",
+              "email": "kurt@quay1.co.za",
+              "phone": "082 858 5797"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Cobras",
+          "type": "",
+          "suburbs": "Paarden Eiland, Ndabeni, Maitland, Montagu Gardens, Killarney Gardens, Parow, Beaconvale, Airport, Epping, Bellville, Triangle Farm, Stikland, Brackenfell, Durbanville, Stonewood, Fisantekraal, Kuilsriver, Blackheath, Kraaifontein, Somerset West, Gants, Strand, Paarl",
+          "hubspot_email": "cobras@quay1.co.za",
+          "hubspot_owner_id": "149441637",
+          "hubspot_division": "Cobras",
+          "brokers": [
+            {
+              "name": "Matthew Manthe",
+              "email": "matthew.manthe@quay1.co.za",
+              "phone": null
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Ninjas",
+          "type": "",
+          "suburbs": "De Waterkant, Green Point, Sea Point, Camps Bay, Hout Bay,  Hout Bay, Bo-kaap",
+          "hubspot_email": "ninjas@greeffcity.co.za",
+          "hubspot_owner_id": "106125992",
+          "hubspot_division": "Ninjas",
+          "brokers": [
+            {
+              "name": "Kurt Dreyer",
+              "email": "kurt@quay1.co.za",
+              "phone": "082 858 5797"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Pioneers",
+          "type": "",
+          "suburbs": "Rosebank, Rondebosch, Newlands, Claremont, Kenilworth, Plumstead, Deep River, \nRetreat, Muizeneberg, Westlake, Lakeside, Tokai, Kirstenhof, Bergvliet, Steenberg, \nConstantia, Capricorn, Fish Hoek, Athlone, Ottery",
+          "hubspot_email": "pioneers@quay1.co.za",
+          "hubspot_owner_id": "149757604",
+          "hubspot_division": "Pioneers",
+          "brokers": [
+            {
+              "name": "Kurt Dreyer",
+              "email": "kurt@quay1.co.za",
+              "phone": "082 858 5797"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Killer Whales",
+          "type": "",
+          "suburbs": "Eerste river, Blackheath, Kuils River, Bellville Industria, Philippi, Brackenfell, Stikland, Kraaifontein Industria, Bellville Central",
+          "hubspot_email": "killerwhales@greeffcity.co.za",
+          "hubspot_owner_id": "85637049",
+          "hubspot_division": "Killer_Whales",
+          "brokers": [
+            {
+              "name": "Kurt Dreyer",
+              "email": "kurt@quay1.co.za",
+              "phone": "082 858 5797"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Blue Whales",
+          "type": "",
+          "suburbs": "Durbanville Hills, Durbanville, Tygervalley, Cape Gate, Joostenbergvlakte, Epping 1 & 2, Airport Industrial, Parow Industrial, Fisantekraal,",
+          "hubspot_email": "bluewhales@quay1.co.za",
+          "hubspot_owner_id": "106124593",
+          "hubspot_division": "Blue_Whales",
+          "brokers": [
+            {
+              "name": "Kurt Dreyer",
+              "email": "kurt@quay1.co.za",
+              "phone": "082 858 5797"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Sperm Whales",
+          "type": "",
+          "suburbs": "Belleville proper, Stikland, Brackenfell and Kraaifontein, Triangle Farm",
+          "hubspot_email": "spermwhales@quay1.co.za",
+          "hubspot_owner_id": "106125976",
+          "hubspot_division": "Sperm_Whales",
+          "brokers": [
+            {
+              "name": "Kurt Dreyer",
+              "email": "kurt@quay1.co.za",
+              "phone": "082 858 5797"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Beluga Whales",
+          "type": "",
+          "suburbs": "Goodwood, Parow, Elsies River, Beaconvale, Durbanville Hills, Plattekloof, Panorama, Goedemoed, Parow Industrial, Airport Industria",
+          "hubspot_email": "belugawhales@quay1.co.za",
+          "hubspot_owner_id": "163287421",
+          "hubspot_division": "Beluga_Whales",
+          "brokers": [
+            {
+              "name": "Kurt Dreyer",
+              "email": "kurt@quay1.co.za",
+              "phone": "082 858 5797"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Humpback Whales",
+          "type": "",
+          "suburbs": "Gordons Bay, Strand, Somerset West, Firgrove, Macassar, Faure, Stellenbosch, Durbanvile Central, Fisantekraal, Cape Gate Corridor, Joostenbergvlakte, Tyger Valley",
+          "hubspot_email": "",
+          "hubspot_owner_id": "163287421",
+          "hubspot_division": "Humpback_Whales",
+          "brokers": [
+            {
+              "name": "Kurt Dreyer",
+              "email": "kurt@quay1.co.za",
+              "phone": "082 858 5797"
+            }
+          ],
+          "specialists": []
+        },
+        {
+          "name": "Mischiefs",
+          "type": "",
+          "suburbs": "Maitland, Ndabeni, Pinelands, Epping, Kensington",
+          "hubspot_email": "mischiefs@quay1.co.za",
+          "hubspot_owner_id": "270821717",
+          "hubspot_division": "",
+          "brokers": [
+            {
+              "name": "Kurt Dreyer",
+              "email": "kurt@quay1.co.za",
+              "phone": "082 858 5797"
+            },
+            {
+              "name": "Jackie Nunn",
+              "email": "jackie@quay1.co.za",
+              "phone": "061 138 5522"
+            }
+          ],
+          "specialists": []
+        }
+      ]
+    }
+  ]
+}
