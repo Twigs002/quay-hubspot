@@ -1,6 +1,6 @@
 {
-  "generated": "2026-06-28T11:14:55.233830+00:00",
-  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 72714 deals processed",
+  "generated": "2026-06-28T12:21:38.323295+00:00",
+  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 72715 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
     "2": "HubSpot Deals | Rentals",
@@ -1693,9 +1693,9 @@
       {
         "team": "Wizards",
         "total": {
-          "deals": 840,
+          "deals": 841,
           "calling": 0,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
@@ -1705,16 +1705,16 @@
         },
         "outdated": {
           "calling": 0,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 1,
           "warm": 0,
           "hot": 0,
-          "outdated": 1,
-          "upToHot": 840,
-          "pctUpdated": 0.9988095238095238
+          "outdated": 2,
+          "upToHot": 841,
+          "pctUpdated": 0.9976218787158145
         },
         "ownerIds": [
           "61986989"
@@ -2611,10 +2611,10 @@
   "portalId": "8870419",
   "kpi": {
     "1": {
-      "totalDeals": 31347,
-      "outdatedLeads": 4141,
-      "pctOutdated": 0.13210195553003476,
-      "avgPctUpdated": 0.8054043581601003
+      "totalDeals": 31348,
+      "outdatedLeads": 4142,
+      "pctOutdated": 0.13212964144443026,
+      "avgPctUpdated": 0.8053838815205535
     },
     "2": {
       "totalDeals": 6654,
@@ -2630,24 +2630,24 @@
     }
   },
   "_prev": {
-    "generated": "2026-06-28T05:16:53.346110+00:00",
+    "generated": "2026-06-28T11:14:55.233830+00:00",
     "kpi": {
       "1": {
-        "totalDeals": 31257,
-        "outdatedLeads": 4042,
-        "pctOutdated": 0.1293150334325111,
-        "avgPctUpdated": 0.8082595410996544
+        "totalDeals": 31347,
+        "outdatedLeads": 4141,
+        "pctOutdated": 0.13210195553003476,
+        "avgPctUpdated": 0.8054043581601003
       },
       "2": {
         "totalDeals": 6654,
-        "outdatedLeads": 3590,
-        "pctOutdated": 0.5395250976856026,
-        "avgPctUpdated": 0.5530146008259627
+        "outdatedLeads": 3591,
+        "pctOutdated": 0.5396753832281335,
+        "avgPctUpdated": 0.5528747406861025
       },
       "3": {
-        "totalDeals": 792,
-        "outdatedLeads": 790,
-        "pctOutdated": 0.9974747474747475,
+        "totalDeals": 791,
+        "outdatedLeads": 789,
+        "pctOutdated": 0.9974715549936789,
         "avgPctUpdated": 0.0007285974499089253
       }
     }
