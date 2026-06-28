@@ -1,6 +1,6 @@
 {
-  "generated": "2026-06-27T12:13:14.579819+00:00",
-  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 72701 deals processed",
+  "generated": "2026-06-28T05:16:53.346110+00:00",
+  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 72708 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
     "2": "HubSpot Deals | Rentals",
@@ -1542,28 +1542,28 @@
       {
         "team": "TNT",
         "total": {
-          "deals": 854,
-          "calling": 2,
+          "deals": 852,
+          "calling": 0,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 638,
-          "warm": 194,
+          "nurture": 637,
+          "warm": 195,
           "hot": 20
         },
         "outdated": {
-          "calling": 2,
+          "calling": 0,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 5,
-          "warm": 5,
+          "nurture": 1,
+          "warm": 3,
           "hot": 0,
-          "outdated": 12,
-          "upToHot": 854,
-          "pctUpdated": 0.9859484777517564
+          "outdated": 4,
+          "upToHot": 852,
+          "pctUpdated": 0.9953051643192489
         },
         "ownerIds": [
           "155292230"
@@ -2611,10 +2611,10 @@
   "portalId": "8870419",
   "kpi": {
     "1": {
-      "totalDeals": 31259,
-      "outdatedLeads": 4050,
-      "pctOutdated": 0.12956268594644743,
-      "avgPctUpdated": 0.8080982189174563
+      "totalDeals": 31257,
+      "outdatedLeads": 4042,
+      "pctOutdated": 0.1293150334325111,
+      "avgPctUpdated": 0.8082595410996544
     },
     "2": {
       "totalDeals": 6654,
@@ -2630,7 +2630,7 @@
     }
   },
   "_prev": {
-    "generated": "2026-06-27T11:04:36.776772+00:00",
+    "generated": "2026-06-27T12:13:14.579819+00:00",
     "kpi": {
       "1": {
         "totalDeals": 31259,
