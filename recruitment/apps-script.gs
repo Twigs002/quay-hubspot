@@ -72,10 +72,10 @@ function doPost(e) {
   }
 }
 
-/** Create/find "Broker Onboarding / «Name — ID»". */
+/** Create/find "Broker Onboarding / «Name - ID»". */
 function _hireFolder_(name, id) {
   var root = _folderByName_(DriveApp.getRootFolder(), CONFIG.PARENT_FOLDER_NAME, true);
-  var label = ((name || 'Unknown') + ' — ' + (id || '')).trim();
+  var label = ((name || 'Unknown') + ' - ' + (id || '')).trim();
   return _folderByName_(root, label, true);
 }
 
@@ -118,7 +118,7 @@ function _generateContract_(folder, f) {
   b.replaceText('\\(\\*delete[^)]*\\)', '');   // remove the "delete inapplicable/options" notes
 
   // Straight fills.
-  b.replaceText('\\[ID number\\]', (f.full_name || '') + ' — ID ' + (f.id_number || ''));
+  b.replaceText('\\[ID number\\]', (f.full_name || '') + ', ID ' + (f.id_number || ''));
   b.replaceText('With effect from\\s*_+', 'With effect from ' + (f.start_date || ''));
   b.replaceText('account of\\s*_+', 'account of ' + (f.senior_broker || '') + ' ');
   b.replaceText('entitled to\\s*_+\\s*%', 'entitled to ' + (f.commission || '') + '%');
@@ -136,18 +136,28 @@ function _generateContract_(folder, f) {
 
   var pdfFile = folder.createFile(DriveApp.getFileById(copyId).getAs('application/pdf')).setName(docName + '.pdf');
 
-  // Email the contract to the candidate, CC the requesting manager, and include
-  // the candidate's personal upload link (for their docs + address/banking).
+  // Email the contract to the candidate, CC the senior broker + the requester,
+  // and include the candidate's personal upload link (docs + address/banking).
   if (f.candidate_email) {
     var uploadLink = _uploadLinkFor_(folder.getId());
+    // Always CC HR (Kat) + Pagan, plus the senior broker and the requester.
+    var cc = [f.senior_email, f.requester_email, 'kat@quay1.co.za', 'pagan@quay1.co.za']
+      .filter(function (x) { return x; }).join(',');
+    var first = (f.full_name || '').trim().split(' ')[0] || 'there';
     var body =
-      'Hi ' + (f.full_name || '') + ',\n\n' +
-      'Please find your Quay 1 Broker Agreement attached.\n\n' +
-      'Next step: upload your supporting documents (ID, proof of address, proof of bank) ' +
-      'and complete your details here:\n' + uploadLink + '\n\n' +
-      'Kind regards,\nQuay 1 International Realty';
-    GmailApp.sendEmail(f.candidate_email, 'Your Quay 1 Broker Agreement', body, {
-      cc: f.requester_email || '',
+      'Hi ' + first + ',\n\n' +
+      'Welcome to Quay 1 International Realty! We are absolutely thrilled to have you ' +
+      'join the team and we cannot wait to see you thrive with us.\n\n' +
+      'Attached you will find your Broker Agreement. Please initial every page and sign ' +
+      'where applicable, then keep a copy for your own records.\n\n' +
+      'To get you fully set up, we just need a few FICA and onboarding documents. Please ' +
+      'upload them and complete your details using your personal link below. It only takes ' +
+      'a few minutes:\n\n' + uploadLink + '\n\n' +
+      'If you have any questions at all, simply reply to this email and we will be happy to help.\n\n' +
+      'Welcome aboard, and here is to a fantastic journey together!\n\n' +
+      'Warm regards,\nThe Quay 1 International Realty Team';
+    GmailApp.sendEmail(f.candidate_email, 'Welcome to Quay 1 International Realty', body, {
+      cc: cc,
       name: 'Quay 1 International Realty',
       attachments: [pdfFile.getAs('application/pdf')],
     });
@@ -169,9 +179,14 @@ function _uploadLinkFor_(folderId) {
  */
 function handleCandidateUpload_(body) {
   var folder = DriveApp.getFolderById(body.folderId);   // token = folderId for now
+  // Folder is named "«Full name» - «ID»"; use the name part to label each doc.
+  var candidate = (folder.getName().split(' - ')[0] || 'Candidate').trim();
   (body.files || []).forEach(function (file) {
     if (!file || !file.dataBase64) return;
-    folder.createFile(Utilities.newBlob(Utilities.base64Decode(file.dataBase64), file.mimeType, file.name));
+    // Saved as "<code> - <candidate full name>.<ext>", e.g. "POB - John Smith.pdf".
+    var label = file.label || 'Document';
+    var fname = label + ' - ' + candidate + (file.ext ? '.' + file.ext : '');
+    folder.createFile(Utilities.newBlob(Utilities.base64Decode(file.dataBase64), file.mimeType, fname));
   });
   // Save the plain-text details as a note file in the folder + flag on the Sheet.
   var d = body.details || {};
