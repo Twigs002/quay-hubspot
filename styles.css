@@ -69,13 +69,12 @@ button { font-family: inherit; cursor: pointer; }
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
   padding-top: 18px; padding-bottom: 18px;
 }
-.topbar-left { display: flex; align-items: center; gap: 22px; }
-.brand {
-  font-family: var(--serif);
-  font-weight: 800; font-size: 24px; letter-spacing: .08em;
-  color: #fff; text-transform: uppercase;
+.topbar-left { display: flex; align-items: center; gap: 20px; }
+/* Official Quay 1 logo (white-on-blue lockup) — brand-guideline usage. */
+.brand-logo { height: 46px; width: auto; display: block; flex: none; }
+.topbar-divider {
+  width: 1px; height: 40px; background: rgba(255,255,255,.28); flex: none;
 }
-.brand span { color: var(--yellow); }
 .topbar-titles h1 {
   font-family: var(--serif);
   font-size: 19px; font-weight: 800; margin: 0; letter-spacing: .04em;
@@ -309,7 +308,8 @@ button { font-family: inherit; cursor: pointer; }
 }
 @media (max-width: 520px) {
   .topbar { padding: 14px 16px; }
-  .brand { font-size: 20px; }
+  .brand-logo { height: 38px; }
+  .topbar-divider { display: none; }
   .topbar-titles h1 { font-size: 16px; }
   .topbar-right .pill { display: none; }   /* badge mirrored in title card, save space */
   .main { padding-top: 16px; padding-bottom: 40px; }   /* sides via shared --gutter */
