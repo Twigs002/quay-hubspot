@@ -716,3 +716,8 @@ tr.row-team:hover .team-chev { color: var(--blue-800); transform: translateX(2px
 @media (max-width: 640px) {
   .rec-grid, .rec-toggles { grid-template-columns: 1fr; }
 }
+
+/* Recruitment — selects keep a native arrow; hint + read-only styling */
+select.rec-select { -webkit-appearance: auto; appearance: auto; }
+.rec-hint { font-size: 11px; font-weight: 600; color: var(--amber); text-transform: none; letter-spacing: 0; }
+.rec-input[readonly] { background: var(--paper); color: var(--slate); cursor: default; }
