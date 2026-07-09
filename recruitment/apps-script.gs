@@ -57,13 +57,20 @@ function doPost(e) {
       pdfUrl = _generateContract_(folder, f);
     }
 
-    // 3) Log to the tracking Sheet.
+    // 3) Upsert the live tracker row (one row per hire, updated in place).
     if (CONFIG.TRACKING_SHEET_ID.indexOf('PASTE') !== 0) {
-      var sh = SpreadsheetApp.openById(CONFIG.TRACKING_SHEET_ID).getSheetByName('Log')
-            || SpreadsheetApp.openById(CONFIG.TRACKING_SHEET_ID).insertSheet('Log');
-      sh.appendRow([new Date(), f.full_name || '', f.id_number || '', f.team || '',
-                    f.senior_broker || '', f.start_date || '', f.activity || '',
-                    f.commission || '', folder.getUrl(), pdfUrl]);
+      var now = new Date();
+      var tr = _tracker_();
+      var row = _trackerFindRow_(tr, folder.getId());
+      var created = row ? (tr.getRange(row, 1).getValue() || now) : now;
+      var docsSoFar = row ? tr.getRange(row, 11).getValue() : '';   // preserve any docs already in
+      if (!row) { tr.appendRow(['']); row = tr.getLastRow(); }
+      tr.getRange(row, 1, 1, 15).setValues([[
+        created, f.full_name || '', f.id_number || '', f.team || '', f.senior_broker || '',
+        f.start_date || '', f.activity || '', f.commission || '', f.candidate_email || '',
+        'Contract sent - awaiting documents', docsSoFar,
+        folder.getUrl(), pdfUrl, now, folder.getId(),
+      ]]);
     }
 
     return _json({ ok: true, folderUrl: folder.getUrl(), pdfUrl: pdfUrl });
@@ -181,22 +188,64 @@ function handleCandidateUpload_(body) {
   var folder = DriveApp.getFolderById(body.folderId);   // token = folderId for now
   // Folder is named "«Full name» - «ID»"; use the name part to label each doc.
   var candidate = (folder.getName().split(' - ')[0] || 'Candidate').trim();
+  var received = [];
   (body.files || []).forEach(function (file) {
     if (!file || !file.dataBase64) return;
     // Saved as "<code> - <candidate full name>.<ext>", e.g. "POB - John Smith.pdf".
     var label = file.label || 'Document';
     var fname = label + ' - ' + candidate + (file.ext ? '.' + file.ext : '');
     folder.createFile(Utilities.newBlob(Utilities.base64Decode(file.dataBase64), file.mimeType, fname));
+    received.push(label);
   });
-  // Save the plain-text details as a note file in the folder + flag on the Sheet.
+  // Save the plain-text details as a note file in the folder.
   var d = body.details || {};
   folder.createFile('Candidate details.txt', Object.keys(d).map(function (k) { return k + ': ' + d[k]; }).join('\n'));
+  // Update the live tracker row for this hire (status + which docs are now in).
   if (CONFIG.TRACKING_SHEET_ID.indexOf('PASTE') !== 0) {
-    var sh = SpreadsheetApp.openById(CONFIG.TRACKING_SHEET_ID).getSheetByName('Log');
-    if (sh) sh.appendRow([new Date(), '(candidate upload)', '', '', '', '', '', '', folder.getUrl(),
-                          'docs+details received']);
+    var now = new Date();
+    var tr = _tracker_();
+    var row = _trackerFindRow_(tr, body.folderId);
+    if (!row) {   // upload arrived before a contract row exists (edge case)
+      tr.appendRow([now, candidate, '', '', '', '', '', '', '', '', '', folder.getUrl(), '', now, body.folderId]);
+      row = tr.getLastRow();
+    }
+    var have = String(tr.getRange(row, 11).getValue() || '').split(', ').filter(function (x) { return x; });
+    received.forEach(function (l) { if (have.indexOf(l) === -1) have.push(l); });
+    if (d && d['PPRA / FFC number'] && d['PPRA / FFC number'] !== '(none provided)' && have.indexOf('PPRA') === -1) have.push('PPRA');
+    tr.getRange(row, 11).setValue(have.join(', '));        // Docs received
+    tr.getRange(row, 10).setValue('Documents & details received');   // Status
+    tr.getRange(row, 14).setValue(now);                    // Last updated
   }
   return { ok: true, folderUrl: folder.getUrl() };
+}
+
+/**
+ * The live recruitment tracker: one row per hire, updated in place at each stage.
+ * Column O (15) holds the folder id as the stable key for upserts.
+ */
+function _tracker_() {
+  var ss = SpreadsheetApp.openById(CONFIG.TRACKING_SHEET_ID);
+  var sh = ss.getSheetByName('Tracker');
+  if (!sh) {
+    sh = ss.insertSheet('Tracker');
+    sh.appendRow(['Created', 'Full name', 'ID number', 'Team', 'Senior broker', 'Start date',
+                  'Activity', 'Commission %', 'Candidate email', 'Status', 'Docs received',
+                  'Folder', 'Contract PDF', 'Last updated', 'Folder ID']);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, 15).setFontWeight('bold');
+  }
+  return sh;
+}
+
+/** Row index (>=2) whose Folder ID (col O) matches, or 0 if not present yet. */
+function _trackerFindRow_(sh, folderId) {
+  var last = sh.getLastRow();
+  if (last < 2) return 0;
+  var ids = sh.getRange(2, 15, last - 1, 1).getValues();
+  for (var i = 0; i < ids.length; i++) {
+    if (String(ids[i][0]) === String(folderId)) return i + 2;
+  }
+  return 0;
 }
 
 function _escRe_(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
