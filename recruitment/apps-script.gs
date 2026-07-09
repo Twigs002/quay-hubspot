@@ -219,6 +219,9 @@ function handleCandidateUpload_(body) {
   return { ok: true, folderUrl: folder.getUrl() };
 }
 
+/** Run once to create the Tracker tab + heading row up front (no data needed). */
+function initTracker() { _tracker_(); }
+
 /**
  * The live recruitment tracker: one row per hire, updated in place at each stage.
  * Column O (15) holds the folder id as the stable key for upserts.
