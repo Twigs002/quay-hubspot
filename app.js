@@ -379,7 +379,7 @@
 
     // ── Cell formatters + colour ───────────────────────────────────
     const fmtCell = (v, isPct) => {
-      if (v == null || v === '') return '<span class="muted">—</span>';
+      if (v == null || v === '') return '<span class="empty">—</span>';
       if (isPct) return (Number(v) * 100).toFixed(1) + '%';
       const n = Number(v);
       return isFinite(n) ? n.toFixed(n % 1 === 0 ? 0 : 1) : escapeHtml(String(v));
@@ -388,7 +388,7 @@
     // marker so the meaning isn't carried only by hue. ✓ when none stale,
     // ⚠ when all stale.
     const stageCell = (outdatedN, totalN) => {
-      if (!totalN) return '<td class="num"><span class="muted">—</span></td>';
+      if (!totalN) return '<td class="num"><span class="empty">—</span></td>';
       const out = Number(outdatedN || 0);
       const tot = Number(totalN);
       const allStale  = tot > 0 && out === tot;
@@ -396,10 +396,12 @@
       const colour = allStale  ? 'color:var(--red);font-weight:700'
                    : noneStale ? 'color:var(--green);font-weight:700'
                                : 'color:var(--ink);font-weight:600';
-      const marker = allStale ? ' ⚠'
-                   : noneStale ? ' ✓'
-                               : '';
-      const display = `${_fmtK(out)}<span class="cell-slash">/</span>${_fmtK(tot)}${marker}`;
+      // Only flag the worst case (all stale). Per-cell ✓ ticks across 8
+      // stage columns were pure noise; the green numerator already reads
+      // as "none stale". Summary pills keep their ✓/⚠ (real signal).
+      const marker = allStale ? ' ⚠' : '';
+      // Colour applies to the numerator (outdated); denominator recedes.
+      const display = `${_fmtK(out)}<span class="cell-slash">/</span><span class="cell-den">${_fmtK(tot)}</span>${marker}`;
       const title = `${out} outdated of ${tot} total`;
       return `<td class="num tnum" style="${colour}" title="${title}">${display}</td>`;
     };
@@ -418,13 +420,13 @@
       return 'ok';
     };
     const pctCell = (frac) => {
-      if (frac == null) return '<td class="num"><span class="muted">—</span></td>';
+      if (frac == null) return '<td class="num"><span class="empty">—</span></td>';
       const cls = pctClass(frac);
       const sym = cls === 'ok' ? ' ✓' : cls === 'bad' ? ' ⚠' : '';
       return `<td class="num"><span class="pill ${cls}">${(Number(frac) * 100).toFixed(1)}%${sym}</span></td>`;
     };
     const outdatedCell = (outdatedN, totalN) => {
-      if (outdatedN == null) return '<td class="num"><span class="muted">—</span></td>';
+      if (outdatedN == null) return '<td class="num"><span class="empty">—</span></td>';
       const cls = outdatedClass(Number(outdatedN), Number(totalN));
       if (!cls) return `<td class="num tnum">${fmt(Math.round(outdatedN))}</td>`;
       const sym = cls === 'bad' ? ' ⚠' : cls === 'ok' ? ' ✓' : '';
@@ -435,6 +437,11 @@
     const STK_TH  = 'position:sticky;left:0;z-index:2;background:var(--paper-2);box-shadow:1px 0 0 var(--line-2)';
     const STK_TD  = 'position:sticky;left:0;z-index:1;background:var(--card);box-shadow:1px 0 0 var(--line-2);white-space:nowrap';
     const STK_TOT = 'position:sticky;left:0;z-index:1;background:#F7F8FC;box-shadow:1px 0 0 var(--line-2)';
+    // Pin the HubSpot-link column to the RIGHT edge too, so the one action
+    // button is always reachable and never scrolls off (the clipping bug).
+    const STK_TH_R  = 'position:sticky;right:0;z-index:2;background:var(--paper-2);box-shadow:-1px 0 0 var(--line-2)';
+    const STK_TD_R  = 'position:sticky;right:0;z-index:1;background:var(--card);box-shadow:-1px 0 0 var(--line-2)';
+    const STK_TOT_R = 'position:sticky;right:0;z-index:1;background:#F7F8FC;box-shadow:-1px 0 0 var(--line-2)';
 
     // Sort indicator on the active column header.
     const sortIndic = (k) => {
@@ -528,7 +535,7 @@
             ${teamHeader}
             ${totalHeader}
             ${HUBSPOT_COLS.map(c => headerCellForStage(c)).join('')}
-            ${portalId ? `<th class="num" style="min-width:60px" title="Open this team's deals in HubSpot"></th>` : ''}
+            ${portalId ? `<th class="num" style="${STK_TH_R};min-width:96px;text-align:right" title="Open this team's deals in HubSpot" scope="col">HubSpot</th>` : ''}
           </tr></thead>
           <tbody>
             ${allRows.length === 0 ? emptyRow : (visible.length === 0 ? noVisibleRow : visible.map(r => {
@@ -551,22 +558,22 @@
                   }
                   return `<td class="num tnum">${fmtCell(r.outdated ? r.outdated[c.k] : null, c.isPct)}</td>`;
                 }).join('')}
-                ${portalId ? `<td class="num">${link ? `<a class="row-go" href="${link}" target="_blank" rel="noopener" title="Open in HubSpot" aria-label="Open ${escapeHtml(r.team || '')} deals in HubSpot"><span class="row-go-text">HubSpot</span><span class="row-go-arrow" aria-hidden="true">↗</span></a>` : '<span class="muted">—</span>'}</td>` : ''}
+                ${portalId ? `<td class="num" style="${STK_TD_R}">${link ? `<a class="row-go" href="${link}" target="_blank" rel="noopener" title="Open in HubSpot" aria-label="Open ${escapeHtml(r.team || '')} deals in HubSpot"><span class="row-go-text">HubSpot</span><span class="row-go-arrow" aria-hidden="true">↗</span></a>` : '<span class="empty">—</span>'}</td>` : ''}
               </tr>`;
             }).join(''))}
-            ${visible.length > 0 ? `<tr style="background:#F7F8FC;font-weight:700">
+            ${visible.length > 0 ? `<tr class="tbl-total" style="background:#F7F8FC;font-weight:700">
               <td style="${STK_TOT}">Total · ${visible.length} team${visible.length === 1 ? '' : 's'}</td>
               <td class="num tnum">${fmt(visible.reduce((s, r) => s + r._tot, 0))}</td>
               ${HUBSPOT_COLS.map(c => {
-                if (c.isPct) return `<td class="num"><span class="muted">—</span></td>`;
+                if (c.isPct) return `<td class="num"><span class="empty">—</span></td>`;
                 if (c.isStage) {
                   const oSum = visible.reduce((s, r) => s + _num(r.outdated && r.outdated[c.k]), 0);
                   const tSum = visible.reduce((s, r) => s + _num(r.total && r.total[c.k]), 0);
-                  return `<td class="num tnum">${_fmtK(oSum)}<span class="cell-slash">/</span>${_fmtK(tSum)}</td>`;
+                  return `<td class="num tnum">${_fmtK(oSum)}<span class="cell-slash">/</span><span class="cell-den">${_fmtK(tSum)}</span></td>`;
                 }
                 return `<td class="num tnum">${fmt(sumCol(c.k))}</td>`;
               }).join('')}
-              ${portalId ? '<td></td>' : ''}
+              ${portalId ? `<td style="${STK_TOT_R}"></td>` : ''}
             </tr>` : ''}
           </tbody>
         </table></div>

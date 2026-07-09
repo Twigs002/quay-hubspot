@@ -18,10 +18,11 @@
   --sky-tint:    #E9F2FB;
   --ink:    #1A2746;
   --slate:  #4A566D;
-  --muted:  #8893A8;
-  --green:  #2F8F63;
+  --muted:  #606C86;   /* was #8893A8 — now ~4.6:1 on white (WCAG AA small text) */
+  --empty:  #9AA4B8;   /* recessed grey, "—" placeholders only (non-essential) */
+  --green:  #277A54;   /* was #2F8F63 — nudged over AA on white */
   --green-tint:#E2F1EA;
-  --amber:  #B98A02;
+  --amber:  #8A6800;   /* was #B98A02 — safe as text on white, matches pill-rental */
   --amber-tint:#FBF1D2;
   --red:    #D20A03;
   --red-tint:#FBE2DD;
@@ -29,6 +30,8 @@
   --line-2: #EDF1F8;
   --r-sm: 8px;
   --r:    12px;
+  --maxw:   1280px;                     /* shared content column */
+  --gutter: clamp(20px, 4vw, 56px);     /* shared side gutter for all bands */
   --shadow-sm: 0 1px 2px rgba(30,46,89,.06), 0 1px 1px rgba(30,46,89,.04);
   --shadow:    0 2px 6px rgba(30,46,89,.07), 0 8px 24px rgba(30,46,89,.07);
   --sans: 'Montserrat', system-ui, -apple-system, sans-serif;
@@ -45,6 +48,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 .muted { color: var(--muted); }
+.empty { color: var(--empty); }
 .tnum { font-variant-numeric: tabular-nums; }
 button { font-family: inherit; cursor: pointer; }
 
@@ -53,9 +57,17 @@ button { font-family: inherit; cursor: pointer; }
   position: sticky; top: 0; z-index: 100;
   background: var(--blue-800);
   color: #fff;
-  padding: 18px 36px;
-  display: flex; align-items: center; gap: 24px;
   box-shadow: var(--shadow);
+}
+/* Shared inner wrapper: aligns topbar + tab-nav content to the same
+   centered column as .main so nothing is misaligned on wide screens. */
+.bar-inner {
+  max-width: var(--maxw); margin: 0 auto;
+  padding-left: var(--gutter); padding-right: var(--gutter);
+}
+.topbar .bar-inner {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  padding-top: 18px; padding-bottom: 18px;
 }
 .topbar-left { display: flex; align-items: center; gap: 22px; }
 .brand {
@@ -78,7 +90,10 @@ button { font-family: inherit; cursor: pointer; }
 .topbar-right .pill { font-size: 11px; padding: 3px 10px; }
 
 /* ─── Main ──────────────────────────────────────────────────── */
-.main { padding: 26px 36px 60px; max-width: 1500px; margin: 0 auto; }
+.main {
+  max-width: var(--maxw); margin: 0 auto;
+  padding: 26px var(--gutter) 60px;
+}
 .tab-view > * + * { margin-top: 16px; }
 
 /* ─── Cards ─────────────────────────────────────────────────── */
@@ -138,8 +153,7 @@ button { font-family: inherit; cursor: pointer; }
 .tbl-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .tbl th, .tbl td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--line-2);
+  padding: 10px 14px;
   text-align: left;
 }
 .tbl thead th {
@@ -215,7 +229,7 @@ button { font-family: inherit; cursor: pointer; }
   padding: 16px 18px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--paper);
+  background: var(--card);
   text-decoration: none;
   color: inherit;
   transition: transform .12s, border-color .12s, box-shadow .12s;
@@ -281,7 +295,10 @@ button { font-family: inherit; cursor: pointer; }
 }
 .row-go:hover { background: var(--sky-tint); }
 
-.cell-slash { color: var(--muted); margin: 0 1px; font-weight: 500; }
+/* Slash cells "60/64": weight the numerator (outdated), recede the
+   denominator (total) so "N of M" parses at a glance. */
+.cell-slash { color: var(--empty); margin: 0 2px; font-weight: 400; }
+.cell-den   { color: var(--muted); font-weight: 500; }
 
 /* ─── Mobile ────────────────────────────────────────────────── */
 @media (max-width: 1180px) {
@@ -295,7 +312,7 @@ button { font-family: inherit; cursor: pointer; }
   .brand { font-size: 20px; }
   .topbar-titles h1 { font-size: 16px; }
   .topbar-right .pill { display: none; }   /* badge mirrored in title card, save space */
-  .main { padding: 16px 14px 40px; }
+  .main { padding-top: 16px; padding-bottom: 40px; }   /* sides via shared --gutter */
   .row.kpis { grid-template-columns: 1fr; }
   .kpi { padding: 14px 16px; }
   .kpi-val { font-size: 26px; }
@@ -309,8 +326,12 @@ button { font-family: inherit; cursor: pointer; }
 /* Zebra-stripe the deals table so the eye stays on a row across the
    13-metric width. Keep hover stronger than the stripe so the active
    row still pops. */
-.tbl tbody tr:nth-child(even):not(.row-team:hover) td { background: var(--paper-2, #F7F8FC); }
+.tbl tbody tr:nth-child(even):not(:hover):not(.tbl-total) td { background: var(--paper-2); }
 .tbl tbody tr:hover td { background: rgba(61, 91, 166, .05) !important; }
+/* Sticky cells carry an inline opaque background (needed to mask content
+   scrolling underneath). Repaint them to match the zebra stripe on even
+   rows so the pinned column doesn't leave a white seam down the edge. */
+.tbl tbody tr:nth-child(even):not(:hover):not(.tbl-total) td[style*="sticky"] { background: var(--paper-2) !important; }
 
 /* Sticky team column gets a permanent right-edge shadow so the user
    knows the column will hold its position when the table scrolls. */
@@ -366,10 +387,12 @@ button { font-family: inherit; cursor: pointer; }
   position: sticky;
   top: 60px;                          /* sits under the topbar */
   z-index: 9;
-  display: flex; gap: 4px;
   background: var(--paper);
-  padding: 8px 28px 0;
   border-bottom: 1px solid var(--line);
+}
+.tab-nav .bar-inner {
+  display: flex; gap: 4px;
+  padding-top: 8px; padding-bottom: 0;
 }
 .tab-btn {
   background: transparent; border: 0; cursor: pointer;
