@@ -67,6 +67,10 @@
   let _dirSection = 'all';                     // section filter on Directory
   let _drillTeam = null;                       // team name when modal open
   let _recruitForm = 'contract';               // 'contract' | 'intake' — active recruitment sub-form
+  // Recruitment backend (Google Apps Script Web App). Filled in after deploy;
+  // while empty, the form stays in preview mode (submits nothing).
+  const RECRUIT_ENDPOINT = '';
+  const RECRUIT_TOKEN = '';
 
   async function loadHubspot() {
     if (_hubspotLoading) return;
@@ -936,6 +940,8 @@
           ${selectField('c_team', 'Team (per program)', teamOptions(), true)}
           ${roField('c_senior', 'Senior broker')}
           ${field('c_commission', 'Commission %', 'number', true)}
+          ${field('c_candidate_email', 'Candidate email', 'email', true)}
+          ${field('c_requester_email', 'Requesting manager email (CC)', 'email', true)}
         </div>
         ${submitRow('Generate contract')}
       </form>`;
@@ -996,16 +1002,82 @@
     }
     const form = document.querySelector('.rec-form');
     if (form) {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!form.checkValidity()) { form.reportValidity(); return; }
         const note = document.getElementById('recNote');
-        if (note) {
-          note.textContent = 'Not submitted — backend not connected yet. Nothing was sent.';
-          note.className = 'rec-note warn';
+        if (!RECRUIT_ENDPOINT) {
+          if (note) {
+            note.textContent = 'Not submitted — backend not connected yet. Nothing was sent.';
+            note.className = 'rec-note warn';
+          }
+          return;
+        }
+        const fd = {};
+        form.querySelectorAll('input, select').forEach(el => {
+          if (el.type === 'checkbox') fd[el.id] = el.checked;
+          else if (el.type !== 'file') fd[el.id] = el.value;
+        });
+        const fields = _recruitFields(form.id, fd);
+        const files = await _recruitFiles(form);
+        if (note) { note.textContent = 'Submitting…'; note.className = 'rec-note'; }
+        try {
+          const res = await fetch(RECRUIT_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight
+            body: JSON.stringify({ token: RECRUIT_TOKEN, fields, files }),
+          });
+          const data = await res.json();
+          if (data.ok && note) {
+            note.innerHTML = 'Done · <a href="' + data.folderUrl + '" target="_blank" rel="noopener">open folder</a>' +
+              (data.pdfUrl ? ' · <a href="' + data.pdfUrl + '" target="_blank" rel="noopener">contract PDF</a>' : '');
+            note.className = 'rec-note';
+            form.reset();
+          } else if (note) {
+            note.textContent = 'Error: ' + (data.error || 'unknown'); note.className = 'rec-note warn';
+          }
+        } catch (err) {
+          if (note) { note.textContent = 'Submit failed: ' + err; note.className = 'rec-note warn'; }
         }
       });
     }
+  }
+
+  // Map a form's raw field ids to the backend's field names.
+  function _recruitFields(formId, fd) {
+    if (formId === 'recFormContract') {
+      return {
+        full_name: fd.c_fullname, id_number: fd.c_id, activity: fd.c_activity,
+        start_date: fd.c_start, team: fd.c_team, senior_broker: fd.c_senior,
+        commission: fd.c_commission,
+        candidate_email: fd.c_candidate_email, requester_email: fd.c_requester_email,
+      };
+    }
+    return {
+      full_name: fd.ri_name, team: fd.ri_team, salary: fd.ri_salary,
+      office: fd.ri_office, start_date: fd.ri_start,
+      needs_cma: fd.ri_cma, needs_whatsapp: fd.ri_whatsapp,
+      needs_dialfire: fd.ri_dialfire, needs_training: fd.ri_training,
+    };
+  }
+  // Read any file inputs as base64 for the Apps Script to save to Drive.
+  async function _recruitFiles(form) {
+    const out = [];
+    for (const inp of form.querySelectorAll('input[type=file]')) {
+      for (const file of (inp.files || [])) {
+        out.push({ name: file.name, mimeType: file.type || 'application/octet-stream',
+                   dataBase64: await _fileToB64(file) });
+      }
+    }
+    return out;
+  }
+  function _fileToB64(file) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result).split(',')[1] || '');
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
   }
 
   // ─── Boot ────────────────────────────────────────────────────────────
