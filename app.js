@@ -125,6 +125,8 @@
   function render() {
     const host = document.getElementById('content');
     if (_tab === 'recruitment') {
+      // Team dropdown is built from the division directory — load it if needed.
+      if (_divisions == null && !_divisionsLoading) loadDivisions();
       host.innerHTML = renderRecruitment();
       wireRecruitment();
     } else if (_tab === 'directory') {
@@ -883,29 +885,49 @@
     const submitRow = (txt) =>
       `<div class="rec-actions"><button type="submit" class="rec-submit">${escapeHtml(txt)}</button>` +
       `<span class="rec-note" id="recNote"></span></div>`;
+    const selectField = (id, label, optionsHtml, req, hint) =>
+      `<label class="rec-field"><span class="rec-label">${escapeHtml(label)}${req ? ' <em>*</em>' : ''}` +
+      `${hint ? ` <span class="rec-hint">${escapeHtml(hint)}</span>` : ''}</span>` +
+      `<select class="rec-input rec-select" id="${id}" name="${id}"${req ? ' required' : ''}>${optionsHtml}</select></label>`;
+    const roField = (id, label) =>
+      `<label class="rec-field"><span class="rec-label">${escapeHtml(label)}</span>` +
+      `<input class="rec-input" id="${id}" name="${id}" type="text" readonly placeholder="auto-filled from team"></label>`;
+
+    // Broker activities options — TODO: replace with the real list from the
+    // user. Empty until then so we never invent contract values.
+    const BROKER_ACTIVITIES = [];
+    const activityOptions = () => BROKER_ACTIVITIES.length
+      ? '<option value="">— select activity —</option>' +
+        BROKER_ACTIVITIES.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('')
+      : '<option value="">Options pending…</option>';
+
+    // Team dropdown built from the division directory: grouped by program
+    // (section), each option carries its senior broker (first-listed) so the
+    // Senior broker field auto-fills on change.
+    const teamOptions = () => {
+      const secs = (_divisions && _divisions.sections) || [];
+      if (!secs.length) return '<option value="">Loading teams…</option>';
+      return '<option value="">— select team —</option>' + secs.map(sec => {
+        const opts = (sec.teams || []).map(t => {
+          const senior = (t.brokers && t.brokers[0] && t.brokers[0].name) || '';
+          return `<option value="${escapeHtml(t.name)}" data-senior="${escapeHtml(senior)}" data-program="${escapeHtml(sec.name)}">${escapeHtml(t.name)}</option>`;
+        }).join('');
+        return `<optgroup label="${escapeHtml(sec.name)}">${opts}</optgroup>`;
+      }).join('');
+    };
 
     const contractForm = `
       <form class="rec-form" id="recFormContract" novalidate>
         <div class="rec-grid">
-          ${field('rc_name', 'New hire full name', 'text', true)}
-          ${field('rc_email', 'Personal email address', 'email', true)}
-          ${field('rc_tax', 'Tax income number', 'text', true)}
-          ${field('rc_ffc', 'FFC', 'text', false)}
-          ${field('rc_ffc_ref', 'FFC reference number', 'text', false)}
+          ${field('c_fullname', 'Full name', 'text', true)}
+          ${field('c_id', 'ID number', 'text', true)}
+          ${selectField('c_activity', 'Broker activities', activityOptions(), true, BROKER_ACTIVITIES.length ? '' : 'options pending')}
+          ${field('c_start', 'Start date', 'date', true)}
+          ${selectField('c_team', 'Team (per program)', teamOptions(), true)}
+          ${roField('c_senior', 'Senior broker')}
+          ${field('c_commission', 'Commission %', 'number', true)}
         </div>
-        <div class="rec-subhead">Next of kin</div>
-        <div class="rec-grid">
-          ${field('rc_nok_name', 'Next of kin name', 'text', true)}
-          ${field('rc_nok_contact', 'Next of kin contact details', 'tel', true)}
-          ${field('rc_nok_rel', 'Relationship to you', 'text', true)}
-        </div>
-        <div class="rec-subhead">Documents</div>
-        <div class="rec-grid">
-          ${fileField('rc_id', 'Copy of ID', true)}
-          ${fileField('rc_addr', 'Proof of address', true)}
-          ${fileField('rc_bank', 'Proof of bank account', true)}
-        </div>
-        ${submitRow('Submit contract documents')}
+        ${submitRow('Generate contract')}
       </form>`;
 
     const intakeForm = `
@@ -932,7 +954,7 @@
         <h3 style="margin:0;font-family:var(--serif);font-size:17px;color:var(--ink)">Recruitment</h3>
         <div class="sub" style="margin-top:6px">Broker onboarding intake — complete the relevant form for a new hire.</div>
         <div class="seg" id="recSeg" style="margin-top:14px">
-          ${seg('contract', 'Contract documents')}${seg('intake', 'Recruitment intake')}
+          ${seg('contract', 'Contract')}${seg('intake', 'Recruitment intake')}
         </div>
       </div>
       <div class="card mt banner" style="background:var(--amber-tint);color:var(--amber);padding:12px 16px;font-size:12.5px;font-weight:600;box-shadow:none">
@@ -952,6 +974,16 @@
         render();
       });
     });
+    // Team → Senior broker: auto-fill the read-only senior broker from the
+    // selected team's option data (first-listed broker for that team).
+    const teamSel = document.getElementById('c_team');
+    if (teamSel) {
+      teamSel.addEventListener('change', () => {
+        const opt = teamSel.selectedOptions[0];
+        const sr = document.getElementById('c_senior');
+        if (sr) sr.value = opt ? (opt.dataset.senior || '') : '';
+      });
+    }
     const form = document.querySelector('.rec-form');
     if (form) {
       form.addEventListener('submit', (e) => {
