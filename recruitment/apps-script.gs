@@ -15,10 +15,10 @@
  *        "Execute as: me", "Who has access: Anyone with the link"):
  */
 var CONFIG = {
-  SECRET_TOKEN: 'CHANGE_ME_LONG_RANDOM_STRING',   // must match the form's token
-  PARENT_FOLDER_NAME: 'Broker Onboarding',        // created at Drive root if missing
-  TEMPLATE_DOC_ID: 'PASTE_GOOGLE_DOC_TEMPLATE_ID', // the uploaded template as a Google Doc
-  TRACKING_SHEET_ID: 'PASTE_TRACKING_SHEET_ID',    // a Google Sheet; tab "Log"
+  SECRET_TOKEN: 'nPmrgKST4i9MmiypOKKNEiB65r4SrPww',        // must match the form's token
+  PARENT_FOLDER_NAME: 'Broker Onboarding',                // found by name at Drive root
+  TEMPLATE_DOC_ID: '1Ewj1i-pPZGJMIR3vjuH_7MDG3q7QYngxjrGqdzTVw44',  // "Broker Agreement - TEMPLATE"
+  TRACKING_SHEET_ID: '1MbhT2aKMknxn131yDAEHr-W4hVmVXrzqCiNItXV9Unw', // "Recruitment Tracking"
 };
 
 // Broker-activity definitions + axes. Keys match the form's activity `code`.
@@ -85,38 +85,53 @@ function _folderByName_(parent, name, createIfMissing) {
   return createIfMissing ? parent.createFolder(name) : null;
 }
 
-/** Copy the template, resolve all tokens, export PDF into the folder. */
+/**
+ * Copy the template, resolve every conditional term from the chosen activity,
+ * export PDF into the folder. Works directly on the real contract wording:
+ * a 7-row "delete inapplicable" definition table + [bracket] term clusters.
+ */
 function _generateContract_(folder, f) {
   var a = ACTIVITIES[f.activity];
   var sale = a.txn === 'sale';
-  var partnershipActivity = a.prop === 'commercial'
+  var prop = a.prop;                       // 'residential' | 'commercial'
+  var partnershipActivity = prop === 'commercial'
       ? 'selling or leasing immovable commercial property'
       : (sale ? 'selling immovable residential property'
               : 'renting/leasing immovable residential property');
-
-  var map = {
-    '{{full_name}}':   f.full_name || '',
-    '{{id_number}}':   f.id_number || '',
-    '{{start_date}}':  f.start_date || '',
-    '{{senior_broker}}': f.senior_broker || '',
-    '{{commission}}':  String(f.commission || ''),
-    '{{definition}}':  a.def,
-    '{{partnership_activity}}': partnershipActivity,
-    '{{prop}}':    a.prop,
-    '{{verb}}':    sale ? 'sell' : 'rent',
-    '{{price}}':   sale ? 'purchase' : 'rental',
-    '{{buyers}}':  sale ? 'purchasers' : 'tenants',
-    '{{seller}}':  sale ? 'seller' : 'lessor',
-    '{{saledoc}}': sale ? 'Deed of Sale' : 'Lease Agreement',
-  };
 
   var docName = 'Memorandum of Agreement - ' + (f.full_name || 'Broker');
   var copyId = DriveApp.getFileById(CONFIG.TEMPLATE_DOC_ID).makeCopy(docName, folder).getId();
   var doc = DocumentApp.openById(copyId);
   var b = doc.getBody();
-  Object.keys(map).forEach(function (k) {
-    b.replaceText(_escRe_(k), map[k]);   // literal token -> value
-  });
+
+  // Definition: replace the whole "delete inapplicable" table with the one
+  // chosen definition paragraph (handles all 8 activities incl. the added one).
+  var tables = b.getTables();
+  for (var i = 0; i < tables.length; i++) {
+    if (tables[i].getText().indexOf('brokerage of immovable') !== -1) {
+      var idx = b.getChildIndex(tables[i]);
+      b.insertParagraph(idx, a.def);
+      tables[i].removeFromParent();
+      break;
+    }
+  }
+  b.replaceText('\\(\\*delete[^)]*\\)', '');   // remove the "delete inapplicable/options" notes
+
+  // Straight fills.
+  b.replaceText('\\[ID number\\]', (f.full_name || '') + ' — ID ' + (f.id_number || ''));
+  b.replaceText('With effect from\\s*_+', 'With effect from ' + (f.start_date || ''));
+  b.replaceText('account of\\s*_+', 'account of ' + (f.senior_broker || '') + ' ');
+  b.replaceText('entitled to\\s*_+\\s*%', 'entitled to ' + (f.commission || '') + '%');
+
+  // Conditional term clusters, resolved from the activity axes.
+  b.replaceText('\\[selling immovable residential property\\]\\s*\\[selling or leasing immovable commercial property\\]\\s*\\[renting/leasing immovable residential property\\]', partnershipActivity);
+  b.replaceText('\\[commercial\\]\\s*\\[residential\\]l?', prop);
+  b.replaceText('\\[sell\\]\\s*\\[rent\\]', sale ? 'sell' : 'rent');
+  b.replaceText('\\[purchase\\]\\s*\\[rental\\]', sale ? 'purchase' : 'rental');
+  b.replaceText('\\[purchasers\\]\\s*\\[tenants\\]', sale ? 'purchasers' : 'tenants');
+  b.replaceText('\\[seller\\]\\s*\\[lessor\\]', sale ? 'seller' : 'lessor');
+  b.replaceText('\\[Deed of Sale\\]\\s*\\[Lease Agreement\\]', sale ? 'Deed of Sale' : 'Lease Agreement');
+
   doc.saveAndClose();
 
   var pdfFile = folder.createFile(DriveApp.getFileById(copyId).getAs('application/pdf')).setName(docName + '.pdf');

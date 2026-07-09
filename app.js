@@ -69,8 +69,8 @@
   let _recruitForm = 'contract';               // 'contract' | 'intake' — active recruitment sub-form
   // Recruitment backend (Google Apps Script Web App). Filled in after deploy;
   // while empty, the form stays in preview mode (submits nothing).
-  const RECRUIT_ENDPOINT = '';
-  const RECRUIT_TOKEN = '';
+  const RECRUIT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzBdDmvtpoQgIEdtopdh8iFK6vuD9Xvmt4OJUDdQEg9qeKgaOP3a_WOeVM4WaQU6PpZ/exec';
+  const RECRUIT_TOKEN = 'nPmrgKST4i9MmiypOKKNEiB65r4SrPww';
 
   async function loadHubspot() {
     if (_hubspotLoading) return;
