@@ -897,6 +897,7 @@
     // (a "delete inapplicable definition" table; one is kept). `code` is the
     // machine value; `def` is the exact clause text merged into the contract.
     const BROKER_ACTIVITIES = [
+      { code: 'sell_res_sb', label: 'Sell · Residential · Broker (SB)', def: 'The selling and/or brokerage of immovable residential property or a broker performing his/her/their functions to such an end; and/or' },
       { code: 'sell_res_jb', label: 'Sell · Residential · Assistant (JB)', def: 'The selling and/or brokerage of immovable residential property or an assistant to a broker performing his/her/their functions to such an end; and/or' },
       { code: 'sell_com_sb', label: 'Sell · Commercial · Broker (SB)', def: 'The selling and/or brokerage of immovable commercial property or a broker performing his/her/their functions to such an end; and/or' },
       { code: 'sell_com_jb', label: 'Sell · Commercial · Assistant (JB)', def: 'The selling and/or brokerage of immovable commercial property or an assistant to a broker performing his/her/their functions to such an end; and/or' },
