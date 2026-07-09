@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quay 1 · Onboarding Documents</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --blue-900:#1E2E59; --blue-800:#3D5BA6; --blue-700:#4C6BB8;
+      --paper:#EEF2F8; --card:#FFFFFF; --card-2:#F6F8FC;
+      --yellow:#FDC503; --ink:#1A2746; --slate:#4A566D; --muted:#606C86;
+      --green:#277A54; --green-tint:#E2F1EA; --red:#D20A03; --red-tint:#FBE2DD;
+      --amber:#8A6800; --amber-tint:#FBF1D2;
+      --line:#E0E7F1; --line-2:#EDF1F8;
+      --r:12px; --r-sm:8px;
+      --sans:'Montserrat',system-ui,-apple-system,sans-serif;
+      --shadow:0 2px 6px rgba(30,46,89,.07),0 8px 24px rgba(30,46,89,.07);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:var(--sans);background:var(--paper);color:var(--ink);
+      line-height:1.55;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:720px;margin:0 auto;padding:28px 20px 64px}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+    .brand .logo{font-weight:800;font-size:20px;letter-spacing:.5px;color:var(--blue-900)}
+    .brand .logo span{color:var(--yellow);-webkit-text-stroke:.4px var(--blue-900)}
+    .hero{background:var(--blue-800);color:#fff;border-radius:var(--r);padding:24px 26px;
+      box-shadow:var(--shadow);margin-bottom:22px}
+    .hero h1{margin:0 0 6px;font-size:22px;font-weight:700}
+    .hero p{margin:0;font-size:14.5px;color:#E4ECF8}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+      box-shadow:var(--shadow);padding:22px 24px;margin-bottom:18px}
+    .sec-title{font-size:12px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;
+      color:var(--blue-700);margin:0 0 14px;display:flex;align-items:center;gap:8px}
+    .sec-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;
+      border-radius:50%;background:var(--sky-tint,#E9F2FB);color:var(--blue-800);font-size:12px;font-weight:700}
+    label{display:block;font-size:13px;font-weight:600;color:var(--slate);margin:0 0 5px}
+    .req{color:var(--red)}
+    .opt{color:var(--muted);font-weight:500}
+    input[type=text],input[type=tel],input[type=number],textarea,select{
+      width:100%;font-family:inherit;font-size:15px;color:var(--ink);background:var(--card-2);
+      border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 13px;outline:none;
+      transition:border-color .15s,box-shadow .15s}
+    input:focus,textarea:focus,select:focus{border-color:var(--blue-700);
+      box-shadow:0 0 0 3px rgba(76,107,184,.15);background:#fff}
+    textarea{resize:vertical;min-height:74px}
+    .row{margin-bottom:16px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:520px){.grid2{grid-template-columns:1fr}}
+    .filewrap{margin-top:10px}
+    .filewrap label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
+    input[type=file]{width:100%;font-family:inherit;font-size:13px;color:var(--slate);
+      background:var(--sky-tint,#E9F2FB);border:1px dashed var(--blue-700);border-radius:var(--r-sm);
+      padding:12px;cursor:pointer}
+    input[type=file]::file-selector-button{font-family:inherit;font-weight:600;font-size:12.5px;
+      color:#fff;background:var(--blue-800);border:0;border-radius:6px;padding:7px 13px;margin-right:12px;cursor:pointer}
+    .hint{font-size:12px;color:var(--muted);margin-top:5px}
+    .actions{margin-top:6px}
+    .btn{width:100%;font-family:inherit;font-size:15px;font-weight:700;color:var(--blue-900);
+      background:var(--yellow);border:0;border-radius:var(--r-sm);padding:14px 18px;cursor:pointer;
+      box-shadow:var(--shadow);transition:filter .15s}
+    .btn:hover{filter:brightness(1.04)}
+    .btn:disabled{opacity:.6;cursor:not-allowed;filter:none}
+    .note{margin-top:14px;font-size:14px;padding:12px 14px;border-radius:var(--r-sm);display:none}
+    .note.show{display:block}
+    .note.ok{background:var(--green-tint);color:var(--green);border:1px solid #B7DEC9}
+    .note.err{background:var(--red-tint);color:var(--red);border:1px solid #F3C3BC}
+    .note.info{background:var(--amber-tint);color:var(--amber);border:1px solid #EAD79A}
+    .foot{text-align:center;font-size:12px;color:var(--muted);margin-top:26px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand"><span class="logo">QUAY <span>1</span></span></div>
+
+    <div class="hero">
+      <h1>Welcome to Quay 1 International Realty</h1>
+      <p>We are so excited to have you on board. Please complete your FICA and onboarding
+         details below and upload the supporting documents. It only takes a few minutes.</p>
+    </div>
+
+    <div id="badlink" class="note err show" style="display:none">
+      This link is missing its reference code. Please use the personal link from your welcome
+      email, or contact the person who sent you your contract.
+    </div>
+
+    <form id="intakeForm" novalidate>
+      <!-- 1. Identity -->
+      <div class="card">
+        <p class="sec-title"><span class="sec-num">1</span> Identity</p>
+        <div class="row">
+          <label for="id_number">ID number <span class="req">*</span></label>
+          <input type="text" id="id_number" inputmode="numeric" autocomplete="off" required>
+        </div>
+        <div class="filewrap">
+          <label for="f_id">Submit a copy of your ID <span class="req">*</span></label>
+          <input type="file" id="f_id" accept="image/*,application/pdf" required>
+        </div>
+      </div>
+
+      <!-- 2. Home address -->
+      <div class="card">
+        <p class="sec-title"><span class="sec-num">2</span> Home address</p>
+        <div class="row">
+          <label for="home_address">Residential address <span class="req">*</span></label>
+          <textarea id="home_address" placeholder="Street, suburb, city, postal code" required></textarea>
+        </div>
+        <div class="filewrap">
+          <label for="f_addr">Submit proof of address <span class="req">*</span></label>
+          <input type="file" id="f_addr" accept="image/*,application/pdf" required>
+          <p class="hint">Utility bill, bank statement or lease, dated within the last 3 months.</p>
+        </div>
+      </div>
+
+      <!-- 3. Banking details -->
+      <div class="card">
+        <p class="sec-title"><span class="sec-num">3</span> Banking details</p>
+        <div class="grid2">
+          <div class="row"><label for="bank_holder">Account holder name <span class="req">*</span></label>
+            <input type="text" id="bank_holder" autocomplete="off" required></div>
+          <div class="row"><label for="bank_name">Bank <span class="req">*</span></label>
+            <input type="text" id="bank_name" autocomplete="off" required></div>
+          <div class="row"><label for="bank_account">Account number <span class="req">*</span></label>
+            <input type="text" id="bank_account" inputmode="numeric" autocomplete="off" required></div>
+          <div class="row"><label for="bank_branch">Branch code <span class="req">*</span></label>
+            <input type="text" id="bank_branch" inputmode="numeric" autocomplete="off" required></div>
+          <div class="row"><label for="bank_type">Account type <span class="req">*</span></label>
+            <select id="bank_type" required>
+              <option value="">Select account type</option>
+              <option>Cheque / Current</option>
+              <option>Savings</option>
+              <option>Transmission</option>
+            </select></div>
+        </div>
+        <div class="filewrap">
+          <label for="f_bank">Submit proof of bank account <span class="req">*</span></label>
+          <input type="file" id="f_bank" accept="image/*,application/pdf" required>
+          <p class="hint">Bank confirmation letter or a stamped statement showing your account details.</p>
+        </div>
+      </div>
+
+      <!-- 4. Tax -->
+      <div class="card">
+        <p class="sec-title"><span class="sec-num">4</span> Tax</p>
+        <div class="row">
+          <label for="tax_number">Tax income number <span class="req">*</span></label>
+          <input type="text" id="tax_number" inputmode="numeric" autocomplete="off" required>
+        </div>
+        <div class="filewrap">
+          <label for="f_tax">Submit proof of tax number <span class="req">*</span></label>
+          <input type="file" id="f_tax" accept="image/*,application/pdf" required>
+          <p class="hint">SARS notice of registration (IT150) or any official document showing your tax number.</p>
+        </div>
+      </div>
+
+      <!-- 5. PPRA -->
+      <div class="card">
+        <p class="sec-title"><span class="sec-num">5</span> PPRA number <span class="opt">(optional)</span></p>
+        <div class="row">
+          <label for="ppra_number">PPRA / FFC number</label>
+          <input type="text" id="ppra_number" autocomplete="off">
+          <p class="hint">If you already have a Fidelity Fund Certificate, add its number here. Leave blank if not.</p>
+        </div>
+      </div>
+
+      <!-- 6. Next of kin -->
+      <div class="card">
+        <p class="sec-title"><span class="sec-num">6</span> Next of kin</p>
+        <div class="grid2">
+          <div class="row"><label for="nok_name">Name and surname <span class="req">*</span></label>
+            <input type="text" id="nok_name" autocomplete="off" required></div>
+          <div class="row"><label for="nok_contact">Contact details <span class="req">*</span></label>
+            <input type="tel" id="nok_contact" autocomplete="off" required></div>
+          <div class="row"><label for="nok_relationship">Relationship <span class="req">*</span></label>
+            <input type="text" id="nok_relationship" autocomplete="off" required></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn" id="submitBtn">Submit my documents</button>
+        <div id="note" class="note"></div>
+      </div>
+    </form>
+
+    <p class="foot">Quay 1 International Realty · your details are stored securely and used only for onboarding.</p>
+  </div>
+
+  <script>
+    var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzBdDmvtpoQgIEdtopdh8iFK6vuD9Xvmt4OJUDdQEg9qeKgaOP3a_WOeVM4WaQU6PpZ/exec';
+    var params = new URLSearchParams(location.search);
+    var FOLDER_ID = params.get('f') || '';
+    if (!FOLDER_ID) {
+      document.getElementById('badlink').style.display = 'block';
+      document.getElementById('submitBtn').disabled = true;
+    }
+
+    function fileToB64(file) {
+      return new Promise(function (resolve, reject) {
+        var r = new FileReader();
+        r.onload = function () { resolve(String(r.result).split(',')[1]); };
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+    function val(id){ var e=document.getElementById(id); return e ? e.value.trim() : ''; }
+
+    // (input id, doc code used in the saved filename: "<code> - <candidate full name>")
+    var FILE_MAP = [
+      ['f_id',   'ID'],
+      ['f_addr', 'POA'],
+      ['f_bank', 'POB'],
+      ['f_tax',  'TAX'],
+    ];
+
+    var form = document.getElementById('intakeForm');
+    var note = document.getElementById('note');
+    var btn  = document.getElementById('submitBtn');
+
+    function showNote(cls, msg) { note.className = 'note show ' + cls; note.textContent = msg; }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!FOLDER_ID) return;
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+
+      btn.disabled = true;
+      showNote('info', 'Uploading your documents, please hold on...');
+
+      var details = {
+        'ID number': val('id_number'),
+        'Home address': val('home_address'),
+        'Bank - Account holder': val('bank_holder'),
+        'Bank - Bank': val('bank_name'),
+        'Bank - Account number': val('bank_account'),
+        'Bank - Branch code': val('bank_branch'),
+        'Bank - Account type': val('bank_type'),
+        'Tax income number': val('tax_number'),
+        'PPRA / FFC number': val('ppra_number') || '(none provided)',
+        'Next of kin - Name': val('nok_name'),
+        'Next of kin - Contact': val('nok_contact'),
+        'Next of kin - Relationship': val('nok_relationship')
+      };
+
+      var jobs = FILE_MAP.map(function (m) {
+        var input = document.getElementById(m[0]);
+        var file = input && input.files && input.files[0];
+        if (!file) return Promise.resolve(null);
+        return fileToB64(file).then(function (b64) {
+          var ext = (file.name.split('.').pop() || 'dat').toLowerCase();
+          return { label: m[1], ext: ext, mimeType: file.type || 'application/octet-stream', dataBase64: b64 };
+        });
+      });
+
+      Promise.all(jobs).then(function (files) {
+        files = files.filter(Boolean);
+        return fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight
+          body: JSON.stringify({ kind: 'candidate_upload', folderId: FOLDER_ID, details: details, files: files })
+        });
+      }).then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && data.ok) {
+            form.style.display = 'none';
+            showNote('ok', 'Thank you! Your documents and details have been received. Welcome to the Quay 1 family, we will be in touch shortly.');
+          } else {
+            showNote('err', 'Something went wrong: ' + ((data && data.error) || 'unknown error') + '. Please try again or contact your Quay 1 recruiter.');
+            btn.disabled = false;
+          }
+        })
+        .catch(function (err) {
+          showNote('err', 'Upload failed: ' + err + '. Please check your connection and try again.');
+          btn.disabled = false;
+        });
+    });
+  </script>
+</body>
+</html>
