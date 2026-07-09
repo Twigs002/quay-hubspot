@@ -62,10 +62,11 @@
   // row (brokers + specialists + suburbs) and to power the Directory tab.
   let _divisions = null;
   let _divisionsLoading = false;
-  let _tab = 'deals';                          // 'deals' | 'directory'
+  let _tab = 'deals';                          // 'deals' | 'directory' | 'recruitment'
   let _dirSearch = '';
   let _dirSection = 'all';                     // section filter on Directory
   let _drillTeam = null;                       // team name when modal open
+  let _recruitForm = 'contract';               // 'contract' | 'intake' — active recruitment sub-form
 
   async function loadHubspot() {
     if (_hubspotLoading) return;
@@ -123,7 +124,10 @@
 
   function render() {
     const host = document.getElementById('content');
-    if (_tab === 'directory') {
+    if (_tab === 'recruitment') {
+      host.innerHTML = renderRecruitment();
+      wireRecruitment();
+    } else if (_tab === 'directory') {
       if (_divisions == null && !_divisionsLoading) loadDivisions();
       host.innerHTML = renderDirectory();
       wireDirectory();
@@ -859,6 +863,107 @@
         render();
       });
     });
+  }
+
+  // ─── Recruitment tab ──────────────────────────────────────────────────
+  // Two broker-onboarding intake forms. Fields + layout only for now — the
+  // submit action (persist a record + kick off the two downstream flows) is
+  // wired once the backend/storage target is confirmed. See project memory.
+  function renderRecruitment() {
+    const seg = (id, label) =>
+      `<button class="${_recruitForm === id ? 'active' : ''}" data-rec-form="${id}">${escapeHtml(label)}</button>`;
+    const field = (id, label, type, req) =>
+      `<label class="rec-field"><span class="rec-label">${escapeHtml(label)}${req ? ' <em>*</em>' : ''}</span>` +
+      `<input class="rec-input" id="${id}" name="${id}" type="${type}"${req ? ' required' : ''}></label>`;
+    const fileField = (id, label, req) =>
+      `<label class="rec-field"><span class="rec-label">${escapeHtml(label)}${req ? ' <em>*</em>' : ''}</span>` +
+      `<input class="rec-input rec-file" id="${id}" name="${id}" type="file"${req ? ' required' : ''}></label>`;
+    const toggle = (id, label) =>
+      `<label class="rec-toggle"><input type="checkbox" id="${id}" name="${id}"><span>${escapeHtml(label)}</span></label>`;
+    const submitRow = (txt) =>
+      `<div class="rec-actions"><button type="submit" class="rec-submit">${escapeHtml(txt)}</button>` +
+      `<span class="rec-note" id="recNote"></span></div>`;
+
+    const contractForm = `
+      <form class="rec-form" id="recFormContract" novalidate>
+        <div class="rec-grid">
+          ${field('rc_name', 'New hire full name', 'text', true)}
+          ${field('rc_email', 'Personal email address', 'email', true)}
+          ${field('rc_tax', 'Tax income number', 'text', true)}
+          ${field('rc_ffc', 'FFC', 'text', false)}
+          ${field('rc_ffc_ref', 'FFC reference number', 'text', false)}
+        </div>
+        <div class="rec-subhead">Next of kin</div>
+        <div class="rec-grid">
+          ${field('rc_nok_name', 'Next of kin name', 'text', true)}
+          ${field('rc_nok_contact', 'Next of kin contact details', 'tel', true)}
+          ${field('rc_nok_rel', 'Relationship to you', 'text', true)}
+        </div>
+        <div class="rec-subhead">Documents</div>
+        <div class="rec-grid">
+          ${fileField('rc_id', 'Copy of ID', true)}
+          ${fileField('rc_addr', 'Proof of address', true)}
+          ${fileField('rc_bank', 'Proof of bank account', true)}
+        </div>
+        ${submitRow('Submit contract documents')}
+      </form>`;
+
+    const intakeForm = `
+      <form class="rec-form" id="recFormIntake" novalidate>
+        <div class="rec-grid">
+          ${field('ri_name', 'New hire full name', 'text', true)}
+          ${field('ri_team', 'Team split', 'text', true)}
+          ${field('ri_salary', 'Base salary (if applicable)', 'text', false)}
+          ${field('ri_office', 'Office location', 'text', true)}
+          ${field('ri_start', 'Start date', 'date', true)}
+        </div>
+        <div class="rec-subhead">Provisioning — what do they need?</div>
+        <div class="rec-toggles">
+          ${toggle('ri_cma', 'CMA account')}
+          ${toggle('ri_whatsapp', 'WhatsApp')}
+          ${toggle('ri_dialfire', 'Dialfire')}
+          ${toggle('ri_training', 'Calling training')}
+        </div>
+        ${submitRow('Submit recruitment intake')}
+      </form>`;
+
+    return `<div class="tab-view">
+      <div class="card card-pad">
+        <h3 style="margin:0;font-family:var(--serif);font-size:17px;color:var(--ink)">Recruitment</h3>
+        <div class="sub" style="margin-top:6px">Broker onboarding intake — complete the relevant form for a new hire.</div>
+        <div class="seg" id="recSeg" style="margin-top:14px">
+          ${seg('contract', 'Contract documents')}${seg('intake', 'Recruitment intake')}
+        </div>
+      </div>
+      <div class="card mt banner" style="background:var(--amber-tint);color:var(--amber);padding:12px 16px;font-size:12.5px;font-weight:600;box-shadow:none">
+        Preview — form submission isn't connected to a backend yet. The fields and layout are in place; we'll wire the submit action (save a record + start the two downstream flows) once the backend/storage target is confirmed.
+      </div>
+      <div class="card mt card-pad">
+        ${_recruitForm === 'contract' ? contractForm : intakeForm}
+      </div>
+    </div>`;
+  }
+
+  function wireRecruitment() {
+    document.querySelectorAll('#recSeg [data-rec-form]').forEach(b => {
+      b.addEventListener('click', () => {
+        if (_recruitForm === b.dataset.recForm) return;
+        _recruitForm = b.dataset.recForm;
+        render();
+      });
+    });
+    const form = document.querySelector('.rec-form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        const note = document.getElementById('recNote');
+        if (note) {
+          note.textContent = 'Not submitted — backend not connected yet. Nothing was sent.';
+          note.className = 'rec-note warn';
+        }
+      });
+    }
   }
 
   // ─── Boot ────────────────────────────────────────────────────────────
