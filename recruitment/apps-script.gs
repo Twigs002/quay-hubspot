@@ -15,10 +15,10 @@
  *        "Execute as: me", "Who has access: Anyone with the link"):
  */
 var CONFIG = {
-  SECRET_TOKEN: 'CHANGE_ME_LONG_RANDOM_STRING',   // must match the form's token
-  PARENT_FOLDER_NAME: 'Broker Onboarding',        // created at Drive root if missing
-  TEMPLATE_DOC_ID: 'PASTE_GOOGLE_DOC_TEMPLATE_ID', // the uploaded template as a Google Doc
-  TRACKING_SHEET_ID: 'PASTE_TRACKING_SHEET_ID',    // a Google Sheet; tab "Log"
+  SECRET_TOKEN: 'nPmrgKST4i9MmiypOKKNEiB65r4SrPww',        // must match the form's token
+  PARENT_FOLDER_NAME: 'Broker Onboarding',                // found by name at Drive root
+  TEMPLATE_DOC_ID: '1Ewj1i-pPZGJMIR3vjuH_7MDG3q7QYngxjrGqdzTVw44',  // "Broker Agreement - TEMPLATE"
+  TRACKING_SHEET_ID: '1MbhT2aKMknxn131yDAEHr-W4hVmVXrzqCiNItXV9Unw', // "Recruitment Tracking"
 };
 
 // Broker-activity definitions + axes. Keys match the form's activity `code`.
@@ -57,13 +57,20 @@ function doPost(e) {
       pdfUrl = _generateContract_(folder, f);
     }
 
-    // 3) Log to the tracking Sheet.
+    // 3) Upsert the live tracker row (one row per hire, updated in place).
     if (CONFIG.TRACKING_SHEET_ID.indexOf('PASTE') !== 0) {
-      var sh = SpreadsheetApp.openById(CONFIG.TRACKING_SHEET_ID).getSheetByName('Log')
-            || SpreadsheetApp.openById(CONFIG.TRACKING_SHEET_ID).insertSheet('Log');
-      sh.appendRow([new Date(), f.full_name || '', f.id_number || '', f.team || '',
-                    f.senior_broker || '', f.start_date || '', f.activity || '',
-                    f.commission || '', folder.getUrl(), pdfUrl]);
+      var now = new Date();
+      var tr = _tracker_();
+      var row = _trackerFindRow_(tr, folder.getId());
+      var created = row ? (tr.getRange(row, 1).getValue() || now) : now;
+      var docsSoFar = row ? tr.getRange(row, 11).getValue() : '';   // preserve any docs already in
+      if (!row) { tr.appendRow(['']); row = tr.getLastRow(); }
+      tr.getRange(row, 1, 1, 15).setValues([[
+        created, f.full_name || '', f.id_number || '', f.team || '', f.senior_broker || '',
+        f.start_date || '', f.activity || '', f.commission || '', f.candidate_email || '',
+        'Contract sent - awaiting documents', docsSoFar,
+        folder.getUrl(), pdfUrl, now, folder.getId(),
+      ]]);
     }
 
     return _json({ ok: true, folderUrl: folder.getUrl(), pdfUrl: pdfUrl });
@@ -72,10 +79,10 @@ function doPost(e) {
   }
 }
 
-/** Create/find "Broker Onboarding / «Name — ID»". */
+/** Create/find "Broker Onboarding / «Name - ID»". */
 function _hireFolder_(name, id) {
   var root = _folderByName_(DriveApp.getRootFolder(), CONFIG.PARENT_FOLDER_NAME, true);
-  var label = ((name || 'Unknown') + ' — ' + (id || '')).trim();
+  var label = ((name || 'Unknown') + ' - ' + (id || '')).trim();
   return _folderByName_(root, label, true);
 }
 
@@ -85,54 +92,79 @@ function _folderByName_(parent, name, createIfMissing) {
   return createIfMissing ? parent.createFolder(name) : null;
 }
 
-/** Copy the template, resolve all tokens, export PDF into the folder. */
+/**
+ * Copy the template, resolve every conditional term from the chosen activity,
+ * export PDF into the folder. Works directly on the real contract wording:
+ * a 7-row "delete inapplicable" definition table + [bracket] term clusters.
+ */
 function _generateContract_(folder, f) {
   var a = ACTIVITIES[f.activity];
   var sale = a.txn === 'sale';
-  var partnershipActivity = a.prop === 'commercial'
+  var prop = a.prop;                       // 'residential' | 'commercial'
+  var partnershipActivity = prop === 'commercial'
       ? 'selling or leasing immovable commercial property'
       : (sale ? 'selling immovable residential property'
               : 'renting/leasing immovable residential property');
-
-  var map = {
-    '{{full_name}}':   f.full_name || '',
-    '{{id_number}}':   f.id_number || '',
-    '{{start_date}}':  f.start_date || '',
-    '{{senior_broker}}': f.senior_broker || '',
-    '{{commission}}':  String(f.commission || ''),
-    '{{definition}}':  a.def,
-    '{{partnership_activity}}': partnershipActivity,
-    '{{prop}}':    a.prop,
-    '{{verb}}':    sale ? 'sell' : 'rent',
-    '{{price}}':   sale ? 'purchase' : 'rental',
-    '{{buyers}}':  sale ? 'purchasers' : 'tenants',
-    '{{seller}}':  sale ? 'seller' : 'lessor',
-    '{{saledoc}}': sale ? 'Deed of Sale' : 'Lease Agreement',
-  };
 
   var docName = 'Memorandum of Agreement - ' + (f.full_name || 'Broker');
   var copyId = DriveApp.getFileById(CONFIG.TEMPLATE_DOC_ID).makeCopy(docName, folder).getId();
   var doc = DocumentApp.openById(copyId);
   var b = doc.getBody();
-  Object.keys(map).forEach(function (k) {
-    b.replaceText(_escRe_(k), map[k]);   // literal token -> value
-  });
+
+  // Definition: replace the whole "delete inapplicable" table with the one
+  // chosen definition paragraph (handles all 8 activities incl. the added one).
+  var tables = b.getTables();
+  for (var i = 0; i < tables.length; i++) {
+    if (tables[i].getText().indexOf('brokerage of immovable') !== -1) {
+      var idx = b.getChildIndex(tables[i]);
+      b.insertParagraph(idx, a.def);
+      tables[i].removeFromParent();
+      break;
+    }
+  }
+  b.replaceText('\\(\\*delete[^)]*\\)', '');   // remove the "delete inapplicable/options" notes
+
+  // Straight fills.
+  b.replaceText('\\[ID number\\]', (f.full_name || '') + ', ID ' + (f.id_number || ''));
+  b.replaceText('With effect from\\s*_+', 'With effect from ' + (f.start_date || ''));
+  b.replaceText('account of\\s*_+', 'account of ' + (f.senior_broker || '') + ' ');
+  b.replaceText('entitled to\\s*_+\\s*%', 'entitled to ' + (f.commission || '') + '%');
+
+  // Conditional term clusters, resolved from the activity axes.
+  b.replaceText('\\[selling immovable residential property\\]\\s*\\[selling or leasing immovable commercial property\\]\\s*\\[renting/leasing immovable residential property\\]', partnershipActivity);
+  b.replaceText('\\[commercial\\]\\s*\\[residential\\]l?', prop);
+  b.replaceText('\\[sell\\]\\s*\\[rent\\]', sale ? 'sell' : 'rent');
+  b.replaceText('\\[purchase\\]\\s*\\[rental\\]', sale ? 'purchase' : 'rental');
+  b.replaceText('\\[purchasers\\]\\s*\\[tenants\\]', sale ? 'purchasers' : 'tenants');
+  b.replaceText('\\[seller\\]\\s*\\[lessor\\]', sale ? 'seller' : 'lessor');
+  b.replaceText('\\[Deed of Sale\\]\\s*\\[Lease Agreement\\]', sale ? 'Deed of Sale' : 'Lease Agreement');
+
   doc.saveAndClose();
 
   var pdfFile = folder.createFile(DriveApp.getFileById(copyId).getAs('application/pdf')).setName(docName + '.pdf');
 
-  // Email the contract to the candidate, CC the requesting manager, and include
-  // the candidate's personal upload link (for their docs + address/banking).
+  // Email the contract to the candidate, CC the senior broker + the requester,
+  // and include the candidate's personal upload link (docs + address/banking).
   if (f.candidate_email) {
     var uploadLink = _uploadLinkFor_(folder.getId());
+    // Always CC HR (Kat) + Pagan, plus the senior broker and the requester.
+    var cc = [f.senior_email, f.requester_email, 'kat@quay1.co.za', 'pagan@quay1.co.za']
+      .filter(function (x) { return x; }).join(',');
+    var first = (f.full_name || '').trim().split(' ')[0] || 'there';
     var body =
-      'Hi ' + (f.full_name || '') + ',\n\n' +
-      'Please find your Quay 1 Broker Agreement attached.\n\n' +
-      'Next step: upload your supporting documents (ID, proof of address, proof of bank) ' +
-      'and complete your details here:\n' + uploadLink + '\n\n' +
-      'Kind regards,\nQuay 1 International Realty';
-    GmailApp.sendEmail(f.candidate_email, 'Your Quay 1 Broker Agreement', body, {
-      cc: f.requester_email || '',
+      'Hi ' + first + ',\n\n' +
+      'Welcome to Quay 1 International Realty! We are absolutely thrilled to have you ' +
+      'join the team and we cannot wait to see you thrive with us.\n\n' +
+      'Attached you will find your Broker Agreement. Please initial every page and sign ' +
+      'where applicable, then keep a copy for your own records.\n\n' +
+      'To get you fully set up, we just need a few FICA and onboarding documents. Please ' +
+      'upload them and complete your details using your personal link below. It only takes ' +
+      'a few minutes:\n\n' + uploadLink + '\n\n' +
+      'If you have any questions at all, simply reply to this email and we will be happy to help.\n\n' +
+      'Welcome aboard, and here is to a fantastic journey together!\n\n' +
+      'Warm regards,\nThe Quay 1 International Realty Team';
+    GmailApp.sendEmail(f.candidate_email, 'Welcome to Quay 1 International Realty', body, {
+      cc: cc,
       name: 'Quay 1 International Realty',
       attachments: [pdfFile.getAs('application/pdf')],
     });
@@ -154,19 +186,69 @@ function _uploadLinkFor_(folderId) {
  */
 function handleCandidateUpload_(body) {
   var folder = DriveApp.getFolderById(body.folderId);   // token = folderId for now
+  // Folder is named "«Full name» - «ID»"; use the name part to label each doc.
+  var candidate = (folder.getName().split(' - ')[0] || 'Candidate').trim();
+  var received = [];
   (body.files || []).forEach(function (file) {
     if (!file || !file.dataBase64) return;
-    folder.createFile(Utilities.newBlob(Utilities.base64Decode(file.dataBase64), file.mimeType, file.name));
+    // Saved as "<code> - <candidate full name>.<ext>", e.g. "POB - John Smith.pdf".
+    var label = file.label || 'Document';
+    var fname = label + ' - ' + candidate + (file.ext ? '.' + file.ext : '');
+    folder.createFile(Utilities.newBlob(Utilities.base64Decode(file.dataBase64), file.mimeType, fname));
+    received.push(label);
   });
-  // Save the plain-text details as a note file in the folder + flag on the Sheet.
+  // Save the plain-text details as a note file in the folder.
   var d = body.details || {};
   folder.createFile('Candidate details.txt', Object.keys(d).map(function (k) { return k + ': ' + d[k]; }).join('\n'));
+  // Update the live tracker row for this hire (status + which docs are now in).
   if (CONFIG.TRACKING_SHEET_ID.indexOf('PASTE') !== 0) {
-    var sh = SpreadsheetApp.openById(CONFIG.TRACKING_SHEET_ID).getSheetByName('Log');
-    if (sh) sh.appendRow([new Date(), '(candidate upload)', '', '', '', '', '', '', folder.getUrl(),
-                          'docs+details received']);
+    var now = new Date();
+    var tr = _tracker_();
+    var row = _trackerFindRow_(tr, body.folderId);
+    if (!row) {   // upload arrived before a contract row exists (edge case)
+      tr.appendRow([now, candidate, '', '', '', '', '', '', '', '', '', folder.getUrl(), '', now, body.folderId]);
+      row = tr.getLastRow();
+    }
+    var have = String(tr.getRange(row, 11).getValue() || '').split(', ').filter(function (x) { return x; });
+    received.forEach(function (l) { if (have.indexOf(l) === -1) have.push(l); });
+    if (d && d['PPRA / FFC number'] && d['PPRA / FFC number'] !== '(none provided)' && have.indexOf('PPRA') === -1) have.push('PPRA');
+    tr.getRange(row, 11).setValue(have.join(', '));        // Docs received
+    tr.getRange(row, 10).setValue('Documents & details received');   // Status
+    tr.getRange(row, 14).setValue(now);                    // Last updated
   }
   return { ok: true, folderUrl: folder.getUrl() };
+}
+
+/** Run once to create the Tracker tab + heading row up front (no data needed). */
+function initTracker() { _tracker_(); }
+
+/**
+ * The live recruitment tracker: one row per hire, updated in place at each stage.
+ * Column O (15) holds the folder id as the stable key for upserts.
+ */
+function _tracker_() {
+  var ss = SpreadsheetApp.openById(CONFIG.TRACKING_SHEET_ID);
+  var sh = ss.getSheetByName('Tracker');
+  if (!sh) {
+    sh = ss.insertSheet('Tracker');
+    sh.appendRow(['Created', 'Full name', 'ID number', 'Team', 'Senior broker', 'Start date',
+                  'Activity', 'Commission %', 'Candidate email', 'Status', 'Docs received',
+                  'Folder', 'Contract PDF', 'Last updated', 'Folder ID']);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, 15).setFontWeight('bold');
+  }
+  return sh;
+}
+
+/** Row index (>=2) whose Folder ID (col O) matches, or 0 if not present yet. */
+function _trackerFindRow_(sh, folderId) {
+  var last = sh.getLastRow();
+  if (last < 2) return 0;
+  var ids = sh.getRange(2, 15, last - 1, 1).getValues();
+  for (var i = 0; i < ids.length; i++) {
+    if (String(ids[i][0]) === String(folderId)) return i + 2;
+  }
+  return 0;
 }
 
 function _escRe_(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
