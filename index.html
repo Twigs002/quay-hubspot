@@ -10,7 +10,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="pre-auth">
+  <!-- Login gate — shown until an admin session is verified (see auth.js). -->
+  <div id="loginGate" class="login-gate">
+    <form class="login-box" id="loginForm" autocomplete="on">
+      <img class="login-logo" src="assets/quay1-logo-white.png" alt="Quay 1 International Realty" width="200">
+      <h2 class="login-title">Team Insights</h2>
+      <p class="login-sub">Sign in with your Quay 1 username &amp; PIN — the same login you use on the other systems. Admin access only.</p>
+      <label class="login-field"><span>Username</span>
+        <input id="loginUser" type="text" autocomplete="username" placeholder="e.g. pagan" required>
+      </label>
+      <label class="login-field"><span>PIN</span>
+        <input id="loginPin" type="password" autocomplete="current-password" required>
+      </label>
+      <button type="submit" class="login-btn" id="loginBtn">Sign in</button>
+      <div class="login-error" id="loginError" role="alert" hidden></div>
+    </form>
+  </div>
+
   <header class="topbar">
     <div class="bar-inner">
       <div class="topbar-left">
@@ -22,7 +39,12 @@
           <p>HubSpot deals · division directory · refreshed 3× daily</p>
         </div>
       </div>
-      <div class="topbar-right" id="topbarRefresh"></div>
+      <div class="topbar-right">
+        <span id="topbarRefresh"></span>
+        <button type="button" id="signOutBtn" class="signout-btn" hidden>
+          <span class="signout-who" id="signOutWho"></span>Sign out
+        </button>
+      </div>
     </div>
   </header>
   <nav class="tab-nav" id="tabNav" aria-label="Dashboard sections">
@@ -34,6 +56,9 @@
   </nav>
   <main id="content" class="main"></main>
   <div id="modalHost"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

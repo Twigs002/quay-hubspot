@@ -535,7 +535,7 @@
         <div class="chips">${filterChips}</div>
         <label style="display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--slate);cursor:pointer">
           <input id="hsShowEmpty" type="checkbox" ${_hubspotShowEmpty ? 'checked' : ''}>
-          Show ${emptyCount} teams with no deals
+          Show ${emptyCount} team${emptyCount === 1 ? '' : 's'} with no deals
         </label>
       </div>
 
@@ -640,7 +640,14 @@
       const specs   = (t.specialists || []).filter(s => s.name && !/^Quay 1 Property Specialist/i.test(s.name));
       const hasHubspot = !!t.hubspot_owner_id;
       const brokerChip = (c) => {
-        const tel = c.phone ? `<a href="tel:${escapeHtml(c.phone.replace(/\s/g, ''))}" class="dir-link" title="Call ${escapeHtml(c.name)}">${escapeHtml(c.phone)}</a>` : '';
+        // Guard against dirty source data: only treat a value as a phone when
+        // it actually reads like one (has digits, no '@', not a copy of the
+        // email). Prevents a broken tel:name@domain link when a row's phone
+        // cell was populated with the email by mistake.
+        const rawPhone = String(c.phone || '').trim();
+        const isPhone = rawPhone && !rawPhone.includes('@') && /\d/.test(rawPhone) &&
+                        rawPhone.toLowerCase() !== String(c.email || '').trim().toLowerCase();
+        const tel = isPhone ? `<a href="tel:${escapeHtml(rawPhone.replace(/\s/g, ''))}" class="dir-link" title="Call ${escapeHtml(c.name)}">${escapeHtml(rawPhone)}</a>` : '';
         const mail = c.email ? `<a href="mailto:${escapeHtml(c.email)}" class="dir-link" title="Email ${escapeHtml(c.name)}">${escapeHtml(c.email)}</a>` : '';
         return `<div class="dir-contact">
           <div class="dir-contact-name">${escapeHtml(c.name)}</div>
@@ -923,8 +930,10 @@
       if (!secs.length) return '<option value="">Loading teams…</option>';
       return '<option value="">— select team —</option>' + secs.map(sec => {
         const opts = (sec.teams || []).map(t => {
-          const senior = (t.brokers && t.brokers[0] && t.brokers[0].name) || '';
-          return `<option value="${escapeHtml(t.name)}" data-senior="${escapeHtml(senior)}" data-program="${escapeHtml(sec.name)}">${escapeHtml(t.name)}</option>`;
+          const sb = (t.brokers && t.brokers[0]) || {};
+          const senior = sb.name || '';
+          const seniorEmail = sb.email || '';
+          return `<option value="${escapeHtml(t.name)}" data-senior="${escapeHtml(senior)}" data-senior-email="${escapeHtml(seniorEmail)}" data-program="${escapeHtml(sec.name)}">${escapeHtml(t.name)}</option>`;
         }).join('');
         return `<optgroup label="${escapeHtml(sec.name)}">${opts}</optgroup>`;
       }).join('');
@@ -999,6 +1008,11 @@
         const opt = teamSel.selectedOptions[0];
         const sr = document.getElementById('c_senior');
         if (sr) sr.value = opt ? (opt.dataset.senior || '') : '';
+        // Prefill the senior broker's email from the directory too (the field
+        // stays editable, so the user can override if the actual senior isn't
+        // the first-listed broker). Removes a manual re-key of a known value.
+        const se = document.getElementById('c_senior_email');
+        if (se) se.value = opt ? (opt.dataset.seniorEmail || '') : '';
       });
     }
     const form = document.querySelector('.rec-form');
@@ -1082,9 +1096,12 @@
     });
   }
 
-  // ─── Boot ────────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    // Tab nav lives in index.html — wire it once at boot.
+  // ─── Boot + auth gate ─────────────────────────────────────────────────
+  // Team Insights is admin-only. app.js never loads data or renders a tab
+  // until auth.js confirms a super/admin Supabase session; it fails closed
+  // (shows the login gate) if the auth layer or session can't be verified.
+  function _wireTabsOnce() {
+    // Tab nav lives in index.html — wire it once after sign-in.
     document.querySelectorAll('#tabNav .tab-btn').forEach(b => {
       b.addEventListener('click', () => {
         if (_tab === b.dataset.tab) return;
@@ -1093,6 +1110,61 @@
         render();
       });
     });
+  }
+
+  function enterApp(user) {
+    document.body.classList.remove('pre-auth');
+    const gate = document.getElementById('loginGate');
+    if (gate) gate.remove();
+    const so = document.getElementById('signOutBtn');
+    if (so) {
+      so.hidden = false;
+      const who = document.getElementById('signOutWho');
+      if (who && user && user.name) who.textContent = user.name.split(' ')[0] + ' · ';
+      so.addEventListener('click', async () => {
+        so.disabled = true;
+        await window.AUTH.signOut();
+        location.reload();
+      });
+    }
+    _wireTabsOnce();
     render();
+  }
+
+  function showLoginGate(prefillError) {
+    const form  = document.getElementById('loginForm');
+    const errEl = document.getElementById('loginError');
+    const btn   = document.getElementById('loginBtn');
+    if (prefillError && errEl) { errEl.textContent = prefillError; errEl.hidden = false; }
+    if (!form) return;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (errEl) errEl.hidden = true;
+      const u = (document.getElementById('loginUser') || {}).value || '';
+      const p = (document.getElementById('loginPin')  || {}).value || '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
+      let r;
+      try { r = await window.AUTH.signIn(u, p); }
+      catch (_) { r = { ok: false, error: 'Sign-in service unavailable — try again.' }; }
+      if (r && r.ok) { enterApp(r.user); return; }
+      if (errEl) { errEl.textContent = (r && r.error) || 'Sign-in failed.'; errEl.hidden = false; }
+      if (btn)   { btn.disabled = false; btn.textContent = 'Sign in'; }
+      const pin = document.getElementById('loginPin');
+      if (pin) { pin.value = ''; pin.focus(); }
+    });
+    const userIn = document.getElementById('loginUser');
+    if (userIn) userIn.focus();
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Fail closed: if the auth layer didn't load, never reveal the app.
+    if (!window.AUTH || !window.supabase) {
+      showLoginGate('Could not reach the sign-in service. Refresh to try again.');
+      return;
+    }
+    let user = null;
+    try { user = await window.AUTH.getSession(); } catch (_) { user = null; }
+    if (user) enterApp(user);
+    else showLoginGate();
   });
 })();
