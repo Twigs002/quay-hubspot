@@ -1096,9 +1096,12 @@
     });
   }
 
-  // ─── Boot ────────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    // Tab nav lives in index.html — wire it once at boot.
+  // ─── Boot + auth gate ─────────────────────────────────────────────────
+  // Team Insights is admin-only. app.js never loads data or renders a tab
+  // until auth.js confirms a super/admin Supabase session; it fails closed
+  // (shows the login gate) if the auth layer or session can't be verified.
+  function _wireTabsOnce() {
+    // Tab nav lives in index.html — wire it once after sign-in.
     document.querySelectorAll('#tabNav .tab-btn').forEach(b => {
       b.addEventListener('click', () => {
         if (_tab === b.dataset.tab) return;
@@ -1107,6 +1110,61 @@
         render();
       });
     });
+  }
+
+  function enterApp(user) {
+    document.body.classList.remove('pre-auth');
+    const gate = document.getElementById('loginGate');
+    if (gate) gate.remove();
+    const so = document.getElementById('signOutBtn');
+    if (so) {
+      so.hidden = false;
+      const who = document.getElementById('signOutWho');
+      if (who && user && user.name) who.textContent = user.name.split(' ')[0] + ' · ';
+      so.addEventListener('click', async () => {
+        so.disabled = true;
+        await window.AUTH.signOut();
+        location.reload();
+      });
+    }
+    _wireTabsOnce();
     render();
+  }
+
+  function showLoginGate(prefillError) {
+    const form  = document.getElementById('loginForm');
+    const errEl = document.getElementById('loginError');
+    const btn   = document.getElementById('loginBtn');
+    if (prefillError && errEl) { errEl.textContent = prefillError; errEl.hidden = false; }
+    if (!form) return;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (errEl) errEl.hidden = true;
+      const u = (document.getElementById('loginUser') || {}).value || '';
+      const p = (document.getElementById('loginPin')  || {}).value || '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
+      let r;
+      try { r = await window.AUTH.signIn(u, p); }
+      catch (_) { r = { ok: false, error: 'Sign-in service unavailable — try again.' }; }
+      if (r && r.ok) { enterApp(r.user); return; }
+      if (errEl) { errEl.textContent = (r && r.error) || 'Sign-in failed.'; errEl.hidden = false; }
+      if (btn)   { btn.disabled = false; btn.textContent = 'Sign in'; }
+      const pin = document.getElementById('loginPin');
+      if (pin) { pin.value = ''; pin.focus(); }
+    });
+    const userIn = document.getElementById('loginUser');
+    if (userIn) userIn.focus();
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Fail closed: if the auth layer didn't load, never reveal the app.
+    if (!window.AUTH || !window.supabase) {
+      showLoginGate('Could not reach the sign-in service. Refresh to try again.');
+      return;
+    }
+    let user = null;
+    try { user = await window.AUTH.getSession(); } catch (_) { user = null; }
+    if (user) enterApp(user);
+    else showLoginGate();
   });
 })();
