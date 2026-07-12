@@ -1,6 +1,6 @@
 {
-  "generated": "2026-07-11T11:54:13.968401+00:00",
-  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 73580 deals processed",
+  "generated": "2026-07-12T04:25:56.965503+00:00",
+  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 73584 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
     "2": "HubSpot Deals | Rentals",
@@ -492,9 +492,9 @@
       {
         "team": "Dutchmen",
         "total": {
-          "deals": 1163,
+          "deals": 1164,
           "calling": 0,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
@@ -504,16 +504,16 @@
         },
         "outdated": {
           "calling": 0,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 56,
           "warm": 28,
           "hot": 2,
-          "outdated": 86,
-          "upToHot": 1163,
-          "pctUpdated": 0.9260533104041273
+          "outdated": 87,
+          "upToHot": 1164,
+          "pctUpdated": 0.9252577319587629
         },
         "ownerIds": [
           "142837416"
@@ -582,9 +582,9 @@
       {
         "team": "Furys",
         "total": {
-          "deals": 515,
+          "deals": 516,
           "calling": 0,
-          "external": 2,
+          "external": 3,
           "inbound": 0,
           "reconv": 0,
           "rental": 5,
@@ -594,16 +594,16 @@
         },
         "outdated": {
           "calling": 0,
-          "external": 2,
+          "external": 3,
           "inbound": 0,
           "reconv": 0,
           "rental": 4,
           "nurture": 4,
           "warm": 0,
           "hot": 0,
-          "outdated": 10,
-          "upToHot": 515,
-          "pctUpdated": 0.9805825242718447
+          "outdated": 11,
+          "upToHot": 516,
+          "pctUpdated": 0.9786821705426356
         },
         "ownerIds": [
           "512880424"
@@ -762,9 +762,9 @@
       {
         "team": "Hoekers",
         "total": {
-          "deals": 499,
+          "deals": 500,
           "calling": 9,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
@@ -774,16 +774,16 @@
         },
         "outdated": {
           "calling": 9,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 46,
           "warm": 12,
           "hot": 8,
-          "outdated": 75,
-          "upToHot": 499,
-          "pctUpdated": 0.8496993987975952
+          "outdated": 76,
+          "upToHot": 500,
+          "pctUpdated": 0.848
         },
         "ownerIds": [
           "90886933",
@@ -1422,9 +1422,9 @@
       {
         "team": "Surfers",
         "total": {
-          "deals": 337,
+          "deals": 338,
           "calling": 1,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 1,
@@ -1434,16 +1434,16 @@
         },
         "outdated": {
           "calling": 1,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 57,
           "warm": 11,
           "hot": 8,
-          "outdated": 77,
-          "upToHot": 337,
-          "pctUpdated": 0.771513353115727
+          "outdated": 78,
+          "upToHot": 338,
+          "pctUpdated": 0.7692307692307693
         },
         "ownerIds": [
           "223928394"
@@ -2611,10 +2611,10 @@
   "portalId": "8870419",
   "kpi": {
     "1": {
-      "totalDeals": 31336,
-      "outdatedLeads": 3899,
-      "pctOutdated": 0.1244255808016339,
-      "avgPctUpdated": 0.8091562733019309
+      "totalDeals": 31340,
+      "outdatedLeads": 3903,
+      "pctOutdated": 0.12453733248245054,
+      "avgPctUpdated": 0.8090411368388767
     },
     "2": {
       "totalDeals": 6558,
@@ -2630,13 +2630,13 @@
     }
   },
   "_prev": {
-    "generated": "2026-07-11T10:20:54.070646+00:00",
+    "generated": "2026-07-11T11:54:13.968401+00:00",
     "kpi": {
       "1": {
-        "totalDeals": 31335,
-        "outdatedLeads": 3898,
-        "pctOutdated": 0.12439763842348811,
-        "avgPctUpdated": 0.8091772993742604
+        "totalDeals": 31336,
+        "outdatedLeads": 3899,
+        "pctOutdated": 0.1244255808016339,
+        "avgPctUpdated": 0.8091562733019309
       },
       "2": {
         "totalDeals": 6558,
