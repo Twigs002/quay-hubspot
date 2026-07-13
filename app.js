@@ -1283,7 +1283,7 @@
         return `<label class="rec-toggle"><input type="checkbox" data-prog-code="${escapeHtml(o.code)}" data-prog-label="${escapeHtml(o.label)}"${on ? ' checked' : ''}><span>${escapeHtml(o.label)}</span></label>`;
       }).join('');
       return `<tr class="prog-panel" data-prog-panel="${escapeHtml(c.folderId)}">
-        <td colspan="${seesAll ? 6 : 5}" style="background:var(--paper-2);padding:16px 18px">
+        <td colspan="5" style="background:var(--paper-2);padding:16px 18px">
           <div style="font-family:var(--serif);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--blue-800);margin-bottom:10px">Programs for ${escapeHtml(c.name || c.firstName || 'this candidate')}</div>
           <div class="rec-toggles" style="margin-bottom:12px">${toggles}</div>
           <label class="rec-field" style="margin-bottom:12px">
@@ -1306,13 +1306,9 @@
           PROG_DOC_FIELDS.filter(d => !(c.docs || {})[d.k]).map(d => escapeHtml(d.label)).join(', ') || 'none'
         }</div>`;
       const desig = [c.team, c.designation].filter(Boolean).map(escapeHtml).join(' · ');
-      const folderLink = c.folderUrl
-        ? `<a class="row-go" href="${escapeHtml(c.folderUrl)}" target="_blank" rel="noopener" title="Open onboarding folder">Folder ↗</a>`
-        : `<span class="empty" style="color:var(--muted)">no folder</span>`;
-      // The folder links straight into the candidate's onboarding Drive folder
-      // (FICA docs). Super/admin only; brokers never see it (backend also omits
-      // folderUrl from their payload, so it is not just hidden client-side).
-      const folderTd = seesAll ? `<td class="num">${folderLink}</td>` : '';
+      // The onboarding Drive folder holds the candidate's FICA docs, so it is
+      // deliberately NOT surfaced anywhere on this dashboard (for anyone). The
+      // backend still omits folderUrl from broker payloads as a second guard.
       return `<tr>
         <td>
           <div class="agent-cell"><div class="agent-name">${escapeHtml(c.name || c.firstName || 'Unnamed')}</div></div>
@@ -1323,7 +1319,6 @@
         <td>${docsCell(c.docs)}${missing}</td>
         <td>${inductionCell(c)}</td>
         <td>${programsCell(c)}</td>
-        ${folderTd}
       </tr>${editorRow(c)}`;
     }).join('');
 
@@ -1339,7 +1334,6 @@
           <th style="text-align:left">Documents</th>
           <th style="text-align:left">Induction</th>
           <th style="text-align:left">Programs</th>
-          ${seesAll ? '<th class="num">Folder</th>' : ''}
         </tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
