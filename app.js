@@ -960,7 +960,7 @@
           `<input class="rec-input" id="c_requester_email" name="c_requester_email" type="email" readonly` +
           ` value="${escapeHtml((_currentUser && _currentUser.email) || '')}"` +
           ` placeholder="${escapeHtml((_currentUser && _currentUser.name) || 'you')}"></label>`
-      : field('c_requester_email', 'Your email (person completing this, CC)', 'email', true);
+      : field('c_requester_email', 'Your email (person completing this, CC)', 'email', false);
 
     // Provisioning toggles - what the new hire needs set up. Captured on the
     // contract request so it flows straight into the tracker (and the Progress
@@ -1050,15 +1050,23 @@
           }
           return;
         }
-        const fd = {};
-        form.querySelectorAll('input, select').forEach(el => {
-          if (el.type === 'checkbox') fd[el.id] = el.checked;
-          else if (el.type !== 'file') fd[el.id] = el.value;
-        });
-        const fields = _recruitFields(form.id, fd);
-        const files = await _recruitFiles(form);
+        // Guard against double-submit. Contract generation is not idempotent on
+        // the backend (a resubmit re-copies the MOA and re-sends the candidate
+        // welcome email), so we block re-entry and disable the button for the
+        // whole in-flight window, re-enabling only once the request settles.
+        if (form.dataset.submitting === '1') return;
+        const submitBtn = form.querySelector('.rec-submit');
+        form.dataset.submitting = '1';
+        if (submitBtn) submitBtn.disabled = true;
         if (note) { note.textContent = 'Submitting…'; note.className = 'rec-note'; }
         try {
+          const fd = {};
+          form.querySelectorAll('input, select').forEach(el => {
+            if (el.type === 'checkbox') fd[el.id] = el.checked;
+            else if (el.type !== 'file') fd[el.id] = el.value;
+          });
+          const fields = _recruitFields(form.id, fd);
+          const files = await _recruitFiles(form);
           // Authenticate with the fresh JWT only. The backend derives the
           // requester from the verified identity (authoritative for brokers,
           // whose requester field is locked) and rejects any unauthenticated
@@ -1090,6 +1098,9 @@
           }
         } catch (err) {
           if (note) { note.textContent = 'Submit failed: ' + err; note.className = 'rec-note warn'; }
+        } finally {
+          form.dataset.submitting = '';
+          if (submitBtn) submitBtn.disabled = false;
         }
       });
     }
@@ -1143,10 +1154,10 @@
   //
   // SCOPE: loadProgress POSTs the Supabase JWT (kind:'progress', accessToken);
   // the backend verifies it and scopes candidates from that identity. Supers
-  // and admins see everyone; a broker sees only candidates whose
-  // requester_email OR senior_email matches theirs. We do NOT pass scope/email
-  // and NEVER client-side filter. A broker with no real staff.email matches no
-  // candidates (the backend's safe default; staff has no email column today).
+  // and admins see everyone; a broker sees ONLY candidates they requested
+  // (requester_email match; being the team's senior broker does NOT count). We
+  // do NOT pass scope/email and NEVER client-side filter. A broker with no real
+  // staff.email matches no candidates (the backend's safe default).
 
   // Master program list, kept client-side so it grows without a backend
   // change. The free-text "Other" row is handled separately (code 'other').
@@ -1194,8 +1205,8 @@
       // Reads are authenticated by the Supabase JWT in the POST body (the old
       // GET ?token&scope read has been retired backend-side). The server scopes
       // candidates from the verified identity: supers see all, brokers see only
-      // their own (requester_email OR senior_email match). We never pass
-      // scope/email and never client-side filter.
+      // contracts they requested (requester_email match; senior broker does not
+      // count). We never pass scope/email and never client-side filter.
       const accessToken = await window.AUTH.getAccessToken();
       const r = await fetch(RECRUIT_ENDPOINT, {
         method: 'POST',
