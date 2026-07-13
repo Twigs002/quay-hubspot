@@ -176,6 +176,16 @@
         </div>
       </div>
 
+      <!-- 7. Signed broker agreement -->
+      <div class="card">
+        <p class="sec-title"><span class="sec-num">7</span> Signed broker agreement</p>
+        <div class="filewrap">
+          <label for="f_contract">Upload your signed broker agreement <span class="req">*</span></label>
+          <input type="file" id="f_contract" accept="image/*,application/pdf" required>
+          <p class="hint">The Broker Agreement we emailed you, initialled on every page and signed where applicable. PDF or a clear scan/photo.</p>
+        </div>
+      </div>
+
       <div class="actions">
         <button type="submit" class="btn" id="submitBtn">Submit my documents</button>
         <div id="note" class="note"></div>
@@ -206,10 +216,11 @@
 
     // (input id, doc code used in the saved filename: "<code> - <candidate full name>")
     var FILE_MAP = [
-      ['f_id',   'ID'],
-      ['f_addr', 'POA'],
-      ['f_bank', 'POB'],
-      ['f_tax',  'TAX'],
+      ['f_id',       'ID'],
+      ['f_addr',     'POA'],
+      ['f_bank',     'POB'],
+      ['f_tax',      'TAX'],
+      ['f_contract', 'CONTRACT'],
     ];
 
     var form = document.getElementById('intakeForm');

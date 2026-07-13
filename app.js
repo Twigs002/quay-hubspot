@@ -907,15 +907,13 @@
     // Broker activities — the 7 definitions from the Broker Agreement template
     // (a "delete inapplicable definition" table; one is kept). `code` is the
     // machine value; `def` is the exact clause text merged into the contract.
+    // Residential only for now — commercial is parked (no commercial template yet),
+    // so it's kept out of the picker to avoid generating a wrong/blank contract.
     const BROKER_ACTIVITIES = [
       { code: 'sell_res_sb', label: 'Sell · Residential · Broker (SB)', def: 'The selling and/or brokerage of immovable residential property or a broker performing his/her/their functions to such an end; and/or' },
       { code: 'sell_res_jb', label: 'Sell · Residential · Assistant (JB)', def: 'The selling and/or brokerage of immovable residential property or an assistant to a broker performing his/her/their functions to such an end; and/or' },
-      { code: 'sell_com_sb', label: 'Sell · Commercial · Broker (SB)', def: 'The selling and/or brokerage of immovable commercial property or a broker performing his/her/their functions to such an end; and/or' },
-      { code: 'sell_com_jb', label: 'Sell · Commercial · Assistant (JB)', def: 'The selling and/or brokerage of immovable commercial property or an assistant to a broker performing his/her/their functions to such an end; and/or' },
       { code: 'rent_res_sb', label: 'Rent · Residential · Broker (SB)', def: 'The renting and/or brokerage for rent of immovable residential property or a broker performing his/her/their functions to such an end; and/or' },
       { code: 'rent_res_jb', label: 'Rent · Residential · Assistant (JB)', def: 'The renting and/or brokerage for rent of immovable residential property or an assistant to a broker performing his/her/their functions to such an end; and/or' },
-      { code: 'rent_com_sb', label: 'Rent · Commercial · Broker (SB)', def: 'The renting and/or brokerage for rent of immovable commercial property or a broker performing his/her/their functions to such an end; and/or' },
-      { code: 'rent_com_jb', label: 'Rent · Commercial · Assistant (JB)', def: 'The renting and/or brokerage for rent of immovable commercial property or an assistant to broker performing his/her/their functions to such an end.' },
     ];
     const activityOptions = () => BROKER_ACTIVITIES.length
       ? '<option value="">— select activity —</option>' +
