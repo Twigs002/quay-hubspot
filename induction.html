@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quay 1 · Book Your Induction</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --blue-900:#1E2E59; --blue-800:#3D5BA6; --blue-700:#4C6BB8;
+      --paper:#EEF2F8; --card:#FFFFFF; --card-2:#F6F8FC;
+      --yellow:#FDC503; --ink:#1A2746; --slate:#4A566D; --muted:#606C86;
+      --green:#277A54; --green-tint:#E2F1EA; --red:#D20A03; --red-tint:#FBE2DD;
+      --amber:#8A6800; --amber-tint:#FBF1D2;
+      --sky-tint:#E9F2FB;
+      --line:#E0E7F1; --line-2:#EDF1F8;
+      --r:12px; --r-sm:8px;
+      --sans:'Montserrat',system-ui,-apple-system,sans-serif;
+      --shadow:0 2px 6px rgba(30,46,89,.07),0 8px 24px rgba(30,46,89,.07);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:var(--sans);background:var(--paper);color:var(--ink);
+      line-height:1.55;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:640px;margin:0 auto;padding:28px 20px 64px}
+    .hero{background:var(--blue-800);color:#fff;border-radius:var(--r);padding:26px 26px 24px;
+      box-shadow:var(--shadow);margin:16px 0 22px}
+    .hero-logo{height:44px;width:auto;display:block;margin:0 0 18px}
+    .hero h1{margin:0 0 6px;font-size:22px;font-weight:700}
+    .hero p{margin:0;font-size:14.5px;color:#E4ECF8}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+      box-shadow:var(--shadow);padding:22px 24px;margin-bottom:18px}
+    .sec-title{font-size:12px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;
+      color:var(--blue-700);margin:0 0 14px;display:flex;align-items:center;gap:8px}
+    .sec-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;
+      border-radius:50%;background:var(--sky-tint);color:var(--blue-800);font-size:12px;font-weight:700}
+    .greet{font-size:17px;font-weight:700;color:var(--ink);margin:0 0 6px}
+    .lead{font-size:14.5px;color:var(--slate);margin:0 0 4px}
+    .loading{text-align:center;color:var(--muted);padding:30px 10px;font-size:14.5px}
+
+    /* Week picker */
+    .weeks{display:flex;flex-direction:column;gap:12px;margin:6px 0 4px}
+    .week-opt{display:flex;align-items:center;gap:14px;border:1.5px solid var(--line);
+      border-radius:var(--r-sm);padding:14px 16px;cursor:pointer;background:var(--card-2);
+      transition:border-color .15s,background .15s,box-shadow .15s}
+    .week-opt:hover{border-color:var(--blue-700);background:#fff}
+    .week-opt input{width:20px;height:20px;accent-color:var(--blue-800);cursor:pointer;flex:0 0 auto}
+    .week-opt.sel{border-color:var(--blue-800);background:#fff;box-shadow:0 0 0 3px rgba(76,107,184,.14)}
+    .week-body{min-width:0}
+    .week-main{font-size:15px;font-weight:700;color:var(--ink)}
+    .week-sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+    /* Confirmed / already-booked block */
+    .confirm{display:flex;gap:14px;align-items:flex-start}
+    .confirm-tick{flex:0 0 auto;width:40px;height:40px;border-radius:50%;background:var(--green-tint);
+      color:var(--green);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800}
+    .confirm-body h2{margin:0 0 6px;font-size:18px;font-weight:700;color:var(--ink)}
+    .confirm-body p{margin:0 0 8px;font-size:14.5px;color:var(--slate)}
+    .confirm-dates{font-size:15px;font-weight:700;color:var(--blue-800);margin:8px 0 0}
+
+    .hint{font-size:12.5px;color:var(--muted);margin-top:12px}
+    .actions{margin-top:18px}
+    .btn{width:100%;font-family:inherit;font-size:15px;font-weight:700;color:var(--blue-900);
+      background:var(--yellow);border:0;border-radius:var(--r-sm);padding:14px 18px;cursor:pointer;
+      box-shadow:var(--shadow);transition:filter .15s}
+    .btn:hover{filter:brightness(1.04)}
+    .btn:disabled{opacity:.6;cursor:not-allowed;filter:none}
+    .note{margin-top:14px;font-size:14px;padding:12px 14px;border-radius:var(--r-sm);display:none}
+    .note.show{display:block}
+    .note.ok{background:var(--green-tint);color:var(--green);border:1px solid #B7DEC9}
+    .note.err{background:var(--red-tint);color:var(--red);border:1px solid #F3C3BC}
+    .note.info{background:var(--amber-tint);color:var(--amber);border:1px solid #EAD79A}
+    .foot{text-align:center;font-size:12px;color:var(--muted);margin-top:26px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <img class="hero-logo" src="assets/quay1-logo-white.png" alt="Quay 1 International Realty">
+      <h1>Book your Quay 1 induction</h1>
+      <p>Induction runs over two mornings each week: Wednesday with Kat, and Thursday
+         for your programs and systems. Pick the week that suits you and we will send
+         through the calendar invites.</p>
+    </div>
+
+    <div id="app">
+      <div class="card"><div class="loading">Loading your induction details, one moment...</div></div>
+    </div>
+
+    <p class="foot">Quay 1 International Realty · welcome to the team.</p>
+  </div>
+
+  <script>
+    var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzBdDmvtpoQgIEdtopdh8iFK6vuD9Xvmt4OJUDdQEg9qeKgaOP3a_WOeVM4WaQU6PpZ/exec';
+    var params = new URLSearchParams(location.search);
+    var FOLDER_ID = params.get('f') || '';
+    var app = document.getElementById('app');
+
+    // ── Date helpers ────────────────────────────────────────────────────
+    var WD_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var WD_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var MO_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var MO_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    function escapeHtml(str){
+      return String(str == null ? '' : str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+    // Parse a 'YYYY-MM-DD' string as a LOCAL date (avoids the UTC shift that
+    // new Date('YYYY-MM-DD') introduces). Returns null if not ISO-shaped.
+    function parseISO(s){
+      var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s == null ? '' : s).trim());
+      return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+    }
+    function isoDate(d){
+      return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+    }
+    function fmtFull(d){ return WD_FULL[d.getDay()] + ' ' + d.getDate() + ' ' + MO_FULL[d.getMonth()]; }
+    function fmtShort(d){ return WD_SHORT[d.getDay()] + ' ' + d.getDate() + ' ' + MO_SHORT[d.getMonth()]; }
+    // Format a backend-supplied date value: format if it's ISO, else pass through.
+    function fmtBackendFull(s){
+      var d = parseISO(s);
+      return d ? fmtFull(d) : escapeHtml(String(s == null ? '' : s));
+    }
+
+    function addDays(d, n){ var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; }
+    function mondayOf(d){
+      var day = d.getDay();               // Sun=0 .. Sat=6
+      var back = (day + 6) % 7;           // days since Monday
+      return addDays(d, -back);
+    }
+    // Next ~4 upcoming induction weeks. A week qualifies only if its Wednesday
+    // 09:00 is still in the future, so a week whose Wednesday has passed drops off.
+    function upcomingWeeks(count){
+      var now = new Date();
+      var monday = mondayOf(now);
+      var out = [];
+      for (var i = 0; out.length < count && i < 16; i++){
+        var wkMon = addDays(monday, i * 7);
+        var wed = addDays(wkMon, 2);
+        var thu = addDays(wkMon, 3);
+        var wedStart = new Date(wed.getFullYear(), wed.getMonth(), wed.getDate(), 9, 0, 0);
+        if (wedStart.getTime() > now.getTime()){
+          out.push({ monday: isoDate(wkMon), wed: wed, thu: thu });
+        }
+      }
+      return out;
+    }
+
+    // ── Render helpers ──────────────────────────────────────────────────
+    function renderError(msg){
+      app.innerHTML =
+        '<div class="card"><div class="note err show" style="margin:0">' + escapeHtml(msg) + '</div></div>';
+    }
+    function renderBooked(wed, thu, heading){
+      app.innerHTML =
+        '<div class="card"><div class="confirm">' +
+          '<div class="confirm-tick" aria-hidden="true">&#10003;</div>' +
+          '<div class="confirm-body">' +
+            '<h2>' + escapeHtml(heading) + '</h2>' +
+            '<p>We look forward to welcoming you. Please keep both mornings free.</p>' +
+            '<p class="confirm-dates">' + fmtBackendFull(wed) + ' &amp; ' + fmtBackendFull(thu) + '</p>' +
+          '</div>' +
+        '</div></div>';
+    }
+
+    function renderPicker(firstName){
+      var weeks = upcomingWeeks(4);
+      if (!weeks.length){
+        renderError('There are no upcoming induction weeks available online right now. Please contact your Quay 1 recruiter and we will book you in.');
+        return;
+      }
+      var opts = weeks.map(function(w, i){
+        return '<label class="week-opt" data-i="' + i + '">' +
+          '<input type="radio" name="week" value="' + escapeHtml(w.monday) + '"' + (i === 0 ? ' checked' : '') + '>' +
+          '<div class="week-body">' +
+            '<div class="week-main">' + escapeHtml(fmtShort(w.wed)) + ' &amp; ' + escapeHtml(fmtShort(w.thu)) + '</div>' +
+            '<div class="week-sub">Wednesday with Kat &amp; Thursday for programs · from 9:00am</div>' +
+          '</div>' +
+        '</label>';
+      }).join('');
+
+      app.innerHTML =
+        '<div class="card">' +
+          '<p class="greet">Hi ' + escapeHtml(firstName || 'there') + ',</p>' +
+          '<p class="lead">Welcome to Quay 1. Choose the week you would like to do your induction in.</p>' +
+        '</div>' +
+        '<form id="bookForm" class="card">' +
+          '<p class="sec-title"><span class="sec-num">1</span> Pick your induction week</p>' +
+          '<div class="weeks">' + opts + '</div>' +
+          '<p class="hint">Each induction runs across both mornings that week, Wednesday and Thursday, from 9:00am. You only need to choose the week.</p>' +
+          '<div class="actions">' +
+            '<button type="submit" class="btn" id="bookBtn">Confirm my induction week</button>' +
+            '<div id="note" class="note"></div>' +
+          '</div>' +
+        '</form>';
+
+      wirePicker();
+    }
+
+    function wirePicker(){
+      // Selected-state styling on the radio cards.
+      var labels = Array.prototype.slice.call(document.querySelectorAll('.week-opt'));
+      function syncSel(){
+        labels.forEach(function(l){
+          var r = l.querySelector('input');
+          l.classList.toggle('sel', !!(r && r.checked));
+        });
+      }
+      labels.forEach(function(l){ l.addEventListener('change', syncSel); });
+      syncSel();
+
+      var form = document.getElementById('bookForm');
+      var note = document.getElementById('note');
+      var btn = document.getElementById('bookBtn');
+      function showNote(cls, msg){ note.className = 'note show ' + cls; note.innerHTML = msg; }
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        var picked = form.querySelector('input[name="week"]:checked');
+        if (!picked){ showNote('info', 'Please choose a week first.'); return; }
+        btn.disabled = true;
+        showNote('info', 'Booking your induction, one moment...');
+
+        fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight
+          body: JSON.stringify({ kind: 'book_induction', folderId: FOLDER_ID, weekMonday: picked.value })
+        }).then(function(res){ return res.json(); })
+          .then(function(data){
+            if (data && data.ok){
+              renderBooked(data.wed, data.thu,
+                'You are booked in. Welcome aboard!');
+              // Follow-up line under the dates about invites.
+              var body = document.querySelector('.confirm-body');
+              if (body){
+                var p = document.createElement('p');
+                p.className = 'lead';
+                p.style.marginTop = '10px';
+                p.textContent = 'Your calendar invites are on the way.';
+                body.appendChild(p);
+              }
+            } else if (data && data.error === 'already_booked'){
+              renderBooked(data.wed, data.thu, 'You are already booked in');
+            } else if (data && data.error === 'bad_week'){
+              showNote('err', 'That week is no longer available. Please pick another week and try again.');
+              btn.disabled = false;
+            } else if (data && data.error === 'not_found'){
+              showNote('err', 'We could not find your onboarding record. Please use the link from your welcome email, or contact your Quay 1 recruiter.');
+            } else {
+              showNote('err', 'Something went wrong: ' + escapeHtml((data && data.error) || 'unknown error') + '. Please try again or contact your Quay 1 recruiter.');
+              btn.disabled = false;
+            }
+          })
+          .catch(function(err){
+            showNote('err', 'Booking failed: ' + escapeHtml(String(err)) + '. Please check your connection and try again.');
+            btn.disabled = false;
+          });
+      });
+    }
+
+    // ── Boot ────────────────────────────────────────────────────────────
+    function boot(){
+      if (!FOLDER_ID){
+        renderError('This link is missing its reference code. Please use the personal link from your welcome email, or contact the person who sent you your contract.');
+        return;
+      }
+      fetch(ENDPOINT + '?f=' + encodeURIComponent(FOLDER_ID))
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+          if (!data || !data.ok || data.error === 'not_found'){
+            renderError('We could not find your onboarding record. Please use the link from your welcome email, or contact your Quay 1 recruiter.');
+            return;
+          }
+          if (data.booked === true && data.induction){
+            renderBooked(data.induction.wed, data.induction.thu, 'You are already booked in');
+            return;
+          }
+          renderPicker(data.firstName);
+        })
+        .catch(function(err){
+          renderError('We could not load your induction details right now. Please check your connection and refresh, or contact your Quay 1 recruiter.');
+        });
+    }
+
+    boot();
+  </script>
+</body>
+</html>

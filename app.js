@@ -21,24 +21,24 @@
 
   // ─── HubSpot Out-of-Date Deals view ──────────────────────────────────
   // The 3 Dialfire-overlay columns (Avg Logged / Avg Answered / Avg NA)
-  // are intentionally not in this list yet — they would render as 14 columns
+  // are intentionally not in this list yet - they would render as 14 columns
   // of em-dashes until the Dialfire overlay lands. They'll come back as
   // additional entries once that data is wired in.
   const HUBSPOT_COLS = [
-    { k: 'calling',    label: 'Calling',      tip: 'Calling leads — outdated / total',     isStage: true },
-    { k: 'external',   label: 'External',     tip: 'External leads — outdated / total',    isStage: true },
-    { k: 'inbound',    label: 'Inbound',      tip: 'Inbound leads — outdated / total',     isStage: true },
-    { k: 'reconv',     label: 'Reconv',       tip: 'Reconverted leads — outdated / total', isStage: true },
-    { k: 'rental',     label: 'Rental',       tip: 'Rental leads — outdated / total',      isStage: true },
-    { k: 'nurture',    label: 'Nurture',      tip: 'Leads to nurture — outdated / total',  isStage: true },
-    { k: 'warm',       label: 'Warm',         tip: 'Warm leads — outdated / total',        isStage: true },
-    { k: 'hot',        label: 'Hot',          tip: 'Hot leads — outdated / total',         isStage: true },
+    { k: 'calling',    label: 'Calling',      tip: 'Calling leads - outdated / total',     isStage: true },
+    { k: 'external',   label: 'External',     tip: 'External leads - outdated / total',    isStage: true },
+    { k: 'inbound',    label: 'Inbound',      tip: 'Inbound leads - outdated / total',     isStage: true },
+    { k: 'reconv',     label: 'Reconv',       tip: 'Reconverted leads - outdated / total', isStage: true },
+    { k: 'rental',     label: 'Rental',       tip: 'Rental leads - outdated / total',      isStage: true },
+    { k: 'nurture',    label: 'Nurture',      tip: 'Leads to nurture - outdated / total',  isStage: true },
+    { k: 'warm',       label: 'Warm',         tip: 'Warm leads - outdated / total',        isStage: true },
+    { k: 'hot',        label: 'Hot',          tip: 'Hot leads - outdated / total',         isStage: true },
     { k: 'outdated',   label: 'Outdated',     tip: 'Total outdated leads across all stages' },
     { k: 'upToHot',    label: 'Up to Hot',    tip: 'Total deals in stages up to Hot Lead' },
     { k: 'pctUpdated', label: '% Updated',    tip: 'Share of leads with a future next-activity date', isPct: true },
   ];
 
-  // Filter chips above the table — restrict the visible roster to a
+  // Filter chips above the table - restrict the visible roster to a
   // worth-acting-on subset. Director-mode triage.
   const HUBSPOT_FILTERS = [
     { k: 'all',       label: 'All teams',     test: () => true },
@@ -66,11 +66,22 @@
   let _dirSearch = '';
   let _dirSection = 'all';                     // section filter on Directory
   let _drillTeam = null;                       // team name when modal open
-  let _recruitForm = 'contract';               // 'contract' | 'intake' — active recruitment sub-form
-  // Recruitment backend (Google Apps Script Web App). Filled in after deploy;
-  // while empty, the form stays in preview mode (submits nothing).
+  let _recruitForm = 'contract';               // 'contract' | 'intake' | 'progress'; active recruitment sub-view
+  // Signed-in user (set by enterApp once auth.js confirms the session):
+  // { username, name, email, isSuper, isAdmin, isBroker, role }. Used to gate
+  // the UI (broker vs super/admin); the backend derives identity from the JWT.
+  let _currentUser = null;
+  // Progress-report state (Recruitment → Progress sub-view).
+  let _progress = null;          // { ok, candidates:[...] } once loaded
+  let _progressLoading = false;
+  let _progressError = null;
+  let _progressExpanded = null;  // folderId of the row whose programs editor is open
+  // Recruitment backend (Google Apps Script Web App). Every authenticated call
+  // sends the caller's fresh Supabase JWT (AUTH.getAccessToken()) in the POST
+  // body; the backend verifies identity and ownership. There is deliberately no
+  // shared secret in the client: a public token in every broker's browser could
+  // be replayed to bypass per-broker ownership checks.
   const RECRUIT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzBdDmvtpoQgIEdtopdh8iFK6vuD9Xvmt4OJUDdQEg9qeKgaOP3a_WOeVM4WaQU6PpZ/exec';
-  const RECRUIT_TOKEN = 'nPmrgKST4i9MmiypOKKNEiB65r4SrPww';
 
   async function loadHubspot() {
     if (_hubspotLoading) return;
@@ -129,7 +140,7 @@
   function render() {
     const host = document.getElementById('content');
     if (_tab === 'recruitment') {
-      // Team dropdown is built from the division directory — load it if needed.
+      // Team dropdown is built from the division directory - load it if needed.
       if (_divisions == null && !_divisionsLoading) loadDivisions();
       host.innerHTML = renderRecruitment();
       wireRecruitment();
@@ -138,7 +149,7 @@
       host.innerHTML = renderDirectory();
       wireDirectory();
     } else {
-      // Deals tab — load divisions in the background so the drill-down
+      // Deals tab - load divisions in the background so the drill-down
       // is ready when a team row is clicked.
       if (_divisions == null && !_divisionsLoading) loadDivisions();
       host.innerHTML = renderHubspot();
@@ -178,7 +189,7 @@
   }
 
   // The fetch-hubspot workflow runs at 03:00 / 11:00 / 13:00 SAST. Pick
-  // the next one ahead of now in local-SAST terms — used in the refresh
+  // the next one ahead of now in local-SAST terms - used in the refresh
   // pill tooltip so the operator sees when fresh data is due.
   function _nextRefreshSAST() {
     const SCHEDULE_H = [3, 11, 13];
@@ -247,7 +258,7 @@
     if (!_hubspotShowEmpty) visible = visible.filter(r => r._tot > 0);
 
     // Sort comparator. Default 'pctUpdated' asc puts the worst-performing
-    // teams (with deals) at the top — that's the triage view a director
+    // teams (with deals) at the top - that's the triage view a director
     // opens the dashboard for.
     visible = visible.slice().sort((a, b) => {
       const k = _hubspotSortBy;
@@ -291,7 +302,7 @@
     })();
     const refreshBadge = genDate
       ? `<span class="pill ${ageClass}" title="${escapeHtml(genAbs)}">Refreshed ${escapeHtml(relAge(genDate))}</span>`
-      : `<span class="pill bad" title="Workflow has never populated data/hubspot_outdated.json">Snapshot — never refreshed</span>`;
+      : `<span class="pill bad" title="Workflow has never populated data/hubspot_outdated.json">Snapshot - never refreshed</span>`;
 
     // ── KPIs + delta vs previous run ────────────────────────────────
     const kpi      = _hsKpiForGroup(allRows);
@@ -332,7 +343,7 @@
       const stale = gk.totalDeals > 0 ? (gk.outdatedLeads / gk.totalDeals) * 100 : 0;
       const staleClass = stale >= 60 ? 'seg-stale-bad' : stale >= 30 ? 'seg-stale-warn' : 'seg-stale-ok';
       const name  = groupNames[k] || ('Group ' + k);
-      // Drop the team count from the button — it's already in the table
+      // Drop the team count from the button - it's already in the table
       // header below. Keep just `name · X% stale` so the segment header
       // does one thing: signal which group is hottest.
       return `<button class="${k === _hubspotGroup ? 'active' : ''}" data-hs-group="${k}" aria-pressed="${k === _hubspotGroup ? 'true' : 'false'}">
@@ -343,7 +354,7 @@
 
     // ── Top-3 needs-attention callout ───────────────────────────────
     // Score = absolute outdated count × outdated share. Rewards teams
-    // that are both large and bad — the director's emails-to-send list.
+    // that are both large and bad - the director's emails-to-send list.
     const top3 = allRows
       .filter(r => r._tot >= 5 && r._stalePct >= 0.3)
       .map(r => ({ row: r, score: r._out * r._stalePct }))
@@ -357,7 +368,7 @@
              `?query=&filters=%5B%7B%22property%22%3A%22hubspot_owner_id%22%2C%22operator%22%3A%22IN%22%2C%22values%22%3A%5B${r.ownerIds.map(encodeURIComponent).join('%2C')}%5D%7D%5D`;
     };
     const top3Html = top3.length === 0
-      ? `<div class="muted" style="font-size:13px">No teams flagged for attention in ${escapeHtml(groupNames[_hubspotGroup])} — every team with ≥5 deals is below the 30% stale threshold.</div>`
+      ? `<div class="muted" style="font-size:13px">No teams flagged for attention in ${escapeHtml(groupNames[_hubspotGroup])} - every team with ≥5 deals is below the 30% stale threshold.</div>`
       : top3.map(({ row: r }, i) => {
           const link = hubspotLinkFor(r);
           const stalePct = (r._stalePct * 100).toFixed(0);
@@ -379,7 +390,7 @@
     // ── Filter chips ────────────────────────────────────────────────
     const filterChips = HUBSPOT_FILTERS.map(f => {
       const count = allRows.filter(r => r._tot > 0).filter(f.test).length;
-      // Always show the count — even 0 — so the user sees the filter is
+      // Always show the count - even 0 - so the user sees the filter is
       // empty BEFORE clicking it. Mute zero counts so they recede.
       const zero = count === 0 ? ' chip-count--zero' : '';
       return `<button class="chip ${f.k === _hubspotFilter ? 'active' : ''}" data-hs-filter="${f.k}" aria-pressed="${f.k === _hubspotFilter ? 'true' : 'false'}">
@@ -389,7 +400,7 @@
 
     // ── Cell formatters + colour ───────────────────────────────────
     const fmtCell = (v, isPct) => {
-      if (v == null || v === '') return '<span class="empty">—</span>';
+      if (v == null || v === '') return '<span class="empty">-</span>';
       if (isPct) return (Number(v) * 100).toFixed(1) + '%';
       const n = Number(v);
       return isFinite(n) ? n.toFixed(n % 1 === 0 ? 0 : 1) : escapeHtml(String(v));
@@ -398,7 +409,7 @@
     // marker so the meaning isn't carried only by hue. ✓ when none stale,
     // ⚠ when all stale.
     const stageCell = (outdatedN, totalN) => {
-      if (!totalN) return '<td class="num"><span class="empty">—</span></td>';
+      if (!totalN) return '<td class="num"><span class="empty">-</span></td>';
       const out = Number(outdatedN || 0);
       const tot = Number(totalN);
       const allStale  = tot > 0 && out === tot;
@@ -430,13 +441,13 @@
       return 'ok';
     };
     const pctCell = (frac) => {
-      if (frac == null) return '<td class="num"><span class="empty">—</span></td>';
+      if (frac == null) return '<td class="num"><span class="empty">-</span></td>';
       const cls = pctClass(frac);
       const sym = cls === 'ok' ? ' ✓' : cls === 'bad' ? ' ⚠' : '';
       return `<td class="num"><span class="pill ${cls}">${(Number(frac) * 100).toFixed(1)}%${sym}</span></td>`;
     };
     const outdatedCell = (outdatedN, totalN) => {
-      if (outdatedN == null) return '<td class="num"><span class="empty">—</span></td>';
+      if (outdatedN == null) return '<td class="num"><span class="empty">-</span></td>';
       const cls = outdatedClass(Number(outdatedN), Number(totalN));
       if (!cls) return `<td class="num tnum">${fmt(Math.round(outdatedN))}</td>`;
       const sym = cls === 'bad' ? ' ⚠' : cls === 'ok' ? ' ✓' : '';
@@ -474,7 +485,7 @@
     const totalHeader = headerNumeric('total', 'Total', 'Total deals for this team', 74);
 
     const emptyRow = `<tr><td colspan="${HUBSPOT_COLS.length + 2}" class="muted" style="text-align:center;padding:36px 20px;line-height:1.55">
-      No data loaded yet — the dashboard refresh hasn't run.<br>
+      No data loaded yet - the dashboard refresh hasn't run.<br>
       Trigger it from the repo's <b>Actions → Fetch HubSpot Deals</b> tab,
       or wait for the next scheduled run (03:00 / 11:00 / 13:00 SAST).
     </td></tr>`;
@@ -500,7 +511,7 @@
             ${segBtn('1')}${segBtn('2')}${segBtn('3')}
           </div>
         </div>
-        ${_hubspot.error ? `<div class="banner" style="margin-top:12px;background:var(--red-tint);color:var(--red);padding:8px 10px;border-radius:6px;font-size:12.5px">Data not loaded — ${escapeHtml(_hubspot.error)}. The GH Action will populate it on its next run.</div>` : ''}
+        ${_hubspot.error ? `<div class="banner" style="margin-top:12px;background:var(--red-tint);color:var(--red);padding:8px 10px;border-radius:6px;font-size:12.5px">Data not loaded - ${escapeHtml(_hubspot.error)}. The GH Action will populate it on its next run.</div>` : ''}
       </div>
 
       <div class="row kpis mt">
@@ -556,7 +567,7 @@
               const divInfo = divisionForTeam(r.team);
               const teamClickable = !!divInfo;
               return `<tr${dim}${teamClickable ? ` class="row-team" data-team-name="${escapeHtml(r.team)}" tabindex="0" role="button" aria-label="Open ${escapeHtml(r.team)} division details"` : ''}>
-                <td style="${STK_TD}"><div class="agent-cell"><div class="agent-name">${escapeHtml(r.team || '—')}${teamClickable ? '<span class="team-chev" aria-hidden="true">›</span>' : ''}</div>${r._tot === 0 ? '<span class="pill" style="background:var(--paper);color:var(--muted);font-size:10px;margin-left:6px">No deals</span>' : ''}</div></td>
+                <td style="${STK_TD}"><div class="agent-cell"><div class="agent-name">${escapeHtml(r.team || '-')}${teamClickable ? '<span class="team-chev" aria-hidden="true">›</span>' : ''}</div>${r._tot === 0 ? '<span class="pill" style="background:var(--paper);color:var(--muted);font-size:10px;margin-left:6px">No deals</span>' : ''}</div></td>
                 <td class="num tnum">${fmt(tot)}</td>
                 ${HUBSPOT_COLS.map(c => {
                   if (c.k === 'pctUpdated') return pctCell(r.outdated ? r.outdated[c.k] : null);
@@ -568,14 +579,14 @@
                   }
                   return `<td class="num tnum">${fmtCell(r.outdated ? r.outdated[c.k] : null, c.isPct)}</td>`;
                 }).join('')}
-                ${portalId ? `<td class="num" style="${STK_TD_R}">${link ? `<a class="row-go" href="${link}" target="_blank" rel="noopener" title="Open in HubSpot" aria-label="Open ${escapeHtml(r.team || '')} deals in HubSpot"><span class="row-go-text">HubSpot</span><span class="row-go-arrow" aria-hidden="true">↗</span></a>` : '<span class="empty">—</span>'}</td>` : ''}
+                ${portalId ? `<td class="num" style="${STK_TD_R}">${link ? `<a class="row-go" href="${link}" target="_blank" rel="noopener" title="Open in HubSpot" aria-label="Open ${escapeHtml(r.team || '')} deals in HubSpot"><span class="row-go-text">HubSpot</span><span class="row-go-arrow" aria-hidden="true">↗</span></a>` : '<span class="empty">-</span>'}</td>` : ''}
               </tr>`;
             }).join(''))}
             ${visible.length > 0 ? `<tr class="tbl-total" style="background:#F7F8FC;font-weight:700">
               <td style="${STK_TOT}">Total · ${visible.length} team${visible.length === 1 ? '' : 's'}</td>
               <td class="num tnum">${fmt(visible.reduce((s, r) => s + r._tot, 0))}</td>
               ${HUBSPOT_COLS.map(c => {
-                if (c.isPct) return `<td class="num"><span class="empty">—</span></td>`;
+                if (c.isPct) return `<td class="num"><span class="empty">-</span></td>`;
                 if (c.isStage) {
                   const oSum = visible.reduce((s, r) => s + _num(r.outdated && r.outdated[c.k]), 0);
                   const tSum = visible.reduce((s, r) => s + _num(r.total && r.total[c.k]), 0);
@@ -602,7 +613,7 @@
     }
     if (_divisions.error) {
       return `<div class="tab-view"><div class="card card-pad" style="color:var(--red);text-align:center;padding:40px">
-        Couldn't load <code>data/divisions.json</code> — ${escapeHtml(_divisions.error)}.<br>
+        Couldn't load <code>data/divisions.json</code> - ${escapeHtml(_divisions.error)}.<br>
         Run <code>python3 scripts/parse_divisions.py</code> to regenerate it.</div></div>`;
     }
 
@@ -711,7 +722,7 @@
     if (search) {
       search.addEventListener('input', (e) => {
         _dirSearch = e.target.value;
-        // Re-render only the result region for a snappier feel — but we
+        // Re-render only the result region for a snappier feel - but we
         // rebuild the whole tab to keep the result-meta line in sync.
         render();
         // Restore focus to the search (the re-render replaces the node).
@@ -785,7 +796,7 @@
         <div class="modal-deals">
           <div><b>${fmt(dealsRow._tot || (dealsRow.total && dealsRow.total.deals) || 0)}</b><span>total</span></div>
           <div><b>${fmt(dealsRow._out || (dealsRow.outdated && dealsRow.outdated.outdated) || 0)}</b><span>outdated</span></div>
-          <div><b>${dealsRow.outdated && dealsRow.outdated.pctUpdated != null ? (Number(dealsRow.outdated.pctUpdated) * 100).toFixed(0) + '%' : '—'}</b><span>% updated</span></div>
+          <div><b>${dealsRow.outdated && dealsRow.outdated.pctUpdated != null ? (Number(dealsRow.outdated.pctUpdated) * 100).toFixed(0) + '%' : '-'}</b><span>% updated</span></div>
         </div>
       </div>` : '';
 
@@ -879,7 +890,7 @@
   }
 
   // ─── Recruitment tab ──────────────────────────────────────────────────
-  // Two broker-onboarding intake forms. Fields + layout only for now — the
+  // Two broker-onboarding intake forms. Fields + layout only for now - the
   // submit action (persist a record + kick off the two downstream flows) is
   // wired once the backend/storage target is confirmed. See project memory.
   function renderRecruitment() {
@@ -904,10 +915,10 @@
       `<label class="rec-field"><span class="rec-label">${escapeHtml(label)}</span>` +
       `<input class="rec-input" id="${id}" name="${id}" type="text" readonly placeholder="auto-filled from team"></label>`;
 
-    // Broker activities — the 7 definitions from the Broker Agreement template
+    // Broker activities - the 7 definitions from the Broker Agreement template
     // (a "delete inapplicable definition" table; one is kept). `code` is the
     // machine value; `def` is the exact clause text merged into the contract.
-    // Residential only for now — commercial is parked (no commercial template yet),
+    // Residential only for now - commercial is parked (no commercial template yet),
     // so it's kept out of the picker to avoid generating a wrong/blank contract.
     const BROKER_ACTIVITIES = [
       { code: 'sell_res_sb', label: 'Sell · Residential · Broker (SB)', def: 'The selling and/or brokerage of immovable residential property or a broker performing his/her/their functions to such an end; and/or' },
@@ -916,7 +927,7 @@
       { code: 'rent_res_jb', label: 'Rent · Residential · Assistant (JB)', def: 'The renting and/or brokerage for rent of immovable residential property or an assistant to a broker performing his/her/their functions to such an end; and/or' },
     ];
     const activityOptions = () => BROKER_ACTIVITIES.length
-      ? '<option value="">— select activity —</option>' +
+      ? '<option value="">- select activity -</option>' +
         BROKER_ACTIVITIES.map(a => `<option value="${escapeHtml(a.code)}">${escapeHtml(a.label)}</option>`).join('')
       : '<option value="">Options pending…</option>';
 
@@ -926,7 +937,7 @@
     const teamOptions = () => {
       const secs = (_divisions && _divisions.sections) || [];
       if (!secs.length) return '<option value="">Loading teams…</option>';
-      return '<option value="">— select team —</option>' + secs.map(sec => {
+      return '<option value="">- select team -</option>' + secs.map(sec => {
         const opts = (sec.teams || []).map(t => {
           const sb = (t.brokers && t.brokers[0]) || {};
           const senior = sb.name || '';
@@ -936,6 +947,20 @@
         return `<optgroup label="${escapeHtml(sec.name)}">${opts}</optgroup>`;
       }).join('');
     };
+
+    const isBroker = !!(_currentUser && _currentUser.role === 'broker');
+
+    // Requester field. For a broker it is prefilled AND locked (readonly) to
+    // their own identity, since a broker can only request contracts as
+    // themselves. The backend force-overrides requester_* from the verified
+    // JWT, so the lock is honest UX, not the security boundary. For
+    // supers/admins it stays an editable field (prefilled in wireRecruitment).
+    const requesterField = isBroker
+      ? `<label class="rec-field"><span class="rec-label">Your email (CC)</span>` +
+          `<input class="rec-input" id="c_requester_email" name="c_requester_email" type="email" readonly` +
+          ` value="${escapeHtml((_currentUser && _currentUser.email) || '')}"` +
+          ` placeholder="${escapeHtml((_currentUser && _currentUser.name) || 'you')}"></label>`
+      : field('c_requester_email', 'Your email (person completing this, CC)', 'email', true);
 
     const contractForm = `
       <form class="rec-form" id="recFormContract" novalidate>
@@ -949,7 +974,7 @@
           ${field('c_commission', 'Commission %', 'number', true)}
           ${field('c_candidate_email', 'Candidate email', 'email', true)}
           ${field('c_senior_email', 'Senior broker email', 'email', true)}
-          ${field('c_requester_email', 'Your email (person completing this — CC)', 'email', true)}
+          ${requesterField}
         </div>
         ${submitRow('Generate contract')}
       </form>`;
@@ -963,7 +988,7 @@
           ${field('ri_office', 'Office location', 'text', true)}
           ${field('ri_start', 'Start date', 'date', true)}
         </div>
-        <div class="rec-subhead">Provisioning — what do they need?</div>
+        <div class="rec-subhead">Provisioning - what do they need?</div>
         <div class="rec-toggles">
           ${toggle('ri_cma', 'CMA account')}
           ${toggle('ri_whatsapp', 'WhatsApp')}
@@ -976,16 +1001,15 @@
     return `<div class="tab-view">
       <div class="card card-pad">
         <h3 style="margin:0;font-family:var(--serif);font-size:17px;color:var(--ink)">Recruitment</h3>
-        <div class="sub" style="margin-top:6px">Broker onboarding intake — complete the relevant form for a new hire.</div>
+        <div class="sub" style="margin-top:6px">Broker onboarding intake - complete the relevant form for a new hire.</div>
         <div class="seg" id="recSeg" style="margin-top:14px">
-          ${seg('contract', 'Contract')}${seg('intake', 'Recruitment intake')}
+          ${seg('contract', 'Contract')}${isBroker ? '' : seg('intake', 'Recruitment intake')}${seg('progress', 'Progress report')}
         </div>
       </div>
-      <div class="card mt banner" style="background:var(--amber-tint);color:var(--amber);padding:12px 16px;font-size:12.5px;font-weight:600;box-shadow:none">
-        Preview — form submission isn't connected to a backend yet. The fields and layout are in place; we'll wire the submit action (save a record + start the two downstream flows) once the backend/storage target is confirmed.
-      </div>
       <div class="card mt card-pad">
-        ${_recruitForm === 'contract' ? contractForm : intakeForm}
+        ${_recruitForm === 'progress' ? renderProgress()
+          : (_recruitForm === 'intake' && !isBroker) ? intakeForm
+          : contractForm}
       </div>
     </div>`;
   }
@@ -998,6 +1022,9 @@
         render();
       });
     });
+    // Progress sub-view has its own wiring; the contract/intake wiring below
+    // is all id-guarded, so it no-ops when those forms aren't rendered.
+    if (_recruitForm === 'progress') { wireProgress(); return; }
     // Team → Senior broker: auto-fill the read-only senior broker from the
     // selected team's option data (first-listed broker for that team).
     const teamSel = document.getElementById('c_team');
@@ -1013,6 +1040,14 @@
         if (se) se.value = opt ? (opt.dataset.seniorEmail || '') : '';
       });
     }
+    // Prefill the requester email from the signed-in user. For supers/admins
+    // the field stays editable (a PA can swap in the broker's address); for a
+    // broker it is rendered readonly and locked to their own identity. Either
+    // way the backend derives the authoritative requester from the JWT.
+    const reqEmail = document.getElementById('c_requester_email');
+    if (reqEmail && !reqEmail.value && _currentUser && _currentUser.email) {
+      reqEmail.value = _currentUser.email;
+    }
     const form = document.querySelector('.rec-form');
     if (form) {
       form.addEventListener('submit', async (e) => {
@@ -1021,7 +1056,7 @@
         const note = document.getElementById('recNote');
         if (!RECRUIT_ENDPOINT) {
           if (note) {
-            note.textContent = 'Not submitted — backend not connected yet. Nothing was sent.';
+            note.textContent = 'Not submitted - backend not connected yet. Nothing was sent.';
             note.className = 'rec-note warn';
           }
           return;
@@ -1035,10 +1070,15 @@
         const files = await _recruitFiles(form);
         if (note) { note.textContent = 'Submitting…'; note.className = 'rec-note'; }
         try {
+          // Authenticate with the fresh JWT only. The backend derives the
+          // requester from the verified identity (authoritative for brokers,
+          // whose requester field is locked) and rejects any unauthenticated
+          // request; there is no shared-token fallback.
+          const accessToken = await window.AUTH.getAccessToken();
           const res = await fetch(RECRUIT_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight
-            body: JSON.stringify({ token: RECRUIT_TOKEN, fields, files }),
+            body: JSON.stringify({ accessToken, fields, files }),
           });
           const data = await res.json();
           if (data.ok && note) {
@@ -1064,6 +1104,10 @@
         start_date: fd.c_start, team: fd.c_team, senior_broker: fd.c_senior,
         commission: fd.c_commission,
         candidate_email: fd.c_candidate_email, senior_email: fd.c_senior_email,
+        // Requester identity scopes "broker sees own candidates" in the
+        // progress view. Email comes from the (prefilled, overridable) field;
+        // name is taken from the signed-in session.
+        requester_name: (_currentUser && _currentUser.name) || '',
         requester_email: fd.c_requester_email,
       };
     }
@@ -1094,12 +1138,282 @@
     });
   }
 
+  // ─── Recruitment → Progress report ────────────────────────────────────
+  // Admin-facing candidate tracker. Lists candidates (own for a broker, all
+  // for a super/admin) with their onboarding stage, and lets a broker set the
+  // programs a new hire needs. Reads / writes via the same Apps Script.
+  //
+  // SCOPE: loadProgress POSTs the Supabase JWT (kind:'progress', accessToken);
+  // the backend verifies it and scopes candidates from that identity. Supers
+  // and admins see everyone; a broker sees only candidates whose
+  // requester_email OR senior_email matches theirs. We do NOT pass scope/email
+  // and NEVER client-side filter. A broker with no real staff.email matches no
+  // candidates (the backend's safe default; staff has no email column today).
+
+  // Master program list, kept client-side so it grows without a backend
+  // change. The free-text "Other" row is handled separately (code 'other').
+  const PROGRAM_OPTIONS = [
+    { code: 'cma',      label: 'CMA account' },
+    { code: 'dialfire', label: 'Dialfire account' },
+    { code: 'whatsapp', label: 'WhatsApp Business' },
+  ];
+  // The four onboarding documents surfaced per candidate (backend omits the
+  // sensitive bank/tax/ID copies; these are the received-flags it exposes).
+  const PROG_DOC_FIELDS = [
+    { k: 'bankConf',  label: 'Bank' },
+    { k: 'poa',       label: 'POA' },
+    { k: 'idRcv',     label: 'ID' },
+    { k: 'agreement', label: 'Agreement' },
+  ];
+  const _MON_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Format a backend date: "15 Jul" if it's ISO YYYY-MM-DD, else pass through.
+  function _fmtProgDate(s) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s == null ? '' : s).trim());
+    return m ? (Number(m[3]) + ' ' + _MON_SHORT[Number(m[2]) - 1]) : escapeHtml(String(s == null ? '' : s));
+  }
+  function _candStatus(c) {
+    if (!c.allDocsIn)                       return { cls: 'warn', label: 'Awaiting docs' };
+    if (!(c.induction && c.induction.wed))  return { cls: 'warn', label: 'Book induction' };
+    if (!c.confirmSent)                     return { cls: 'ok',   label: 'Induction set' };
+    return { cls: 'ok', label: 'Confirmed' };
+  }
+  // Normalise a programs list to a comparable string (so "nothing changed"
+  // can be detected before POSTing). Only 'other' carries a meaningful note.
+  function _programsNorm(list) {
+    return (list || [])
+      .map(p => (p.code || '') + '|' + (p.code === 'other' ? (p.note || '') : ''))
+      .sort().join(',');
+  }
+
+  async function loadProgress() {
+    if (_progressLoading) return;
+    _progressLoading = true;
+    _progressError = null;
+    try {
+      // Reads are authenticated by the Supabase JWT in the POST body (the old
+      // GET ?token&scope read has been retired backend-side). The server scopes
+      // candidates from the verified identity: supers see all, brokers see only
+      // their own (requester_email OR senior_email match). We never pass
+      // scope/email and never client-side filter.
+      const accessToken = await window.AUTH.getAccessToken();
+      const r = await fetch(RECRUIT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight
+        body: JSON.stringify({ kind: 'progress', accessToken }),
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      if (!data || !data.ok) {
+        const err = (data && data.error) || 'load failed';
+        _progress = null;
+        _progressError = (err === 'unauthorized' || err === 'forbidden')
+          ? 'Your session could not be verified for recruitment access. Please sign out and back in.'
+          : String(err);
+        return;
+      }
+      _progress = data;
+    } catch (e) {
+      console.warn('[progress] load failed', e);
+      _progress = null;
+      _progressError = String(e.message || e);
+    } finally {
+      _progressLoading = false;
+      render();
+    }
+  }
+
+  function renderProgress() {
+    if (_progress == null && !_progressLoading && _progressError == null) loadProgress();
+    if (_progressLoading || (_progress == null && _progressError == null)) {
+      return `<div style="text-align:center;color:var(--muted);padding:44px 20px">Loading candidates…</div>`;
+    }
+    if (_progressError != null) {
+      return `<div style="text-align:center;color:var(--red);padding:32px 20px">
+        Couldn't load candidates: ${escapeHtml(_progressError)}.
+        <div style="margin-top:12px"><button class="chip" id="progRetry">Try again</button></div>
+      </div>`;
+    }
+    const cands = (_progress && _progress.candidates) || [];
+    // Supers and admins see everyone; brokers see only their own. Key the note
+    // off that, not isSuper alone, so admins do not read "your candidates".
+    const seesAll = !!(_currentUser && (_currentUser.isSuper || _currentUser.isAdmin));
+    const scopeNote = seesAll
+      ? `Showing all candidates.`
+      : `Showing your candidates${_currentUser && _currentUser.name ? ' (' + escapeHtml(_currentUser.name) + ')' : ''}.`;
+
+    if (!cands.length) {
+      return `<div style="color:var(--muted);padding:8px 2px 4px">
+        <div style="font-size:12.5px;margin-bottom:10px">${scopeNote}</div>
+        <div style="text-align:center;padding:40px 20px">No candidates yet. Once a contract is generated it will appear here.</div>
+      </div>`;
+    }
+
+    const docPill = (ok, label) =>
+      `<span class="pill ${ok ? 'ok' : 'bad'}" style="font-size:10.5px;padding:2px 7px" title="${escapeHtml(label)} ${ok ? 'received' : 'outstanding'}">${ok ? '✓' : '✗'} ${escapeHtml(label)}</span>`;
+    const docsCell = (docs) => `<div style="display:flex;flex-wrap:wrap;gap:4px">${
+      PROG_DOC_FIELDS.map(d => docPill(!!(docs || {})[d.k], d.label)).join('')
+    }</div>`;
+
+    const progChip = (p) => {
+      const txt = p.code === 'other' ? ('Other: ' + (p.note || '')) : (p.label || p.code || '');
+      return `<span class="pill" style="background:var(--sky-tint,#E9F2FB);color:var(--blue-800);font-size:10.5px;padding:2px 8px">${escapeHtml(txt)}</span>`;
+    };
+    const programsCell = (c) => {
+      const list = c.programs || [];
+      const chips = list.length
+        ? list.map(progChip).join(' ')
+        : `<span class="empty" style="color:var(--muted)">none</span>`;
+      return `<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">${chips}
+        <button class="chip" data-prog-edit="${escapeHtml(c.folderId)}" style="font-size:10.5px;padding:3px 9px">${_progressExpanded === c.folderId ? 'Close' : 'Edit'}</button>
+      </div>`;
+    };
+
+    const inductionCell = (c) => {
+      const ind = c.induction || {};
+      if (!ind.wed) return `<span class="empty" style="color:var(--muted)">not yet</span>`;
+      return `<span style="font-weight:600;color:var(--ink)">Wed ${_fmtProgDate(ind.wed)}<br>Thu ${_fmtProgDate(ind.thu)}</span>`;
+    };
+
+    const editorRow = (c) => {
+      if (_progressExpanded !== c.folderId) return '';
+      const other = (c.programs || []).find(p => p.code === 'other');
+      const toggles = PROGRAM_OPTIONS.map(o => {
+        const on = (c.programs || []).some(p => p.code === o.code);
+        return `<label class="rec-toggle"><input type="checkbox" data-prog-code="${escapeHtml(o.code)}" data-prog-label="${escapeHtml(o.label)}"${on ? ' checked' : ''}><span>${escapeHtml(o.label)}</span></label>`;
+      }).join('');
+      return `<tr class="prog-panel" data-prog-panel="${escapeHtml(c.folderId)}">
+        <td colspan="6" style="background:var(--paper-2);padding:16px 18px">
+          <div style="font-family:var(--serif);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--blue-800);margin-bottom:10px">Programs for ${escapeHtml(c.name || c.firstName || 'this candidate')}</div>
+          <div class="rec-toggles" style="margin-bottom:12px">${toggles}</div>
+          <label class="rec-field" style="margin-bottom:12px">
+            <span class="rec-label">Other (free text)</span>
+            <input class="rec-input" type="text" data-prog-other placeholder="e.g. Payprop access" value="${escapeHtml(other ? (other.note || '') : '')}">
+          </label>
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <button class="rec-submit" data-prog-save="${escapeHtml(c.folderId)}" style="width:auto">Save programs</button>
+            <button class="chip" data-prog-cancel>Cancel</button>
+            <span class="prog-save-note" style="font-size:12.5px;font-weight:600;color:var(--muted)"></span>
+          </div>
+        </td>
+      </tr>`;
+    };
+
+    const rows = cands.map(c => {
+      const st = _candStatus(c);
+      const missing = c.allDocsIn ? '' :
+        `<div style="font-size:11px;color:var(--muted);margin-top:3px">Missing: ${
+          PROG_DOC_FIELDS.filter(d => !(c.docs || {})[d.k]).map(d => escapeHtml(d.label)).join(', ') || 'none'
+        }</div>`;
+      const desig = [c.team, c.designation].filter(Boolean).map(escapeHtml).join(' · ');
+      const folderCell = c.folderUrl
+        ? `<a class="row-go" href="${escapeHtml(c.folderUrl)}" target="_blank" rel="noopener" title="Open onboarding folder">Folder ↗</a>`
+        : `<span class="empty" style="color:var(--muted)">no folder</span>`;
+      return `<tr>
+        <td>
+          <div class="agent-cell"><div class="agent-name">${escapeHtml(c.name || c.firstName || 'Unnamed')}</div></div>
+          ${desig ? `<div style="font-size:11.5px;color:var(--muted);margin-top:2px">${desig}</div>` : ''}
+          <div style="margin-top:5px"><span class="pill ${st.cls}">${escapeHtml(st.label)}</span></div>
+        </td>
+        <td>${escapeHtml(c.requesterName || c.requesterEmail || 'Unknown')}</td>
+        <td>${docsCell(c.docs)}${missing}</td>
+        <td>${inductionCell(c)}</td>
+        <td>${programsCell(c)}</td>
+        <td class="num">${folderCell}</td>
+      </tr>${editorRow(c)}`;
+    }).join('');
+
+    return `<div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+        <div class="sub">${scopeNote} ${cands.length} candidate${cands.length === 1 ? '' : 's'}.</div>
+        <button class="chip" id="progRefresh">Refresh</button>
+      </div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr>
+          <th style="text-align:left">Candidate</th>
+          <th style="text-align:left">Requester</th>
+          <th style="text-align:left">Documents</th>
+          <th style="text-align:left">Induction</th>
+          <th style="text-align:left">Programs</th>
+          <th class="num">Folder</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+    </div>`;
+  }
+
+  function wireProgress() {
+    const retry = document.getElementById('progRetry');
+    if (retry) retry.addEventListener('click', () => { _progressError = null; _progress = null; loadProgress(); });
+    const refresh = document.getElementById('progRefresh');
+    if (refresh) refresh.addEventListener('click', () => { _progress = null; _progressExpanded = null; loadProgress(); });
+
+    document.querySelectorAll('[data-prog-edit]').forEach(b => {
+      b.addEventListener('click', () => {
+        const fid = b.dataset.progEdit;
+        _progressExpanded = (_progressExpanded === fid) ? null : fid;
+        render();
+      });
+    });
+    document.querySelectorAll('[data-prog-cancel]').forEach(b => {
+      b.addEventListener('click', () => { _progressExpanded = null; render(); });
+    });
+    document.querySelectorAll('[data-prog-save]').forEach(b => {
+      b.addEventListener('click', () => _savePrograms(b.dataset.progSave));
+    });
+  }
+
+  async function _savePrograms(folderId) {
+    const panel = document.querySelector('.prog-panel[data-prog-panel]');
+    if (!panel) return;
+    const note = panel.querySelector('.prog-save-note');
+    const setNote = (msg, colour) => { if (note) { note.textContent = msg; note.style.color = colour || 'var(--muted)'; } };
+
+    const programs = [];
+    panel.querySelectorAll('input[type=checkbox][data-prog-code]').forEach(cb => {
+      if (cb.checked) programs.push({ code: cb.dataset.progCode, label: cb.dataset.progLabel });
+    });
+    const otherInput = panel.querySelector('input[data-prog-other]');
+    const otherNote = otherInput ? otherInput.value.trim() : '';
+    if (otherNote) programs.push({ code: 'other', label: 'Other', note: otherNote });
+
+    const cand = ((_progress && _progress.candidates) || []).find(c => c.folderId === folderId);
+    if (cand && _programsNorm(cand.programs || []) === _programsNorm(programs)) {
+      setNote('No changes to save.');
+      return;
+    }
+    const btn = panel.querySelector('[data-prog-save]');
+    if (btn) btn.disabled = true;
+    setNote('Saving…');
+    try {
+      // Authenticate with the fresh JWT only so the backend can enforce
+      // ownership (a broker may only edit their own candidate). No shared token.
+      const accessToken = await window.AUTH.getAccessToken();
+      const res = await fetch(RECRUIT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight
+        body: JSON.stringify({ kind: 'set_programs', folderId, programs, accessToken }),
+      });
+      const data = await res.json();
+      if (data && data.ok) {
+        if (cand) cand.programs = data.programs || programs;
+        _progressExpanded = null;
+        render();
+      } else {
+        setNote('Error: ' + ((data && data.error) || 'unknown'), 'var(--red)');
+        if (btn) btn.disabled = false;
+      }
+    } catch (err) {
+      setNote('Save failed: ' + err, 'var(--red)');
+      if (btn) btn.disabled = false;
+    }
+  }
+
   // ─── Boot + auth gate ─────────────────────────────────────────────────
   // Team Insights is admin-only. app.js never loads data or renders a tab
   // until auth.js confirms a super/admin Supabase session; it fails closed
   // (shows the login gate) if the auth layer or session can't be verified.
   function _wireTabsOnce() {
-    // Tab nav lives in index.html — wire it once after sign-in.
+    // Tab nav lives in index.html - wire it once after sign-in.
     document.querySelectorAll('#tabNav .tab-btn').forEach(b => {
       b.addEventListener('click', () => {
         if (_tab === b.dataset.tab) return;
@@ -1111,6 +1425,7 @@
   }
 
   function enterApp(user) {
+    _currentUser = user || null;   // { username, name, email, isSuper, isAdmin, isBroker, role }
     document.body.classList.remove('pre-auth');
     const gate = document.getElementById('loginGate');
     if (gate) gate.remove();
@@ -1124,6 +1439,17 @@
         await window.AUTH.signOut();
         location.reload();
       });
+    }
+    // Broker logins are gated to the Recruitment area only: hide the whole tab
+    // nav and pin the active view to Recruitment. Supers/admins keep the full
+    // nav. The real boundary is server-side (Supabase JWT checked by the Apps
+    // Script); this UI lock is just honest UX. Creating broker accounts is the
+    // user's job, done per account.
+    if (_currentUser && _currentUser.role === 'broker') {
+      _tab = 'recruitment';
+      if (_recruitForm === 'intake') _recruitForm = 'contract';  // intake is not broker-facing
+      const nav = document.getElementById('tabNav');
+      if (nav) nav.style.display = 'none';
     }
     _wireTabsOnce();
     render();
@@ -1143,7 +1469,7 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
       let r;
       try { r = await window.AUTH.signIn(u, p); }
-      catch (_) { r = { ok: false, error: 'Sign-in service unavailable — try again.' }; }
+      catch (_) { r = { ok: false, error: 'Sign-in service unavailable - try again.' }; }
       if (r && r.ok) { enterApp(r.user); return; }
       if (errEl) { errEl.textContent = (r && r.error) || 'Sign-in failed.'; errEl.hidden = false; }
       if (btn)   { btn.disabled = false; btn.textContent = 'Sign in'; }
