@@ -66,7 +66,7 @@
   let _dirSearch = '';
   let _dirSection = 'all';                     // section filter on Directory
   let _drillTeam = null;                       // team name when modal open
-  let _recruitForm = 'contract';               // 'contract' | 'intake' | 'progress'; active recruitment sub-view
+  let _recruitForm = 'contract';               // 'contract' | 'progress'; active recruitment sub-view
   // Signed-in user (set by enterApp once auth.js confirms the session):
   // { username, name, email, isSuper, isAdmin, isBroker, role }. Used to gate
   // the UI (broker vs super/admin); the backend derives identity from the JWT.
@@ -890,9 +890,9 @@
   }
 
   // ─── Recruitment tab ──────────────────────────────────────────────────
-  // Two broker-onboarding intake forms. Fields + layout only for now - the
-  // submit action (persist a record + kick off the two downstream flows) is
-  // wired once the backend/storage target is confirmed. See project memory.
+  // Contract request (with provisioning) + Progress report. The contract form
+  // generates the MOA, seeds the tracker row, and captures what the hire needs
+  // provisioned; the Progress report tracks each candidate from there.
   function renderRecruitment() {
     const seg = (id, label) =>
       `<button class="${_recruitForm === id ? 'active' : ''}" data-rec-form="${id}">${escapeHtml(label)}</button>`;
@@ -962,6 +962,15 @@
           ` placeholder="${escapeHtml((_currentUser && _currentUser.name) || 'you')}"></label>`
       : field('c_requester_email', 'Your email (person completing this, CC)', 'email', true);
 
+    // Provisioning toggles - what the new hire needs set up. Captured on the
+    // contract request so it flows straight into the tracker (and the Progress
+    // report + broker/digest emails) instead of a separate intake step.
+    const provisioningSection = `
+        <div class="rec-subhead">Provisioning - what do they need?</div>
+        <div class="rec-toggles">
+          ${PROGRAM_OPTIONS.map(o => toggle('c_prov_' + o.code, o.label)).join('')}
+        </div>`;
+
     const contractForm = `
       <form class="rec-form" id="recFormContract" novalidate>
         <div class="rec-grid">
@@ -976,40 +985,20 @@
           ${field('c_senior_email', 'Senior broker email', 'email', true)}
           ${requesterField}
         </div>
+        ${provisioningSection}
         ${submitRow('Generate contract')}
-      </form>`;
-
-    const intakeForm = `
-      <form class="rec-form" id="recFormIntake" novalidate>
-        <div class="rec-grid">
-          ${field('ri_name', 'New hire full name', 'text', true)}
-          ${field('ri_team', 'Team split', 'text', true)}
-          ${field('ri_salary', 'Base salary (if applicable)', 'text', false)}
-          ${field('ri_office', 'Office location', 'text', true)}
-          ${field('ri_start', 'Start date', 'date', true)}
-        </div>
-        <div class="rec-subhead">Provisioning - what do they need?</div>
-        <div class="rec-toggles">
-          ${toggle('ri_cma', 'CMA account')}
-          ${toggle('ri_whatsapp', 'WhatsApp')}
-          ${toggle('ri_dialfire', 'Dialfire')}
-          ${toggle('ri_training', 'Calling training')}
-        </div>
-        ${submitRow('Submit recruitment intake')}
       </form>`;
 
     return `<div class="tab-view">
       <div class="card card-pad">
         <h3 style="margin:0;font-family:var(--serif);font-size:17px;color:var(--ink)">Recruitment</h3>
-        <div class="sub" style="margin-top:6px">Broker onboarding intake - complete the relevant form for a new hire.</div>
+        <div class="sub" style="margin-top:6px">Broker onboarding - request a contract for a new hire, then track their progress.</div>
         <div class="seg" id="recSeg" style="margin-top:14px">
-          ${seg('contract', 'Contract')}${isBroker ? '' : seg('intake', 'Recruitment intake')}${seg('progress', 'Progress report')}
+          ${seg('contract', 'Contract')}${seg('progress', 'Progress report')}
         </div>
       </div>
       <div class="card mt card-pad">
-        ${_recruitForm === 'progress' ? renderProgress()
-          : (_recruitForm === 'intake' && !isBroker) ? intakeForm
-          : contractForm}
+        ${_recruitForm === 'progress' ? renderProgress() : contractForm}
       </div>
     </div>`;
   }
@@ -1082,8 +1071,18 @@
           });
           const data = await res.json();
           if (data.ok && note) {
-            note.innerHTML = 'Done · <a href="' + data.folderUrl + '" target="_blank" rel="noopener">open folder</a>' +
-              (data.pdfUrl ? ' · <a href="' + data.pdfUrl + '" target="_blank" rel="noopener">contract PDF</a>' : '');
+            // Brokers must not reach the onboarding Drive folder (it collects the
+            // candidate's FICA docs), so only supers/admins get the folder link.
+            // The contract PDF the broker just requested is fine to surface.
+            const isBrokerUser = !!(_currentUser && _currentUser.role === 'broker');
+            const links = [];
+            if (!isBrokerUser && data.folderUrl) {
+              links.push('<a href="' + data.folderUrl + '" target="_blank" rel="noopener">open folder</a>');
+            }
+            if (data.pdfUrl) {
+              links.push('<a href="' + data.pdfUrl + '" target="_blank" rel="noopener">contract PDF</a>');
+            }
+            note.innerHTML = 'Done' + (links.length ? ' · ' + links.join(' · ') : '');
             note.className = 'rec-note';
             form.reset();
           } else if (note) {
@@ -1098,24 +1097,23 @@
 
   // Map a form's raw field ids to the backend's field names.
   function _recruitFields(formId, fd) {
-    if (formId === 'recFormContract') {
-      return {
-        full_name: fd.c_fullname, id_number: fd.c_id, activity: fd.c_activity,
-        start_date: fd.c_start, team: fd.c_team, senior_broker: fd.c_senior,
-        commission: fd.c_commission,
-        candidate_email: fd.c_candidate_email, senior_email: fd.c_senior_email,
-        // Requester identity scopes "broker sees own candidates" in the
-        // progress view. Email comes from the (prefilled, overridable) field;
-        // name is taken from the signed-in session.
-        requester_name: (_currentUser && _currentUser.name) || '',
-        requester_email: fd.c_requester_email,
-      };
-    }
+    // Provisioning toggles ticked on the contract form become the candidate's
+    // initial programs, stored on the tracker by the backend (editable later in
+    // the Progress report).
+    const programs = PROGRAM_OPTIONS
+      .filter(o => fd['c_prov_' + o.code])
+      .map(o => ({ code: o.code, label: o.label }));
     return {
-      full_name: fd.ri_name, team: fd.ri_team, salary: fd.ri_salary,
-      office: fd.ri_office, start_date: fd.ri_start,
-      needs_cma: fd.ri_cma, needs_whatsapp: fd.ri_whatsapp,
-      needs_dialfire: fd.ri_dialfire, needs_training: fd.ri_training,
+      full_name: fd.c_fullname, id_number: fd.c_id, activity: fd.c_activity,
+      start_date: fd.c_start, team: fd.c_team, senior_broker: fd.c_senior,
+      commission: fd.c_commission,
+      candidate_email: fd.c_candidate_email, senior_email: fd.c_senior_email,
+      // Requester identity scopes "broker sees own candidates" in the
+      // progress view. Email comes from the (prefilled, overridable) field;
+      // name is taken from the signed-in session.
+      requester_name: (_currentUser && _currentUser.name) || '',
+      requester_email: fd.c_requester_email,
+      programs: programs,
     };
   }
   // Read any file inputs as base64 for the Apps Script to save to Drive.
@@ -1152,10 +1150,13 @@
 
   // Master program list, kept client-side so it grows without a backend
   // change. The free-text "Other" row is handled separately (code 'other').
+  // Single source of truth for provisioning options, shared by the contract
+  // form's "Provisioning" section and the Progress report's per-candidate editor.
   const PROGRAM_OPTIONS = [
     { code: 'cma',      label: 'CMA account' },
     { code: 'dialfire', label: 'Dialfire account' },
     { code: 'whatsapp', label: 'WhatsApp Business' },
+    { code: 'training', label: 'Calling training' },
   ];
   // The four onboarding documents surfaced per candidate (backend omits the
   // sensitive bank/tax/ID copies; these are the received-flags it exposes).
@@ -1282,7 +1283,7 @@
         return `<label class="rec-toggle"><input type="checkbox" data-prog-code="${escapeHtml(o.code)}" data-prog-label="${escapeHtml(o.label)}"${on ? ' checked' : ''}><span>${escapeHtml(o.label)}</span></label>`;
       }).join('');
       return `<tr class="prog-panel" data-prog-panel="${escapeHtml(c.folderId)}">
-        <td colspan="6" style="background:var(--paper-2);padding:16px 18px">
+        <td colspan="${seesAll ? 6 : 5}" style="background:var(--paper-2);padding:16px 18px">
           <div style="font-family:var(--serif);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--blue-800);margin-bottom:10px">Programs for ${escapeHtml(c.name || c.firstName || 'this candidate')}</div>
           <div class="rec-toggles" style="margin-bottom:12px">${toggles}</div>
           <label class="rec-field" style="margin-bottom:12px">
@@ -1305,9 +1306,13 @@
           PROG_DOC_FIELDS.filter(d => !(c.docs || {})[d.k]).map(d => escapeHtml(d.label)).join(', ') || 'none'
         }</div>`;
       const desig = [c.team, c.designation].filter(Boolean).map(escapeHtml).join(' · ');
-      const folderCell = c.folderUrl
+      const folderLink = c.folderUrl
         ? `<a class="row-go" href="${escapeHtml(c.folderUrl)}" target="_blank" rel="noopener" title="Open onboarding folder">Folder ↗</a>`
         : `<span class="empty" style="color:var(--muted)">no folder</span>`;
+      // The folder links straight into the candidate's onboarding Drive folder
+      // (FICA docs). Super/admin only; brokers never see it (backend also omits
+      // folderUrl from their payload, so it is not just hidden client-side).
+      const folderTd = seesAll ? `<td class="num">${folderLink}</td>` : '';
       return `<tr>
         <td>
           <div class="agent-cell"><div class="agent-name">${escapeHtml(c.name || c.firstName || 'Unnamed')}</div></div>
@@ -1318,7 +1323,7 @@
         <td>${docsCell(c.docs)}${missing}</td>
         <td>${inductionCell(c)}</td>
         <td>${programsCell(c)}</td>
-        <td class="num">${folderCell}</td>
+        ${folderTd}
       </tr>${editorRow(c)}`;
     }).join('');
 
@@ -1334,7 +1339,7 @@
           <th style="text-align:left">Documents</th>
           <th style="text-align:left">Induction</th>
           <th style="text-align:left">Programs</th>
-          <th class="num">Folder</th>
+          ${seesAll ? '<th class="num">Folder</th>' : ''}
         </tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
@@ -1447,7 +1452,6 @@
     // user's job, done per account.
     if (_currentUser && _currentUser.role === 'broker') {
       _tab = 'recruitment';
-      if (_recruitForm === 'intake') _recruitForm = 'contract';  // intake is not broker-facing
       const nav = document.getElementById('tabNav');
       if (nav) nav.style.display = 'none';
     }
