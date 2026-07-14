@@ -1464,28 +1464,71 @@
     render();
   }
 
+  // PIN-pad sign-in, matched to the Performance Dashboard. Staff PINs are
+  // always 6 digits (admin-set-pin refuses anything else), so we auto-submit
+  // once six are entered.
   function showLoginGate(prefillError) {
-    const form  = document.getElementById('loginForm');
+    const gate  = document.getElementById('loginGate');
     const errEl = document.getElementById('loginError');
-    const btn   = document.getElementById('loginBtn');
-    if (prefillError && errEl) { errEl.textContent = prefillError; errEl.hidden = false; }
-    if (!form) return;
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (errEl) errEl.hidden = true;
-      const u = (document.getElementById('loginUser') || {}).value || '';
-      const p = (document.getElementById('loginPin')  || {}).value || '';
-      if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
-      let r;
-      try { r = await window.AUTH.signIn(u, p); }
-      catch (_) { r = { ok: false, error: 'Sign-in service unavailable - try again.' }; }
-      if (r && r.ok) { enterApp(r.user); return; }
-      if (errEl) { errEl.textContent = (r && r.error) || 'Sign-in failed.'; errEl.hidden = false; }
-      if (btn)   { btn.disabled = false; btn.textContent = 'Sign in'; }
-      const pin = document.getElementById('loginPin');
-      if (pin) { pin.value = ''; pin.focus(); }
-    });
+    const dots  = document.getElementById('pinDots');
+    const keypad = document.getElementById('loginKeypad');
     const userIn = document.getElementById('loginUser');
+    if (prefillError && errEl) { errEl.textContent = prefillError; errEl.hidden = false; }
+    if (!gate || !keypad) return;
+
+    let pin = '';
+    let busy = false;
+    const paintDots = () => {
+      if (!dots) return;
+      Array.from(dots.children).forEach((d, i) =>
+        d.classList.toggle('filled', i < pin.length));
+    };
+    const setError = (msg) => {
+      if (!errEl) return;
+      errEl.textContent = msg || '';
+      errEl.hidden = !msg;
+    };
+
+    async function submit() {
+      if (busy) return;
+      const u = (userIn && userIn.value || '').trim();
+      if (!u) { setError('Enter your username first.'); flash(); pin = ''; paintDots(); return; }
+      if (pin.length !== 6) return;
+      busy = true; setError('');
+      let r;
+      try { r = await window.AUTH.signIn(u, pin); }
+      catch (_) { r = { ok: false, error: 'Sign-in service unavailable — try again.' }; }
+      if (r && r.ok) { enterApp(r.user); return; }
+      busy = false;
+      setError((r && r.error) || 'Sign-in failed.');
+      flash(); pin = ''; paintDots();
+    }
+    function flash() {
+      gate.classList.add('pin-error');
+      setTimeout(() => gate.classList.remove('pin-error'), 500);
+    }
+    function press(d) {
+      if (busy || pin.length >= 6) return;
+      pin += d; paintDots();
+      if (pin.length === 6) submit();
+    }
+
+    keypad.querySelectorAll('.key[data-d]').forEach(b =>
+      b.addEventListener('click', () => { setError(''); press(b.dataset.d); }));
+    const back = keypad.querySelector('.key[data-back]');
+    if (back) back.addEventListener('click', () => { pin = pin.slice(0, -1); paintDots(); });
+    const clr = keypad.querySelector('.key[data-clear]');
+    if (clr) clr.addEventListener('click', () => { pin = ''; setError(''); paintDots(); });
+
+    // Physical keyboard support (desktop).
+    document.addEventListener('keydown', (e) => {
+      if (!document.getElementById('loginGate')) return; // app already entered
+      if (e.key >= '0' && e.key <= '9') { setError(''); press(e.key); }
+      else if (e.key === 'Backspace' && document.activeElement !== userIn) {
+        pin = pin.slice(0, -1); paintDots();
+      } else if (e.key === 'Enter') { submit(); }
+    });
+
     if (userIn) userIn.focus();
   }
 

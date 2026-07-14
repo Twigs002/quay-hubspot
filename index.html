@@ -11,21 +11,36 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="pre-auth">
-  <!-- Login gate — shown until an admin session is verified (see auth.js). -->
+  <!-- Login gate — shown until a session is verified (see auth.js). PIN-pad
+       styled to match the Quay 1 Performance Dashboard (quay-dashboard-v2). -->
   <div id="loginGate" class="login-gate">
-    <form class="login-box" id="loginForm" autocomplete="on">
+    <div class="login-box">
       <img class="login-logo" src="assets/quay1-logo-white.png" alt="Quay 1 International Realty" width="200">
       <h2 class="login-title">Team Insights</h2>
-      <p class="login-sub">Sign in with your Quay 1 username &amp; PIN — the same login you use on the other systems. Admin access only.</p>
-      <label class="login-field"><span>Username</span>
-        <input id="loginUser" type="text" autocomplete="username" placeholder="e.g. pagan" required>
-      </label>
-      <label class="login-field"><span>PIN</span>
-        <input id="loginPin" type="password" autocomplete="current-password" required>
-      </label>
-      <button type="submit" class="login-btn" id="loginBtn">Sign in</button>
+      <p class="login-sub">Sign in with your username &amp; PIN — the same login you use on the other systems.</p>
+      <input id="loginUser" class="login-user" type="text" autocomplete="username"
+             autocapitalize="none" autocorrect="off" placeholder="username">
+      <div class="pin-dots" id="pinDots">
+        <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+        <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+      </div>
       <div class="login-error" id="loginError" role="alert" hidden></div>
-    </form>
+      <div class="keypad" id="loginKeypad">
+        <button class="key" data-d="1">1</button>
+        <button class="key" data-d="2">2</button>
+        <button class="key" data-d="3">3</button>
+        <button class="key" data-d="4">4</button>
+        <button class="key" data-d="5">5</button>
+        <button class="key" data-d="6">6</button>
+        <button class="key" data-d="7">7</button>
+        <button class="key" data-d="8">8</button>
+        <button class="key" data-d="9">9</button>
+        <button class="key alt" data-back>← Back</button>
+        <button class="key" data-d="0">0</button>
+        <button class="key alt" data-clear>Clear</button>
+      </div>
+      <p class="login-foot">Admin &amp; broker access only.</p>
+    </div>
   </div>
 
   <header class="topbar">
