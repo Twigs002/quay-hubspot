@@ -731,40 +731,65 @@ body.pre-auth .tab-nav,
 body.pre-auth .main,
 body.pre-auth #modalHost { display: none !important; }
 
+/* Login gate — PIN-pad matched to the Quay 1 Performance Dashboard
+   (quay-dashboard-v2 .dash-login) so the two tools share one sign-in look. */
 .login-gate {
   position: fixed; inset: 0; z-index: 1000;
   display: flex; align-items: center; justify-content: center; padding: 24px;
-  background: radial-gradient(1200px 600px at 50% -10%, #2A3E73, var(--blue-900) 60%, #16224a);
+  background: linear-gradient(160deg, #34508F 0%, #27396B 70%, #1A2547 100%);
+  font-family: var(--sans);
 }
 .login-box {
   width: 100%; max-width: 380px;
-  display: flex; flex-direction: column; gap: 14px; text-align: center;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 16px; padding: 32px 28px 28px;
+  padding: 36px 30px 30px; text-align: center; color: #fff;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 22px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.35);
 }
-.login-logo { align-self: center; height: auto; max-width: 190px; margin-bottom: 4px; }
-.login-title { margin: 0; color: #fff; font-family: var(--sans); font-size: 20px; font-weight: 800; letter-spacing: .01em; }
-.login-sub { margin: 0 0 6px; color: rgba(255,255,255,0.72); font-size: 12.5px; line-height: 1.5; }
-.login-field { display: flex; flex-direction: column; gap: 6px; text-align: left; color: rgba(255,255,255,0.85); font-size: 12px; font-weight: 600; }
-.login-field input {
-  font: inherit; font-size: 15px; font-weight: 500; padding: 11px 13px;
-  border-radius: 10px; border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.96); color: var(--ink); outline: none;
+.login-logo { display: block; width: 200px; max-width: 100%; height: auto; margin: 0 auto 18px; }
+.login-title { margin: 0 0 4px; color: #fff; font-family: var(--sans); font-size: 18px; font-weight: 800; letter-spacing: .01em; }
+.login-sub { margin: 0 0 22px; color: rgba(255,255,255,0.65); font-size: 13px; line-height: 1.5; }
+.login-user {
+  width: 100%; box-sizing: border-box;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 12px; color: #fff; font-family: var(--sans);
+  font-size: 15px; font-weight: 600; padding: 12px 14px;
+  margin-bottom: 14px; outline: none; text-align: center;
 }
-.login-field input:focus { border-color: #C6A15B; box-shadow: 0 0 0 3px rgba(198,161,91,0.35); }
-.login-btn {
-  margin-top: 6px; padding: 12px 16px; border: none; border-radius: 10px;
-  background: #C6A15B; color: #201a0c; font: inherit; font-weight: 700; font-size: 14px;
-  cursor: pointer; transition: filter .15s ease;
+.login-user::placeholder { color: rgba(255,255,255,0.55); }
+.login-user:focus { border-color: var(--yellow); }
+.login-gate .pin-dots { display: flex; gap: 14px; justify-content: center; margin: 6px 0 14px; }
+.login-gate .pin-dot {
+  width: 14px; height: 14px; border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.5); background: transparent;
 }
-.login-btn:hover:not(:disabled) { filter: brightness(1.06); }
-.login-btn:disabled { opacity: .7; cursor: default; }
+.login-gate .pin-dot.filled { background: var(--yellow); border-color: var(--yellow); }
+.login-gate.pin-error .pin-dot { border-color: #FF8B85; }
 .login-error {
-  margin-top: 2px; color: #FFD9D5; background: rgba(210,10,3,0.28);
-  border: 1px solid rgba(255,120,110,0.45); border-radius: 8px;
-  padding: 8px 10px; font-size: 12.5px; font-weight: 600;
+  min-height: 18px; margin: 0 0 8px;
+  font-size: 13px; font-weight: 600; color: #FFD1CE;
+}
+.login-error[hidden] { display: block; visibility: hidden; }
+.login-gate .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.login-gate .key {
+  height: 56px; border-radius: 16px;
+  background: rgba(255,255,255,0.18); color: #fff;
+  font-size: 22px; font-weight: 700; border: 1px solid rgba(255,255,255,0.08);
+  font-family: var(--sans); cursor: pointer;
+  transition: background .12s ease, transform .08s ease;
+}
+.login-gate .key:hover { background: rgba(255,255,255,0.28); }
+.login-gate .key:active { transform: scale(.97); }
+.login-gate .key.alt { background: transparent; border-color: transparent; font-size: 13px; font-weight: 700; }
+.login-foot { font-size: 11.5px; color: rgba(255,255,255,0.55); margin: 18px 0 0; }
+@media (max-height: 600px) {
+  .login-box { padding: 18px 24px; }
+  .login-logo { width: 140px; margin-bottom: 8px; }
+  .login-title { font-size: 16px; }
+  .login-sub { margin-bottom: 12px; }
+  .login-gate .pin-dots { margin: 4px 0 10px; }
+  .login-gate .key { height: 44px; font-size: 18px; border-radius: 12px; }
 }
 
 .signout-btn {
