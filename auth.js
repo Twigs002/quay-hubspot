@@ -34,11 +34,15 @@ window.AUTH = (() => {
   function _gate(staff) {
     if (!staff) return { ok: false, error: 'No staff record for this login.' };
     if (staff.active === false) return { ok: false, error: 'This account is disabled.' };
-    if (!staff.is_super && !staff.is_admin && !staff.is_broker && !staff.is_payroll) {
+    // A payroll login is marked by designation 'payroll' (no DB migration
+    // needed) or the optional is_payroll flag; either grants Recruitment-only
+    // access, same as a broker.
+    const isPayroll = staff.designation === 'payroll' || !!staff.is_payroll;
+    if (!staff.is_super && !staff.is_admin && !staff.is_broker && !isPayroll) {
       return { ok: false, error: 'This login has no dashboard access.' };
     }
     const isSuper = !!staff.is_super, isAdmin = !!staff.is_admin,
-          isBroker = !!staff.is_broker, isPayroll = !!staff.is_payroll;
+          isBroker = !!staff.is_broker;
     return { ok: true, user: {
       username: staff.id, name: staff.name,
       // Real work email if the staff row carries one, else null. We do NOT
@@ -51,9 +55,9 @@ window.AUTH = (() => {
       // view note in app.js.
       email: staff.email || null,
       isSuper, isAdmin, isBroker, isPayroll,
-      // Coarse role marker app.js uses to choose nav + view scope. Payroll is
-      // only reached when the login carries is_payroll but neither super nor
-      // admin, so a payroll user who is also an admin keeps full access.
+      // Coarse role marker app.js uses to choose nav + view scope. Reaches
+      // 'payroll' only for a payroll login that is neither super nor admin nor
+      // broker, so a payroll user who is also an admin keeps full access.
       role: isSuper ? 'super' : isAdmin ? 'admin' : isBroker ? 'broker' : 'payroll',
     } };
   }
