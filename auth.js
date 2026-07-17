@@ -27,16 +27,18 @@ window.AUTH = (() => {
 
   const emailFor = (u) => `${(u || '').toLowerCase().trim()}@${cfg.AUTH_EMAIL_DOMAIN}`;
 
-  // Active super / admin / broker staff may sign in. Supers and admins get the
-  // full dashboard; brokers are gated down to the Recruitment area in app.js.
-  // (Creating broker logins is the user's job, done per account.)
+  // Active super / admin / broker / payroll staff may sign in. Supers and
+  // admins get the full dashboard; brokers AND payroll are gated down to the
+  // Recruitment area in app.js. (Creating these logins is the user's job, done
+  // per account.)
   function _gate(staff) {
     if (!staff) return { ok: false, error: 'No staff record for this login.' };
     if (staff.active === false) return { ok: false, error: 'This account is disabled.' };
-    if (!staff.is_super && !staff.is_admin && !staff.is_broker) {
+    if (!staff.is_super && !staff.is_admin && !staff.is_broker && !staff.is_payroll) {
       return { ok: false, error: 'This login has no dashboard access.' };
     }
-    const isSuper = !!staff.is_super, isAdmin = !!staff.is_admin, isBroker = !!staff.is_broker;
+    const isSuper = !!staff.is_super, isAdmin = !!staff.is_admin,
+          isBroker = !!staff.is_broker, isPayroll = !!staff.is_payroll;
     return { ok: true, user: {
       username: staff.id, name: staff.name,
       // Real work email if the staff row carries one, else null. We do NOT
@@ -48,9 +50,11 @@ window.AUTH = (() => {
       // default. The staff table has no email column today; see the Progress
       // view note in app.js.
       email: staff.email || null,
-      isSuper, isAdmin, isBroker,
-      // Coarse role marker app.js uses to choose nav + view scope.
-      role: isSuper ? 'super' : isAdmin ? 'admin' : 'broker',
+      isSuper, isAdmin, isBroker, isPayroll,
+      // Coarse role marker app.js uses to choose nav + view scope. Payroll is
+      // only reached when the login carries is_payroll but neither super nor
+      // admin, so a payroll user who is also an admin keeps full access.
+      role: isSuper ? 'super' : isAdmin ? 'admin' : isBroker ? 'broker' : 'payroll',
     } };
   }
 

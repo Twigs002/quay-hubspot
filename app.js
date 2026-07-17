@@ -1450,12 +1450,12 @@
         location.reload();
       });
     }
-    // Broker logins are gated to the Recruitment area only: hide the whole tab
-    // nav and pin the active view to Recruitment. Supers/admins keep the full
-    // nav. The real boundary is server-side (Supabase JWT checked by the Apps
-    // Script); this UI lock is just honest UX. Creating broker accounts is the
-    // user's job, done per account.
-    if (_currentUser && _currentUser.role === 'broker') {
+    // Broker AND payroll logins are gated to the Recruitment area only: hide the
+    // whole tab nav and pin the active view to Recruitment. Supers/admins keep
+    // the full nav. The real boundary is server-side (Supabase JWT checked by
+    // the Apps Script); this UI lock is just honest UX. Creating these accounts
+    // is the user's job, done per account.
+    if (_currentUser && (_currentUser.role === 'broker' || _currentUser.role === 'payroll')) {
       _tab = 'recruitment';
       const nav = document.getElementById('tabNav');
       if (nav) nav.style.display = 'none';
