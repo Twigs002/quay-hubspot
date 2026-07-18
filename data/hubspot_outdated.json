@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-18T10:25:35.247383+00:00",
+  "generated": "2026-07-18T11:56:55.330576+00:00",
   "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 73997 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
@@ -2630,13 +2630,13 @@
     }
   },
   "_prev": {
-    "generated": "2026-07-18T03:54:18.849080+00:00",
+    "generated": "2026-07-18T10:25:35.247383+00:00",
     "kpi": {
       "1": {
-        "totalDeals": 31397,
-        "outdatedLeads": 3856,
-        "pctOutdated": 0.12281428161926299,
-        "avgPctUpdated": 0.8175308239970178
+        "totalDeals": 31399,
+        "outdatedLeads": 3868,
+        "pctOutdated": 0.12318863658078283,
+        "avgPctUpdated": 0.8172210381195799
       },
       "2": {
         "totalDeals": 6549,
