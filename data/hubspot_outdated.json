@@ -1,6 +1,6 @@
 {
-  "generated": "2026-07-18T11:56:55.330576+00:00",
-  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 73997 deals processed",
+  "generated": "2026-07-19T04:22:10.855848+00:00",
+  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 74000 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
     "2": "HubSpot Deals | Rentals",
@@ -598,12 +598,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 4,
-          "nurture": 4,
+          "nurture": 5,
           "warm": 0,
           "hot": 0,
-          "outdated": 10,
+          "outdated": 11,
           "upToHot": 524,
-          "pctUpdated": 0.9809160305343512
+          "pctUpdated": 0.9790076335877863
         },
         "ownerIds": [
           "512880424"
@@ -1242,9 +1242,9 @@
       {
         "team": "Raccoons",
         "total": {
-          "deals": 349,
+          "deals": 350,
           "calling": 0,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
@@ -1254,16 +1254,16 @@
         },
         "outdated": {
           "calling": 0,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 33,
           "warm": 16,
           "hot": 4,
-          "outdated": 53,
-          "upToHot": 349,
-          "pctUpdated": 0.8481375358166189
+          "outdated": 54,
+          "upToHot": 350,
+          "pctUpdated": 0.8457142857142858
         },
         "ownerIds": [
           "61698092"
@@ -1602,9 +1602,9 @@
       {
         "team": "Vipers",
         "total": {
-          "deals": 222,
+          "deals": 223,
           "calling": 1,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
@@ -1614,16 +1614,16 @@
         },
         "outdated": {
           "calling": 1,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 39,
           "warm": 10,
           "hot": 4,
-          "outdated": 54,
-          "upToHot": 222,
-          "pctUpdated": 0.7567567567567568
+          "outdated": 55,
+          "upToHot": 223,
+          "pctUpdated": 0.7533632286995515
         },
         "ownerIds": [
           "87800852"
@@ -2611,10 +2611,10 @@
   "portalId": "8870419",
   "kpi": {
     "1": {
-      "totalDeals": 31399,
-      "outdatedLeads": 3868,
-      "pctOutdated": 0.12318863658078283,
-      "avgPctUpdated": 0.8172210381195799
+      "totalDeals": 31401,
+      "outdatedLeads": 3871,
+      "pctOutdated": 0.12327632877933824,
+      "avgPctUpdated": 0.8170878454453367
     },
     "2": {
       "totalDeals": 6549,
@@ -2630,7 +2630,7 @@
     }
   },
   "_prev": {
-    "generated": "2026-07-18T10:25:35.247383+00:00",
+    "generated": "2026-07-18T11:56:55.330576+00:00",
     "kpi": {
       "1": {
         "totalDeals": 31399,
