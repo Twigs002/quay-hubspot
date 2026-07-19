@@ -1,6 +1,6 @@
 {
-  "generated": "2026-07-19T10:33:55.639839+00:00",
-  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 74003 deals processed",
+  "generated": "2026-07-19T11:59:10.039296+00:00",
+  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 74005 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
     "2": "HubSpot Deals | Rentals",
@@ -101,9 +101,9 @@
       {
         "team": "Babes",
         "total": {
-          "deals": 761,
+          "deals": 762,
           "calling": 4,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
@@ -113,16 +113,16 @@
         },
         "outdated": {
           "calling": 4,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 80,
           "warm": 3,
           "hot": 0,
-          "outdated": 87,
-          "upToHot": 761,
-          "pctUpdated": 0.885676741130092
+          "outdated": 88,
+          "upToHot": 762,
+          "pctUpdated": 0.884514435695538
         },
         "ownerIds": [
           "61715183"
@@ -162,27 +162,27 @@
         "team": "Bergscape",
         "total": {
           "deals": 83,
-          "calling": 12,
-          "external": 0,
-          "inbound": 0,
+          "calling": 1,
+          "external": 9,
+          "inbound": 1,
           "reconv": 0,
           "rental": 0,
-          "nurture": 55,
+          "nurture": 56,
           "warm": 8,
           "hot": 8
         },
         "outdated": {
-          "calling": 12,
-          "external": 0,
+          "calling": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 50,
-          "warm": 7,
-          "hot": 7,
-          "outdated": 76,
+          "nurture": 49,
+          "warm": 5,
+          "hot": 6,
+          "outdated": 61,
           "upToHot": 83,
-          "pctUpdated": 0.08433734939759036
+          "pctUpdated": 0.26506024096385544
         },
         "ownerIds": [
           "79270572"
@@ -311,9 +311,9 @@
       {
         "team": "Cavaliers",
         "total": {
-          "deals": 416,
+          "deals": 417,
           "calling": 0,
-          "external": 3,
+          "external": 4,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
@@ -323,16 +323,16 @@
         },
         "outdated": {
           "calling": 0,
-          "external": 3,
+          "external": 4,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 38,
           "warm": 10,
           "hot": 0,
-          "outdated": 51,
-          "upToHot": 416,
-          "pctUpdated": 0.8774038461538461
+          "outdated": 52,
+          "upToHot": 417,
+          "pctUpdated": 0.8752997601918465
         },
         "ownerIds": [
           "84018278"
@@ -2611,10 +2611,10 @@
   "portalId": "8870419",
   "kpi": {
     "1": {
-      "totalDeals": 31403,
-      "outdatedLeads": 3886,
-      "pctOutdated": 0.12374613890392637,
-      "avgPctUpdated": 0.8167238122668576
+      "totalDeals": 31405,
+      "outdatedLeads": 3873,
+      "pctOutdated": 0.12332431141537972,
+      "avgPctUpdated": 0.8197834070973699
     },
     "2": {
       "totalDeals": 6549,
@@ -2630,19 +2630,19 @@
     }
   },
   "_prev": {
-    "generated": "2026-07-19T04:22:10.855848+00:00",
+    "generated": "2026-07-19T10:33:55.639839+00:00",
     "kpi": {
       "1": {
-        "totalDeals": 31401,
-        "outdatedLeads": 3871,
-        "pctOutdated": 0.12327632877933824,
-        "avgPctUpdated": 0.8170878454453367
+        "totalDeals": 31403,
+        "outdatedLeads": 3886,
+        "pctOutdated": 0.12374613890392637,
+        "avgPctUpdated": 0.8167238122668576
       },
       "2": {
         "totalDeals": 6549,
-        "outdatedLeads": 2647,
-        "pctOutdated": 0.40418384486181097,
-        "avgPctUpdated": 0.6395674067341618
+        "outdatedLeads": 2648,
+        "pctOutdated": 0.40433653992976026,
+        "avgPctUpdated": 0.6394211651430534
       },
       "3": {
         "totalDeals": 803,
