@@ -991,6 +991,7 @@
           ${roField('c_senior', 'Senior broker')}
           ${field('c_commission', 'Commission %', 'number', true)}
           ${field('c_candidate_email', 'Candidate email', 'email', true)}
+          ${field('c_contact', 'Candidate contact number', 'tel', true)}
           ${field('c_senior_email', 'Senior broker email', 'email', true)}
           ${requesterField}
         </div>
@@ -1128,7 +1129,8 @@
       full_name: fd.c_fullname, id_number: fd.c_id, activity: fd.c_activity,
       start_date: fd.c_start, team: fd.c_team, senior_broker: fd.c_senior,
       commission: fd.c_commission,
-      candidate_email: fd.c_candidate_email, senior_email: fd.c_senior_email,
+      candidate_email: fd.c_candidate_email, contact_number: fd.c_contact,
+      senior_email: fd.c_senior_email,
       // Requester identity scopes "broker sees own candidates" in the
       // progress view. Email comes from the (prefilled, overridable) field;
       // name is taken from the signed-in session.
