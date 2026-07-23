@@ -76,6 +76,11 @@
   let _progressLoading = false;
   let _progressError = null;
   let _progressExpanded = null;  // folderId of the row whose programs editor is open
+  // Hired state (Recruitment → Hired sub-view; super/admin only). Candidates who
+  // have been through induction move here off the Progress list.
+  let _hired = null;
+  let _hiredLoading = false;
+  let _hiredError = null;
   // Recruitment backend (Google Apps Script Web App). Every authenticated call
   // sends the caller's fresh Supabase JWT (AUTH.getAccessToken()) in the POST
   // body; the backend verifies identity and ownership. There is deliberately no
@@ -894,6 +899,10 @@
   // generates the MOA, seeds the tracker row, and captures what the hire needs
   // provisioned; the Progress report tracks each candidate from there.
   function renderRecruitment() {
+    // The Hired sub-view is super/admin only. Guard the active sub-view so a
+    // broker can never land on it (e.g. if state carried over from another user).
+    const recSeesHired = !!(_currentUser && (_currentUser.isSuper || _currentUser.isAdmin));
+    if (_recruitForm === 'hired' && !recSeesHired) _recruitForm = 'contract';
     const seg = (id, label) =>
       `<button class="${_recruitForm === id ? 'active' : ''}" data-rec-form="${id}">${escapeHtml(label)}</button>`;
     const field = (id, label, type, req) =>
@@ -994,11 +1003,11 @@
         <h3 style="margin:0;font-family:var(--serif);font-size:17px;color:var(--ink)">Recruitment</h3>
         <div class="sub" style="margin-top:6px">Broker onboarding - request a contract for a new hire, then track their progress.</div>
         <div class="seg" id="recSeg" style="margin-top:14px">
-          ${seg('contract', 'Contract')}${seg('progress', 'Progress report')}
+          ${seg('contract', 'Contract')}${seg('progress', 'Progress report')}${recSeesHired ? seg('hired', 'Hired') : ''}
         </div>
       </div>
       <div class="card mt card-pad">
-        ${_recruitForm === 'progress' ? renderProgress() : contractForm}
+        ${_recruitForm === 'progress' ? renderProgress() : _recruitForm === 'hired' ? renderHired() : contractForm}
       </div>
     </div>`;
   }
@@ -1014,6 +1023,7 @@
     // Progress sub-view has its own wiring; the contract/intake wiring below
     // is all id-guarded, so it no-ops when those forms aren't rendered.
     if (_recruitForm === 'progress') { wireProgress(); return; }
+    if (_recruitForm === 'hired')    { wireHired();    return; }
     // Team → Senior broker: auto-fill the read-only senior broker from the
     // selected team's option data (first-listed broker for that team).
     const teamSel = document.getElementById('c_team');
@@ -1286,6 +1296,16 @@
       return `<span style="font-weight:600;color:var(--ink)">Wed ${_fmtProgDate(ind.wed)}<br>Thu ${_fmtProgDate(ind.thu)}</span>`;
     };
 
+    // Super/admin can tick "Been through induction", which hires the candidate
+    // (moves them to the Hired tab, off Progress). Brokers never see this column.
+    const canHire = seesAll;
+    const hireCell = (c) => `<td style="text-align:center">
+      <label class="rec-toggle" title="Tick once ${escapeHtml(c.name || 'this candidate')} has completed induction - moves them to the Hired tab" style="justify-content:center">
+        <input type="checkbox" data-hire="${escapeHtml(c.folderId)}" data-hire-name="${escapeHtml(c.name || c.firstName || 'this candidate')}">
+      </label>
+    </td>`;
+    const colCount = canHire ? 6 : 5;
+
     const editorRow = (c) => {
       if (_progressExpanded !== c.folderId) return '';
       const other = (c.programs || []).find(p => p.code === 'other');
@@ -1294,7 +1314,7 @@
         return `<label class="rec-toggle"><input type="checkbox" data-prog-code="${escapeHtml(o.code)}" data-prog-label="${escapeHtml(o.label)}"${on ? ' checked' : ''}><span>${escapeHtml(o.label)}</span></label>`;
       }).join('');
       return `<tr class="prog-panel" data-prog-panel="${escapeHtml(c.folderId)}">
-        <td colspan="5" style="background:var(--paper-2);padding:16px 18px">
+        <td colspan="${colCount}" style="background:var(--paper-2);padding:16px 18px">
           <div style="font-family:var(--serif);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--blue-800);margin-bottom:10px">Programs for ${escapeHtml(c.name || c.firstName || 'this candidate')}</div>
           <div class="rec-toggles" style="margin-bottom:12px">${toggles}</div>
           <label class="rec-field" style="margin-bottom:12px">
@@ -1330,6 +1350,7 @@
         <td>${docsCell(c.docs)}${missing}</td>
         <td>${inductionCell(c)}</td>
         <td>${programsCell(c)}</td>
+        ${canHire ? hireCell(c) : ''}
       </tr>${editorRow(c)}`;
     }).join('');
 
@@ -1345,6 +1366,7 @@
           <th style="text-align:left">Documents</th>
           <th style="text-align:left">Induction</th>
           <th style="text-align:left">Programs</th>
+          ${canHire ? '<th style="text-align:center">Been through induction</th>' : ''}
         </tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
@@ -1370,6 +1392,126 @@
     document.querySelectorAll('[data-prog-save]').forEach(b => {
       b.addEventListener('click', () => _savePrograms(b.dataset.progSave));
     });
+    // "Been through induction" → hire the candidate (moves them to Hired).
+    document.querySelectorAll('input[data-hire]').forEach(cb => {
+      cb.addEventListener('change', () => _markHired(cb));
+    });
+  }
+
+  async function _markHired(cb) {
+    if (!cb.checked) return;
+    const folderId = cb.dataset.hire;
+    const name = cb.dataset.hireName || 'this candidate';
+    if (!confirm(`Mark ${name} as having been through induction?\n\nThey will move to the Hired tab and drop off the Progress report.`)) {
+      cb.checked = false;
+      return;
+    }
+    cb.disabled = true;
+    try {
+      const accessToken = await window.AUTH.getAccessToken();
+      const res = await fetch(RECRUIT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight
+        body: JSON.stringify({ kind: 'mark_hired', folderId, accessToken }),
+      });
+      const data = await res.json();
+      if (data && data.ok) {
+        _progress = null;   // candidate now filtered out of progress
+        _hired = null;      // and will appear in the (re-fetched) hired list
+        _progressExpanded = null;
+        loadProgress();
+      } else {
+        alert('Could not mark hired: ' + ((data && data.error) || 'unknown error'));
+        cb.checked = false; cb.disabled = false;
+      }
+    } catch (err) {
+      alert('Network error: ' + err);
+      cb.checked = false; cb.disabled = false;
+    }
+  }
+
+  // ─── Recruitment → Hired (super/admin only) ───────────────────────────
+  async function loadHired() {
+    if (_hiredLoading) return;
+    _hiredLoading = true;
+    _hiredError = null;
+    try {
+      const accessToken = await window.AUTH.getAccessToken();
+      const r = await fetch(RECRUIT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ kind: 'hired', accessToken }),
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      if (!data || !data.ok) {
+        _hired = null;
+        _hiredError = (data && (data.error === 'unauthorized' || data.error === 'forbidden'))
+          ? 'Your session could not be verified for recruitment access. Please sign out and back in.'
+          : String((data && data.error) || 'load failed');
+        return;
+      }
+      _hired = data;
+    } catch (e) {
+      console.warn('[hired] load failed', e);
+      _hired = null;
+      _hiredError = String(e.message || e);
+    } finally {
+      _hiredLoading = false;
+      render();
+    }
+  }
+
+  function renderHired() {
+    if (_hired == null && !_hiredLoading && _hiredError == null) loadHired();
+    if (_hiredLoading || (_hired == null && _hiredError == null)) {
+      return `<div style="text-align:center;color:var(--muted);padding:44px 20px">Loading hired candidates…</div>`;
+    }
+    if (_hiredError != null) {
+      return `<div style="text-align:center;color:var(--red);padding:32px 20px">
+        Couldn't load hired candidates: ${escapeHtml(_hiredError)}.
+        <div style="margin-top:12px"><button class="chip" id="hiredRetry">Try again</button></div>
+      </div>`;
+    }
+    const cands = (_hired && _hired.candidates) || [];
+    if (!cands.length) {
+      return `<div style="color:var(--muted);padding:8px 2px 4px">
+        <div style="font-size:12.5px;margin-bottom:10px">Candidates move here once they've been through induction.</div>
+        <div style="text-align:center;padding:40px 20px">No hired candidates yet.</div>
+      </div>`;
+    }
+    const rows = cands.map(c => {
+      const desig = [c.team, c.designation].filter(Boolean).map(escapeHtml).join(' · ');
+      return `<tr>
+        <td>
+          <div class="agent-cell"><div class="agent-name">${escapeHtml(c.name || c.firstName || 'Unnamed')}</div></div>
+          ${desig ? `<div style="font-size:11.5px;color:var(--muted);margin-top:2px">${desig}</div>` : ''}
+        </td>
+        <td>${escapeHtml(c.requesterName || c.requesterEmail || 'Unknown')}</td>
+        <td>${escapeHtml(c.hiredAt || '')}</td>
+      </tr>`;
+    }).join('');
+    return `<div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+        <div class="sub">${cands.length} hired candidate${cands.length === 1 ? '' : 's'}.</div>
+        <button class="chip" id="hiredRefresh">Refresh</button>
+      </div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr>
+          <th style="text-align:left">Candidate</th>
+          <th style="text-align:left">Requester</th>
+          <th style="text-align:left">Hired on</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+    </div>`;
+  }
+
+  function wireHired() {
+    const retry = document.getElementById('hiredRetry');
+    if (retry) retry.addEventListener('click', () => { _hiredError = null; _hired = null; loadHired(); });
+    const refresh = document.getElementById('hiredRefresh');
+    if (refresh) refresh.addEventListener('click', () => { _hired = null; loadHired(); });
   }
 
   async function _savePrograms(folderId) {
