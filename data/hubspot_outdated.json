@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-26T10:49:58.671707+00:00",
+  "generated": "2026-07-26T12:06:09.527905+00:00",
   "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 74441 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
@@ -2270,13 +2270,13 @@
           "external": 1,
           "inbound": 1,
           "reconv": 0,
-          "rental": 29,
+          "rental": 30,
           "nurture": 1,
           "warm": 1,
           "hot": 0,
-          "outdated": 34,
+          "outdated": 35,
           "upToHot": 199,
-          "pctUpdated": 0.8291457286432161
+          "pctUpdated": 0.8241206030150754
         },
         "ownerIds": [
           "105191306"
@@ -2618,9 +2618,9 @@
     },
     "2": {
       "totalDeals": 6559,
-      "outdatedLeads": 2590,
-      "pctOutdated": 0.39487726787620064,
-      "avgPctUpdated": 0.6307290578366497
+      "outdatedLeads": 2591,
+      "pctOutdated": 0.3950297301417899,
+      "avgPctUpdated": 0.630342509711408
     },
     "3": {
       "totalDeals": 808,
@@ -2630,13 +2630,13 @@
     }
   },
   "_prev": {
-    "generated": "2026-07-26T04:26:08.866478+00:00",
+    "generated": "2026-07-26T10:49:58.671707+00:00",
     "kpi": {
       "1": {
-        "totalDeals": 31453,
-        "outdatedLeads": 3514,
-        "pctOutdated": 0.11172225224938798,
-        "avgPctUpdated": 0.8405472737382157
+        "totalDeals": 31455,
+        "outdatedLeads": 3526,
+        "pctOutdated": 0.1120966460022254,
+        "avgPctUpdated": 0.8402338161481777
       },
       "2": {
         "totalDeals": 6559,
