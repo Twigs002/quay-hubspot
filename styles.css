@@ -37,6 +37,13 @@
   --sans: 'Montserrat', system-ui, -apple-system, sans-serif;
   --serif:'Montserrat', system-ui, sans-serif;
   --marker:'Permanent Marker', 'Montserrat', cursive;
+
+  /* ── Unified Quay 1 header (shared spec across all apps) ──────── */
+  --hdr-logo:    52px;   /* brand lockup height — middle ground, echoes the dashboard */
+  --hdr-pad-y:   16px;   /* topbar vertical padding */
+  --hdr-divider: 44px;   /* vertical divider height */
+  --hdr-title:   20px;   /* app title size */
+  --hdr-h:       84px;   /* total bar height = logo + 2*pad-y; sub-nav sticks here */
 }
 
 * { box-sizing: border-box; }
@@ -67,17 +74,17 @@ button { font-family: inherit; cursor: pointer; }
 }
 .topbar .bar-inner {
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
-  padding-top: 18px; padding-bottom: 18px;
+  padding-top: var(--hdr-pad-y); padding-bottom: var(--hdr-pad-y);
 }
 .topbar-left { display: flex; align-items: center; gap: 20px; }
 /* Official Quay 1 logo (white-on-blue lockup) — brand-guideline usage. */
-.brand-logo { height: 46px; width: auto; display: block; flex: none; }
+.brand-logo { height: var(--hdr-logo); width: auto; display: block; flex: none; }
 .topbar-divider {
-  width: 1px; height: 40px; background: rgba(255,255,255,.28); flex: none;
+  width: 1px; height: var(--hdr-divider); background: rgba(255,255,255,.28); flex: none;
 }
 .topbar-titles h1 {
   font-family: var(--serif);
-  font-size: 19px; font-weight: 800; margin: 0; letter-spacing: .04em;
+  font-size: var(--hdr-title); font-weight: 800; margin: 0; letter-spacing: .04em;
   color: #fff; text-transform: uppercase;
 }
 .topbar-titles p {
@@ -307,10 +314,8 @@ button { font-family: inherit; cursor: pointer; }
   .t3-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {
-  .topbar { padding: 14px 16px; }
-  .brand-logo { height: 38px; }
+  :root { --hdr-logo: 40px; --hdr-pad-y: 12px; --hdr-title: 16px; --hdr-h: 64px; }
   .topbar-divider { display: none; }
-  .topbar-titles h1 { font-size: 16px; }
   .topbar-right .pill { display: none; }   /* badge mirrored in title card, save space */
   .main { padding-top: 16px; padding-bottom: 40px; }   /* sides via shared --gutter */
   .row.kpis { grid-template-columns: 1fr; }
@@ -385,7 +390,7 @@ button { font-family: inherit; cursor: pointer; }
 /* ─── Tab navigation ─────────────────────────────────────────────────── */
 .tab-nav {
   position: sticky;
-  top: 60px;                          /* sits under the topbar */
+  top: var(--hdr-h);                  /* sits directly under the topbar */
   z-index: 9;
   background: var(--paper);
   border-bottom: 1px solid var(--line);
@@ -412,7 +417,7 @@ button { font-family: inherit; cursor: pointer; }
   border-bottom-color: var(--blue-800);
 }
 @media (max-width: 520px) {
-  .tab-nav { padding: 6px 14px 0; top: 50px; }
+  .tab-nav { padding: 6px 14px 0; }
   .tab-btn { padding: 8px 12px 10px; font-size: 13px; }
 }
 
