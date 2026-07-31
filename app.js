@@ -1581,6 +1581,8 @@
   function enterApp(user) {
     _currentUser = user || null;   // { username, name, email, isSuper, isAdmin, isBroker, role }
     document.body.classList.remove('pre-auth');
+    // Shared cross-app switcher on the Quay 1 flag (superusers only; no-op else).
+    if (window.QuayNav) window.QuayNav.mount({ isSuper: !!(user && user.isSuper), current: 'hubspot' });
     const gate = document.getElementById('loginGate');
     if (gate) gate.remove();
     const so = document.getElementById('signOutBtn');
