@@ -138,7 +138,7 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ─── Seg control ──────────────────────────────────────────── */
 .seg {
-  display: inline-flex; gap: 6px;
+  display: inline-flex; flex-wrap: wrap; gap: 6px;
   background: var(--paper); border-radius: 999px; padding: 4px;
   border: 1px solid var(--line);
 }
@@ -317,6 +317,7 @@ button { font-family: inherit; cursor: pointer; }
   :root { --hdr-logo: 40px; --hdr-pad-y: 12px; --hdr-title: 16px; --hdr-h: 64px; }
   .topbar-divider { display: none; }
   .topbar-right .pill { display: none; }   /* badge mirrored in title card, save space */
+  .signout-who { display: none; }          /* drop the name so "Sign out" never crowds the topbar */
   .main { padding-top: 16px; padding-bottom: 40px; }   /* sides via shared --gutter */
   .row.kpis { grid-template-columns: 1fr; }
   .kpi { padding: 14px 16px; }
