@@ -318,6 +318,13 @@ button { font-family: inherit; cursor: pointer; }
   .topbar-divider { display: none; }
   .topbar-right .pill { display: none; }   /* badge mirrored in title card, save space */
   .signout-who { display: none; }          /* drop the name so "Sign out" never crowds the topbar */
+  /* Tighten the header row so the fixed sign-out block can't leak past 375px */
+  .topbar .bar-inner { gap: 10px; }
+  .topbar-left { gap: 10px; min-width: 0; }
+  .topbar-titles { min-width: 0; }
+  .topbar-titles h1, .topbar-titles p {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
   .main { padding-top: 16px; padding-bottom: 40px; }   /* sides via shared --gutter */
   .row.kpis { grid-template-columns: 1fr; }
   .kpi { padding: 14px 16px; }
