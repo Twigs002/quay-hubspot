@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-02T10:47:30.932933+00:00",
-  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 74816 deals processed",
+  "generated": "2026-08-02T12:04:47.134259+00:00",
+  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 74818 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
     "2": "HubSpot Deals | Rentals",
@@ -11,9 +11,9 @@
       {
         "team": "Amigos",
         "total": {
-          "deals": 438,
+          "deals": 439,
           "calling": 3,
-          "external": 0,
+          "external": 1,
           "inbound": 1,
           "reconv": 0,
           "rental": 0,
@@ -23,16 +23,16 @@
         },
         "outdated": {
           "calling": 0,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 34,
           "warm": 3,
           "hot": 1,
-          "outdated": 38,
-          "upToHot": 438,
-          "pctUpdated": 0.91324200913242
+          "outdated": 39,
+          "upToHot": 439,
+          "pctUpdated": 0.9111617312072893
         },
         "ownerIds": [
           "61989266"
@@ -417,12 +417,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 89,
+          "nurture": 86,
           "warm": 0,
           "hot": 0,
-          "outdated": 101,
+          "outdated": 98,
           "upToHot": 759,
-          "pctUpdated": 0.8669301712779973
+          "pctUpdated": 0.8708827404479579
         },
         "ownerIds": [
           "192141162"
@@ -1242,9 +1242,9 @@
       {
         "team": "Raccoons",
         "total": {
-          "deals": 539,
+          "deals": 540,
           "calling": 0,
-          "external": 3,
+          "external": 4,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
@@ -1254,16 +1254,16 @@
         },
         "outdated": {
           "calling": 0,
-          "external": 3,
+          "external": 4,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 35,
           "warm": 33,
           "hot": 4,
-          "outdated": 75,
-          "upToHot": 539,
-          "pctUpdated": 0.8608534322820037
+          "outdated": 76,
+          "upToHot": 540,
+          "pctUpdated": 0.8592592592592593
         },
         "ownerIds": [
           "61698092"
@@ -1319,11 +1319,11 @@
           "reconv": 0,
           "rental": 0,
           "nurture": 17,
-          "warm": 4,
-          "hot": 1,
-          "outdated": 22,
+          "warm": 2,
+          "hot": 0,
+          "outdated": 19,
           "upToHot": 664,
-          "pctUpdated": 0.9668674698795181
+          "pctUpdated": 0.9713855421686747
         },
         "ownerIds": [
           "84021524"
@@ -2611,10 +2611,10 @@
   "portalId": "8870419",
   "kpi": {
     "1": {
-      "totalDeals": 31457,
-      "outdatedLeads": 3196,
-      "pctOutdated": 0.1015990081698827,
-      "avgPctUpdated": 0.8598055319697729
+      "totalDeals": 31459,
+      "outdatedLeads": 3192,
+      "pctOutdated": 0.10146539940875425,
+      "avgPctUpdated": 0.8598882249096221
     },
     "2": {
       "totalDeals": 6538,
@@ -2630,19 +2630,19 @@
     }
   },
   "_prev": {
-    "generated": "2026-08-02T04:24:35.844069+00:00",
+    "generated": "2026-08-02T10:47:30.932933+00:00",
     "kpi": {
       "1": {
-        "totalDeals": 31454,
-        "outdatedLeads": 3186,
-        "pctOutdated": 0.1012907738284479,
-        "avgPctUpdated": 0.8599156534628772
+        "totalDeals": 31457,
+        "outdatedLeads": 3196,
+        "pctOutdated": 0.1015990081698827,
+        "avgPctUpdated": 0.8598055319697729
       },
       "2": {
         "totalDeals": 6538,
-        "outdatedLeads": 2751,
-        "pctOutdated": 0.4207708779443255,
-        "avgPctUpdated": 0.5980379516583892
+        "outdatedLeads": 2753,
+        "pctOutdated": 0.42107678189048636,
+        "avgPctUpdated": 0.5977493097187155
       },
       "3": {
         "totalDeals": 812,
