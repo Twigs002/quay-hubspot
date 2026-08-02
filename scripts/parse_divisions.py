@@ -184,6 +184,23 @@ def parse():
             _flush_team()
             contact_rows_consumed = 0
             _new_section(_norm(row[0]))
+            # A "header" row that also carries team data (suburbs / HubSpot
+            # email / owner / division / type) is really a broker-less team
+            # that doubles as its group's label — e.g. "Lions", which has
+            # lions@greeffcity.co.za and its own Parklands book but no broker
+            # in B-D. Emit it as the section's first team so it stays
+            # selectable; following broker-teams still attach to the section.
+            if any(_norm(row[i]) for i in (7, 8, 9, 10, 11)):
+                current_team = {
+                    "name":             _norm(row[0]),
+                    "type":             _norm(row[11]) or "",
+                    "suburbs":          _norm(row[7]) or "",
+                    "hubspot_email":    _norm(row[8]) or "",
+                    "hubspot_owner_id": _norm(row[9]) or "",
+                    "hubspot_division": _norm(row[10]) or "",
+                    "brokers":          [],
+                    "specialists":      [],
+                }
             continue
 
         if _is_team_header(row):
