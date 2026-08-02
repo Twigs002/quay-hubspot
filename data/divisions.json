@@ -429,6 +429,11 @@
           "hubspot_division": "Lions",
           "brokers": [
             {
+              "name": "Nic Morkel",
+              "email": "nic@quay1.co.za",
+              "phone": "082 468 6490"
+            },
+            {
               "name": "Le-Roy Salimu",
               "email": "le-roy@quay1.co.za",
               "phone": "084 968 3951"
