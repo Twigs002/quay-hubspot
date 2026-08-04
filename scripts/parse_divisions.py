@@ -77,6 +77,16 @@ SRC = _resolve_source()
 EMAIL_RX = re.compile(r"^[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}$")
 PHONE_RX = re.compile(r"[\d\s+()\-/]{7,}")
 
+# Manual senior-broker overrides for teams the source sheet carries no
+# broker for — broker-less group-label teams like Lions (lions@greeffcity,
+# its own Parklands book, but no broker in cols B-D). The dashboard treats
+# brokers[0] as the "senior broker", so we prepend the override there. This
+# survives re-parses from the xlsx (a raw divisions.json edit does not).
+# Keyed by team name.
+SENIOR_BROKER_OVERRIDES = {
+    "Lions": {"name": "Nic Morkel", "email": "nic@quay1.co.za", "phone": "082 468 6490"},
+}
+
 # Columns (1-indexed in xlsx, 0-indexed in tuples):
 #   A=team, B=broker1, C=broker2, D=broker3,
 #   E=spec1,  F=spec2,    G=spec3,
@@ -261,6 +271,13 @@ def parse():
 
     # Drop the "Unsorted" catch-all if it ended up empty.
     sections = [s for s in sections if s["teams"]]
+
+    # Apply manual senior-broker overrides for broker-less teams (see map).
+    for s in sections:
+        for t in s["teams"]:
+            ov = SENIOR_BROKER_OVERRIDES.get(t["name"])
+            if ov and not any(b.get("name") == ov["name"] for b in t["brokers"]):
+                t["brokers"].insert(0, dict(ov))
 
     # Stats — useful for sanity-checking the parse.
     team_count    = sum(len(s["teams"]) for s in sections)
