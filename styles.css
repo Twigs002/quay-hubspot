@@ -814,3 +814,111 @@ body.pre-auth #modalHost { display: none !important; }
 .signout-btn:hover:not(:disabled) { background: rgba(255,255,255,0.18); }
 .signout-btn:disabled { opacity: .6; cursor: default; }
 .signout-who { opacity: .8; font-weight: 500; }
+
+/* ============================================================
+   PREMIUM PASS — spreadsheet-grade heatmap grid + elevated cards
+   Layered on top so the base sheet stays intact and reversible.
+   Light theme only, Quay 1 navy + brass. No dark mode.
+   ============================================================ */
+:root {
+  --shadow-lift: 0 1px 2px rgba(30,46,89,.05), 0 14px 30px -18px rgba(30,46,89,.32);
+  --grid-line:   #E8EDF6;   /* hairline between spreadsheet cells */
+}
+
+/* Subtle page depth so cards read as lifted off the surface. */
+body {
+  background:
+    radial-gradient(1200px 460px at 50% -140px, rgba(152,197,237,.16), transparent 70%),
+    linear-gradient(180deg, #EEF2F8 0%, #E7ECF5 100%);
+  background-attachment: fixed;
+}
+
+/* ── Heatmap cells (the spreadsheet signature) ──────────────── */
+.heat-cell { text-align: right; padding: 9px 14px; }
+.heat-val {
+  font-weight: 700; color: var(--ink);
+  font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+}
+.heat-cell--empty { background: transparent !important; }
+.heat-cell--empty .empty { font-weight: 500; }
+/* Keep the heat readable when the whole row lifts on hover: dim the
+   fill slightly rather than replacing it, so the gradient still reads. */
+.tbl tbody tr:hover td.heat-cell { background-image: linear-gradient(rgba(255,255,255,.28), rgba(255,255,255,.28)); }
+
+/* ── KPI hero cards — depth, brass accent, financial numerals ── */
+.kpi {
+  position: relative;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFCFF 100%);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lift);
+  padding: 20px 22px 22px;
+  overflow: hidden;
+}
+.kpi::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue-800), var(--sky));
+}
+.kpi-ic {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: linear-gradient(150deg, var(--sky-tint), #DCEAFA);
+  color: var(--blue-800);
+  box-shadow: inset 0 0 0 1px rgba(61,91,166,.12);
+}
+.kpi-label { color: var(--slate); letter-spacing: .05em; }
+.kpi-val {
+  font-size: 36px; letter-spacing: -.015em;
+  font-variant-numeric: tabular-nums;
+}
+.kpi.kpi--hero-bad::before  { background: linear-gradient(90deg, var(--red), #FF8A80); }
+.kpi.kpi--hero-warn::before { background: linear-gradient(90deg, var(--yellow-deep), var(--yellow)); }
+.kpi.kpi--hero-ok::before   { background: linear-gradient(90deg, var(--green), #58C596); }
+.kpi.kpi--hero-bad  { background: linear-gradient(180deg, #FDECEA, #FBE2DD); }
+.kpi.kpi--hero-warn { background: linear-gradient(180deg, #FEF6DE, #FBF1D2); }
+.kpi.kpi--hero-ok   { background: linear-gradient(180deg, #ECF7F1, #E2F1EA); }
+.kpi.kpi--hero-bad  .kpi-ic { background: linear-gradient(150deg, #FDE0DC, #FBD0C9); color: var(--red); box-shadow: inset 0 0 0 1px rgba(210,10,3,.14); }
+
+/* ── Table → authoritative boxed spreadsheet grid ───────────── */
+.tbl thead th {
+  background: linear-gradient(180deg, #EDF1FA 0%, #E3E9F5 100%);
+  color: var(--blue-900);
+  font-size: 11px; letter-spacing: .06em;
+  padding-top: 12px; padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--line);
+}
+.tbl-sortable th:hover { background: linear-gradient(180deg,#E4EAF6 0%, #D9E1F1 100%); }
+/* Thin vertical rules between columns = the spreadsheet's boxed feel. */
+.tbl th, .tbl td { border-right: 1px solid var(--grid-line); }
+.tbl th:last-child, .tbl td:last-child { border-right: 0; }
+.tbl tbody td { border-bottom: 1px solid #F1F4FA; }
+/* Softer, near-white zebra so heat columns own the colour. */
+.tbl tbody tr:nth-child(even):not(:hover):not(.tbl-total) td { background: #F7F9FD; }
+.tbl tbody tr:nth-child(even):not(:hover):not(.tbl-total) td[style*="sticky"] { background: #F7F9FD !important; }
+.tbl tbody tr:nth-child(even):not(:hover):not(.tbl-total) td.heat-cell { background: transparent; }
+.agent-name { letter-spacing: -.005em; }
+.tbl-total td {
+  border-top: 2px solid var(--line);
+  background: linear-gradient(180deg,#F4F6FC,#EEF2FA) !important;
+}
+.tbl-total td[style*="sticky"] { background: #F1F4FB !important; }
+
+/* ── Needs-attention rank badges get the brass treatment ────── */
+.t3-card { box-shadow: var(--shadow-sm); }
+.t3-rank {
+  background: linear-gradient(160deg, var(--blue-700), var(--blue-900));
+  box-shadow: 0 2px 6px rgba(30,46,89,.28), inset 0 1px 0 rgba(255,255,255,.18);
+}
+.t3-card:first-child .t3-rank,
+.t3-grid > :first-child .t3-rank {
+  background: linear-gradient(160deg, var(--yellow), var(--yellow-deep));
+  color: #3a2c00;
+}
+
+/* ── Filter chips + section titles: a hair more premium ─────── */
+.chip { box-shadow: 0 1px 1px rgba(30,46,89,.04); }
+.chip.active { box-shadow: 0 2px 8px -2px rgba(61,91,166,.5); }
+.hs-titlebar h3 { letter-spacing: -.01em; }
+
+@media (max-width: 520px) {
+  .kpi-val { font-size: 28px; }
+  .heat-cell { padding: 8px 11px; }
+}

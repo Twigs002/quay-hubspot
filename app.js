@@ -445,18 +445,35 @@
       if (share >= 0.15) return 'warn';
       return 'ok';
     };
+    // Continuous green→amber→red heat fill for a cell, à la the RAW DATA
+    // spreadsheet. `score` runs 0 (worst → red) to 1 (best → green). Text
+    // stays dark ink so the value never depends on hue alone (WCAG 1.3.1);
+    // the ✓/⚠ marker carries the same signal for colour-blind readers.
+    const heatBg = (score) => {
+      const s = Math.max(0, Math.min(1, Number(score)));
+      const hue   = 6 + (145 - 6) * s;          // 6°=red → 42°=amber → 145°=green
+      const sat   = 64 - 18 * Math.abs(s - 0.5) * 2;  // ease saturation at the midpoint
+      const light = 80 + 9 * s;                 // reds sit a touch deeper than greens
+      return `background:hsl(${hue.toFixed(0)} ${sat.toFixed(0)}% ${light.toFixed(0)}%)`;
+    };
     const pctCell = (frac) => {
-      if (frac == null) return '<td class="num"><span class="empty">-</span></td>';
+      if (frac == null) return '<td class="num heat-cell heat-cell--empty"><span class="empty">-</span></td>';
       const cls = pctClass(frac);
       const sym = cls === 'ok' ? ' ✓' : cls === 'bad' ? ' ⚠' : '';
-      return `<td class="num"><span class="pill ${cls}">${(Number(frac) * 100).toFixed(1)}%${sym}</span></td>`;
+      const val = (Number(frac) * 100).toFixed(1);
+      return `<td class="num heat-cell tnum" style="${heatBg(Number(frac))}" title="${val}% of leads updated"><span class="heat-val">${val}%${sym}</span></td>`;
     };
     const outdatedCell = (outdatedN, totalN) => {
-      if (outdatedN == null) return '<td class="num"><span class="empty">-</span></td>';
-      const cls = outdatedClass(Number(outdatedN), Number(totalN));
-      if (!cls) return `<td class="num tnum">${fmt(Math.round(outdatedN))}</td>`;
+      if (outdatedN == null) return '<td class="num heat-cell heat-cell--empty"><span class="empty">-</span></td>';
+      const n   = Number(outdatedN);
+      const tot = Number(totalN) || 0;
+      if (!tot) return `<td class="num tnum">${fmt(Math.round(n))}</td>`;
+      const share = n / tot;
+      // Share ≥ 50% reads fully red, 0% fully green — mirrors the spreadsheet.
+      const score = 1 - Math.min(1, share / 0.5);
+      const cls = outdatedClass(n, tot);
       const sym = cls === 'bad' ? ' ⚠' : cls === 'ok' ? ' ✓' : '';
-      return `<td class="num"><span class="pill ${cls}" style="font-variant-numeric:tabular-nums">${fmt(Math.round(outdatedN))}${sym}</span></td>`;
+      return `<td class="num heat-cell tnum" style="${heatBg(score)}" title="${n} outdated of ${tot} · ${(share * 100).toFixed(0)}% stale"><span class="heat-val">${fmt(Math.round(n))}${sym}</span></td>`;
     };
     const sumCol = (k) => visible.reduce((s, r) => s + _num(r.outdated && r.outdated[k]), 0);
 
