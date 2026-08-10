@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-09T11:29:24.388718+00:00",
-  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 75093 deals processed",
+  "generated": "2026-08-10T03:14:01.440446+00:00",
+  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 75097 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
     "2": "HubSpot Deals | Rentals",
@@ -1154,9 +1154,9 @@
       {
         "team": "Power Rangers",
         "total": {
-          "deals": 735,
+          "deals": 736,
           "calling": 2,
-          "external": 8,
+          "external": 9,
           "inbound": 0,
           "reconv": 3,
           "rental": 1,
@@ -1166,16 +1166,16 @@
         },
         "outdated": {
           "calling": 2,
-          "external": 8,
+          "external": 9,
           "inbound": 0,
           "reconv": 2,
           "rental": 0,
           "nurture": 16,
           "warm": 0,
           "hot": 47,
-          "outdated": 75,
-          "upToHot": 735,
-          "pctUpdated": 0.8979591836734694
+          "outdated": 76,
+          "upToHot": 736,
+          "pctUpdated": 0.8967391304347826
         },
         "ownerIds": [
           "182959417"
@@ -1212,9 +1212,9 @@
       {
         "team": "Proteas",
         "total": {
-          "deals": 478,
+          "deals": 479,
           "calling": 0,
-          "external": 1,
+          "external": 2,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
@@ -1224,16 +1224,16 @@
         },
         "outdated": {
           "calling": 0,
-          "external": 1,
+          "external": 2,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 9,
           "warm": 0,
           "hot": 0,
-          "outdated": 10,
-          "upToHot": 478,
-          "pctUpdated": 0.9790794979079498
+          "outdated": 11,
+          "upToHot": 479,
+          "pctUpdated": 0.9770354906054279
         },
         "ownerIds": [
           "445668165"
@@ -1302,9 +1302,9 @@
       {
         "team": "Samurais",
         "total": {
-          "deals": 657,
+          "deals": 658,
           "calling": 0,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
@@ -1314,16 +1314,16 @@
         },
         "outdated": {
           "calling": 0,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
           "nurture": 32,
           "warm": 3,
           "hot": 1,
-          "outdated": 36,
-          "upToHot": 657,
-          "pctUpdated": 0.9452054794520548
+          "outdated": 37,
+          "upToHot": 658,
+          "pctUpdated": 0.9437689969604863
         },
         "ownerIds": [
           "84021524"
@@ -2611,10 +2611,10 @@
   "portalId": "8870419",
   "kpi": {
     "1": {
-      "totalDeals": 31434,
-      "outdatedLeads": 3332,
-      "pctOutdated": 0.1059998727492524,
-      "avgPctUpdated": 0.8498191061660986
+      "totalDeals": 31437,
+      "outdatedLeads": 3335,
+      "pctOutdated": 0.10608518624550689,
+      "avgPctUpdated": 0.849738062320706
     },
     "2": {
       "totalDeals": 6528,
@@ -2630,13 +2630,13 @@
     }
   },
   "_prev": {
-    "generated": "2026-08-09T09:44:32.040998+00:00",
+    "generated": "2026-08-09T11:29:24.388718+00:00",
     "kpi": {
       "1": {
-        "totalDeals": 31433,
+        "totalDeals": 31434,
         "outdatedLeads": 3332,
-        "pctOutdated": 0.10600324499729584,
-        "avgPctUpdated": 0.8498716866002426
+        "pctOutdated": 0.1059998727492524,
+        "avgPctUpdated": 0.8498191061660986
       },
       "2": {
         "totalDeals": 6528,
