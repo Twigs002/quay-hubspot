@@ -515,26 +515,25 @@
       No teams match the current filter / hidden-empties setting.
     </td></tr>`;
 
-    return `<div class="tab-view">
+    return `<div class="tab-view deals-view">
 
-      <div class="card card-pad hs-titlebar">
-        <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;justify-content:space-between">
-          <div style="min-width:0;flex:1 1 320px">
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
-              <h3 style="margin:0;font-family:var(--serif);font-size:17px;color:var(--ink)">Out-of-Date Deals · per team</h3>
-              ${refreshBadge}
-            </div>
-            <div class="sub" style="margin-top:6px">
-              Mirrors the RAW DATA DEALS spreadsheet · pulled from HubSpot
-              ${genAbs ? ` · ${escapeHtml(genAbs)}` : ''}
-            </div>
-          </div>
-          <div class="seg seg-with-meta" id="hsGroupSeg" style="flex-wrap:wrap">
+      <section class="hs-hero">
+        <div class="hs-hero-main">
+          <span class="hs-eyebrow">Deal Health · HubSpot</span>
+          <h2 class="hs-hero-title">Out-of-Date Deals</h2>
+          <p class="hs-hero-sub">
+            Per-team lead freshness, mirroring the RAW DATA DEALS spreadsheet${genAbs ? ` · pulled ${escapeHtml(genAbs)}` : ''}
+          </p>
+          <div class="hs-hero-meta">${refreshBadge}</div>
+        </div>
+        <div class="hs-hero-seg">
+          <span class="hs-seg-label">Deal group</span>
+          <div class="seg seg-with-meta seg--on-navy" id="hsGroupSeg">
             ${segBtn('1')}${segBtn('2')}${segBtn('3')}
           </div>
         </div>
-        ${_hubspot.error ? `<div class="banner" style="margin-top:12px;background:var(--red-tint);color:var(--red);padding:8px 10px;border-radius:6px;font-size:12.5px">Data not loaded - ${escapeHtml(_hubspot.error)}. The GH Action will populate it on its next run.</div>` : ''}
-      </div>
+        ${_hubspot.error ? `<div class="hs-hero-error">Data not loaded — ${escapeHtml(_hubspot.error)}. The GH Action will populate it on its next run.</div>` : ''}
+      </section>
 
       <div class="row kpis mt">
         ${kpiCard(I.alert,  'Outdated Leads',
@@ -556,23 +555,27 @@
                   deltaFmt(kpi.totalDeals, prevKpi && prevKpi.totalDeals, '', false))}
       </div>
 
-      <div class="card mt card-pad">
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
-          <div style="font-family:var(--serif);font-size:14px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.04em">Needs attention</div>
-          <div class="sub">Top 3 worst stale ratios in ${escapeHtml(groupNames[_hubspotGroup])} (≥ 5 deals, ≥ 30% stale)</div>
+      <div class="card mt card-pad hs-section">
+        <div class="hs-section-head">
+          <h3 class="hs-section-title">Needs attention</h3>
+          <span class="hs-section-sub">Top 3 worst stale ratios in ${escapeHtml(groupNames[_hubspotGroup])} · ≥ 5 deals, ≥ 30% stale</span>
         </div>
         <div class="t3-grid">${top3Html}</div>
       </div>
 
-      <div class="card mt card-pad" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">
+      <div class="card mt card-pad hs-toolbar">
         <div class="chips">${filterChips}</div>
-        <label style="display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--slate);cursor:pointer">
+        <label class="hs-empty-toggle">
           <input id="hsShowEmpty" type="checkbox" ${_hubspotShowEmpty ? 'checked' : ''}>
           Show ${emptyCount} team${emptyCount === 1 ? '' : 's'} with no deals
         </label>
       </div>
 
-      <div class="card mt">
+      <div class="card mt hs-table-card">
+        <div class="hs-table-head">
+          <h3 class="hs-section-title">Per-team breakdown</h3>
+          <span class="hs-section-sub">${escapeHtml(groupNames[_hubspotGroup])} · sorted by ${_hubspotSortBy === 'pctUpdated' ? '% updated (worst first)' : 'selected column'}</span>
+        </div>
         <div class="tbl-wrap"><table class="tbl tbl-sortable">
           <thead><tr>
             ${teamHeader}
