@@ -1168,3 +1168,93 @@ a.d-spot:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-
   .d-title { font-size: 24px; }
   .d-head-side { padding-top: 0; }
 }
+
+
+/* ==================================================================
+   BRAND PASS — Quay 1 Brand Guidelines applied to the Deals view
+   Palette: #3D5BA6 blue · #FDC503 yellow · #98C5ED sky · #D20A03 red
+   Titles: bold, ALWAYS UPPERCASE. Rounded edges preferred.
+   Appended last so it overrides the earlier passes; scoped to the
+   shared chrome + .deals-view so Directory / Recruitment are untouched.
+   ================================================================== */
+
+:root {
+  --brand-blue:   #3D5BA6;   /* the Quay 1 blue — primary */
+  --brand-yellow: #FDC503;
+  --brand-sky:    #98C5ED;
+  --brand-red:    #D20A03;
+  --r-lg:  14px;             /* was undefined → cards rendered square */
+  --r-kpi: 14px;
+}
+
+/* ── Chrome: blue band + yellow keyline, uppercase tabs ─────────── */
+.topbar { background: var(--brand-blue); border-bottom: 4px solid var(--brand-yellow); box-shadow: none; }
+.topbar-titles h1 { letter-spacing: .16em; font-weight: 700; }
+.topbar-titles p { color: #D7E4F5; }
+.signout-btn { border-color: rgba(255,255,255,.32); }
+.signout-btn:hover:not(:disabled) { border-color: var(--brand-yellow); color: var(--brand-yellow); background: transparent; }
+.topbar-right .pill { background: rgba(255,255,255,.14); border: 0; color: #fff; }
+
+.tab-nav { background: #fff; }
+.tab-btn { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; padding: 15px 14px 12px; }
+.tab-btn.active { font-weight: 700; border-bottom: 3px solid var(--brand-yellow); }
+.tab-btn:hover { color: var(--brand-blue); }
+
+/* ── Page header: uppercase title, blue eyebrow ─────────────────── */
+.deals-view .d-eyebrow { color: var(--brand-blue); letter-spacing: .2em; }
+.deals-view .d-title {
+  font-weight: 700; text-transform: uppercase;
+  letter-spacing: .01em; font-size: clamp(26px, 3vw, 34px);
+}
+.deals-view .d-sub { font-weight: 400; color: #55607A; }
+.d-head-side .pill { border-radius: 999px; }
+
+/* ── Rounded surfaces throughout ────────────────────────────────── */
+.deals-view .card,
+.deals-view .kpi,
+.deals-view .d-tablecard,
+.deals-view .d-spot { border-radius: var(--r-lg); }
+.deals-view .d-tablecard { overflow: hidden; }
+
+/* ── Group switch + filter chips: brand blue, pill shaped ───────── */
+.d-groups button { border-radius: 999px; padding: 11px 20px; }
+.d-groups button.active { background: var(--brand-blue); border-color: var(--brand-blue); }
+.d-groups button.active .seg-meta { color: var(--brand-yellow) !important; }
+.d-groups button:hover { border-color: var(--brand-blue); color: var(--brand-blue); }
+.deals-view .chip { border-radius: 999px; padding: 9px 15px; }
+.deals-view .chip.active { background: var(--brand-blue); border-color: var(--brand-blue); }
+.deals-view .chip.active .chip-count { background: rgba(255,255,255,.2); color: #fff; }
+
+/* ── KPI cards: uppercase label, no accent bar, sky icon chip ───── */
+.deals-view .kpi-label { text-transform: uppercase; letter-spacing: .13em; font-size: 11px; font-weight: 700; color: #6C7793; }
+.deals-view .kpi-val { font-weight: 700; letter-spacing: -.01em; }
+.deals-view .kpi-ic { border-radius: 12px; background: #E9F2FB; border-color: #CFE3F6; color: var(--brand-blue); }
+.deals-view .kpi.kpi--hero-ok,
+.deals-view .kpi.kpi--hero-warn,
+.deals-view .kpi.kpi--hero-bad { background: var(--card); }
+
+/* ── Section subheads: uppercase, tracked ───────────────────────── */
+.deals-view .d-subtitle { font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+
+/* ── Needs-attention cards: white, yellow on hover (was peach) ──── */
+.deals-view .d-spot { background: #fff; border-color: var(--line); }
+a.d-spot:hover { border-color: var(--brand-yellow); box-shadow: 0 6px 18px rgba(34,49,92,.10); }
+.deals-view .d-spot .d-eyebrow { color: var(--yellow-deep); }
+.deals-view .d-spot-name { font-weight: 700; text-transform: uppercase; letter-spacing: .01em; font-size: 21px; }
+.d-medal--1 { background: var(--brand-yellow); color: #4A3800; }
+.d-medal--2 { background: var(--brand-sky); color: #22315C; }
+.deals-view .d-spot-bar,
+.deals-view .d-spot-fill { border-radius: 999px; }
+.deals-view .d-spot-go { color: var(--brand-blue); letter-spacing: .08em; text-transform: uppercase; font-size: 10.5px; }
+
+/* ── Table: uppercase heads, pill action, rounded bars ──────────── */
+.deals-view .tbl thead th { text-transform: uppercase; letter-spacing: .13em; font-size: 10px; color: #6C7793; }
+.deals-view .avatar { border-radius: 999px; background: #E9F2FB; border-color: #CFE3F6; color: var(--brand-blue); }
+.deals-view .cell-bar .track,
+.deals-view .cell-bar .fill { border-radius: 999px; }
+.deals-view .row-go {
+  border-radius: 999px; letter-spacing: .1em; font-size: 10px; color: var(--brand-blue);
+}
+.deals-view .row-go:hover { border-color: var(--brand-yellow); color: var(--yellow-deep); background: #fff; }
+.deals-view .sort-ind--active { color: var(--yellow-deep); }
+.deals-view .tbl-total td { border-top: 2px solid var(--brand-blue); }
