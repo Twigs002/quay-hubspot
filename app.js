@@ -326,10 +326,12 @@
       const txt = unit === '%' ? `${Math.abs(d * 100).toFixed(1)} pts` : fmt(Math.round(Math.abs(d)));
       return `<span class="${cls}" title="vs previous refresh">${arrow} ${txt}</span>`;
     };
-    const kpiCard = (icon, label, val, foot, delta, heroClass) => `<div class="card kpi ${heroClass || ''}">
-      <div class="kpi-top"><div class="kpi-ic">${icon}</div></div>
+    // Clean editorial KPI card, mirroring quay-dashboard-v2: icon chip
+    // top-left, delta pill top-right, muted label, big serif value, foot.
+    const kpiCard = (icon, label, val, foot, delta) => `<div class="card kpi">
+      <div class="kpi-top"><div class="kpi-ic">${icon}</div>${delta || ''}</div>
       <div class="kpi-label">${escapeHtml(label)}</div>
-      <div class="kpi-valrow"><span class="kpi-val tnum">${val}</span>${delta || ''}</div>
+      <div class="kpi-val tnum">${val}</div>
       <div class="kpi-foot">${escapeHtml(foot)}</div>
     </div>`;
 
@@ -373,23 +375,24 @@
              `?query=&filters=%5B%7B%22property%22%3A%22hubspot_owner_id%22%2C%22operator%22%3A%22IN%22%2C%22values%22%3A%5B${r.ownerIds.map(encodeURIComponent).join('%2C')}%5D%7D%5D`;
     };
     const top3Html = top3.length === 0
-      ? `<div class="muted" style="font-size:13px">No teams flagged for attention in ${escapeHtml(groupNames[_hubspotGroup])} - every team with ≥5 deals is below the 30% stale threshold.</div>`
+      ? `<div class="d-attn-empty">No teams flagged for attention in ${escapeHtml(groupNames[_hubspotGroup])} — every team with ≥ 5 deals is below the 30% stale threshold.</div>`
       : top3.map(({ row: r }, i) => {
           const link = hubspotLinkFor(r);
-          const stalePct = (r._stalePct * 100).toFixed(0);
+          const stalePct = Math.round(r._stalePct * 100);
+          const lvl = r._stalePct >= 0.6 ? 'bad' : r._stalePct >= 0.3 ? 'warn' : 'ok';
+          const barW = Math.max(4, Math.min(100, stalePct));
           const inner = `
-            <div class="t3-rank">${i + 1}</div>
-            <div class="t3-body">
-              <div class="t3-name">${escapeHtml(r.team)}</div>
-              <div class="t3-stats">
-                <span class="t3-stat"><b>${fmt(r._out)}</b> stale of <b>${fmt(r._tot)}</b></span>
-                <span class="t3-stat t3-pct" style="color:${r._stalePct >= 0.6 ? 'var(--red)' : r._stalePct >= 0.3 ? 'var(--amber)' : 'var(--green)'}">${stalePct}% stale</span>
-              </div>
+            <div class="d-spot-top">
+              <span class="d-eyebrow">${escapeHtml((groupNames[_hubspotGroup] || '').split('|').pop().trim() || 'Deal group')}</span>
+              <span class="d-medal d-medal--${i + 1}">${i + 1}</span>
             </div>
-            ${link ? `<div class="t3-go" aria-hidden="true">→</div>` : ''}`;
+            <div class="d-spot-name">${escapeHtml(r.team)}</div>
+            <div class="d-spot-stat"><b>${fmt(r._out)}</b> stale of <b>${fmt(r._tot)}</b> deals</div>
+            <div class="d-spot-bar"><span class="d-spot-fill d-spot-fill--${lvl}" style="width:${barW}%"></span></div>
+            <div class="d-spot-foot"><span class="d-spot-pct d-spot-pct--${lvl}">${stalePct}% stale</span>${link ? '<span class="d-spot-go">Open in HubSpot →</span>' : ''}</div>`;
           return link
-            ? `<a class="t3-card" href="${link}" target="_blank" rel="noopener" title="Open this team's deals in HubSpot">${inner}</a>`
-            : `<div class="t3-card t3-card--static">${inner}</div>`;
+            ? `<a class="card d-spot" href="${link}" target="_blank" rel="noopener" title="Open this team's deals in HubSpot">${inner}</a>`
+            : `<div class="card d-spot">${inner}</div>`;
         }).join('');
 
     // ── Filter chips ────────────────────────────────────────────────
@@ -414,22 +417,18 @@
     // marker so the meaning isn't carried only by hue. ✓ when none stale,
     // ⚠ when all stale.
     const stageCell = (outdatedN, totalN) => {
-      if (!totalN) return '<td class="num"><span class="empty">-</span></td>';
+      if (!totalN) return '<td class="num"><span class="empty">–</span></td>';
       const out = Number(outdatedN || 0);
       const tot = Number(totalN);
       const allStale  = tot > 0 && out === tot;
       const noneStale = out === 0;
-      const colour = allStale  ? 'color:var(--red);font-weight:700'
-                   : noneStale ? 'color:var(--green);font-weight:700'
-                               : 'color:var(--ink);font-weight:600';
-      // Only flag the worst case (all stale). Per-cell ✓ ticks across 8
-      // stage columns were pure noise; the green numerator already reads
-      // as "none stale". Summary pills keep their ✓/⚠ (real signal).
-      const marker = allStale ? ' ⚠' : '';
-      // Colour applies to the numerator (outdated); denominator recedes.
+      // Calm treatment: numerator recedes to ink, denominator muted. Only the
+      // worst case (all stale) is flagged red + ⚠; a clean cell reads green.
+      const cls = allStale ? ' stage-cell--bad' : noneStale ? ' stage-cell--clean' : '';
+      const marker = allStale ? '<span class="cell-mark" aria-hidden="true">⚠</span>' : '';
       const display = `${_fmtK(out)}<span class="cell-slash">/</span><span class="cell-den">${_fmtK(tot)}</span>${marker}`;
       const title = `${out} outdated of ${tot} total`;
-      return `<td class="num tnum" style="${colour}" title="${title}">${display}</td>`;
+      return `<td class="num tnum stage-cell${cls}" title="${title}">${display}</td>`;
     };
     const pctClass = (frac) => {
       if (frac == null) return '';
@@ -456,24 +455,29 @@
       const light = 80 + 9 * s;                 // reds sit a touch deeper than greens
       return `background:hsl(${hue.toFixed(0)} ${sat.toFixed(0)}% ${light.toFixed(0)}%)`;
     };
+    // % Updated → an elegant mini proportion bar (à la quay-dashboard-v2's
+    // .cell-bar) instead of a heat fill: value + a thin RAG-coloured track.
     const pctCell = (frac) => {
-      if (frac == null) return '<td class="num heat-cell heat-cell--empty"><span class="empty">-</span></td>';
+      if (frac == null) return '<td class="num"><span class="empty">–</span></td>';
       const cls = pctClass(frac);
-      const sym = cls === 'ok' ? ' ✓' : cls === 'bad' ? ' ⚠' : '';
-      const val = (Number(frac) * 100).toFixed(1);
-      return `<td class="num heat-cell tnum" style="${heatBg(Number(frac))}" title="${val}% of leads updated"><span class="heat-val">${val}%${sym}</span></td>`;
+      const val = (Number(frac) * 100);
+      const w = Math.max(4, Math.min(100, val));
+      return `<td class="num" title="${val.toFixed(1)}% of leads with a future next-activity date">
+        <div class="cell-bar">
+          <span class="cell-bar-val tnum">${val.toFixed(0)}%</span>
+          <span class="track"><span class="fill fill--${cls}" style="width:${w}%"></span></span>
+        </div></td>`;
     };
+    // Outdated total → plain number preceded by a small RAG status dot; the
+    // dot carries the stale-share signal without flooding the cell with colour.
     const outdatedCell = (outdatedN, totalN) => {
-      if (outdatedN == null) return '<td class="num heat-cell heat-cell--empty"><span class="empty">-</span></td>';
+      if (outdatedN == null) return '<td class="num"><span class="empty">–</span></td>';
       const n   = Number(outdatedN);
       const tot = Number(totalN) || 0;
       if (!tot) return `<td class="num tnum">${fmt(Math.round(n))}</td>`;
-      const share = n / tot;
-      // Share ≥ 50% reads fully red, 0% fully green — mirrors the spreadsheet.
-      const score = 1 - Math.min(1, share / 0.5);
       const cls = outdatedClass(n, tot);
-      const sym = cls === 'bad' ? ' ⚠' : cls === 'ok' ? ' ✓' : '';
-      return `<td class="num heat-cell tnum" style="${heatBg(score)}" title="${n} outdated of ${tot} · ${(share * 100).toFixed(0)}% stale"><span class="heat-val">${fmt(Math.round(n))}${sym}</span></td>`;
+      const share = (n / tot * 100).toFixed(0);
+      return `<td class="num tnum" title="${n} outdated of ${tot} · ${share}% stale"><span class="cell-dot cell-dot--${cls}" aria-hidden="true"></span>${fmt(Math.round(n))}</td>`;
     };
     const sumCol = (k) => visible.reduce((s, r) => s + _num(r.outdated && r.outdated[k]), 0);
 
@@ -517,37 +521,33 @@
 
     return `<div class="tab-view deals-view">
 
-      <section class="hs-hero">
-        <div class="hs-hero-main">
-          <span class="hs-eyebrow">Deal Health · HubSpot</span>
-          <h2 class="hs-hero-title">Out-of-Date Deals</h2>
-          <p class="hs-hero-sub">
-            Per-team lead freshness, mirroring the RAW DATA DEALS spreadsheet${genAbs ? ` · pulled ${escapeHtml(genAbs)}` : ''}
-          </p>
-          <div class="hs-hero-meta">${refreshBadge}</div>
+      <header class="d-head">
+        <div class="d-head-main">
+          <span class="d-eyebrow">HubSpot · Deal Health</span>
+          <h1 class="d-title">Out-of-Date Deals</h1>
+          <p class="d-sub">Per-team lead freshness, mirroring the RAW DATA DEALS spreadsheet${genAbs ? ` · pulled ${escapeHtml(genAbs)}` : ''}</p>
         </div>
-        <div class="hs-hero-seg">
-          <span class="hs-seg-label">Deal group</span>
-          <div class="seg seg-with-meta seg--on-navy" id="hsGroupSeg">
-            ${segBtn('1')}${segBtn('2')}${segBtn('3')}
-          </div>
-        </div>
-        ${_hubspot.error ? `<div class="hs-hero-error">Data not loaded — ${escapeHtml(_hubspot.error)}. The GH Action will populate it on its next run.</div>` : ''}
-      </section>
+        <div class="d-head-side">${refreshBadge}</div>
+      </header>
+
+      <div class="d-groups" id="hsGroupSeg">
+        ${segBtn('1')}${segBtn('2')}${segBtn('3')}
+      </div>
+
+      ${_hubspot.error ? `<div class="d-banner">Data not loaded — ${escapeHtml(_hubspot.error)}. The GH Action will populate it on its next run.</div>` : ''}
 
       <div class="row kpis mt">
         ${kpiCard(I.alert,  'Outdated Leads',
                   fmt(kpi.outdatedLeads),
-                  'sum of stale leads across the group',
+                  'Sum of stale leads across the group',
                   deltaFmt(kpi.outdatedLeads, prevKpi && prevKpi.outdatedLeads, '', true))}
         ${kpiCard(I.target, '% Outdated',
                   (kpi.pctOutdated * 100).toFixed(1) + '%',
-                  'outdated ÷ total deals',
-                  deltaFmt(kpi.pctOutdated, prevKpi && prevKpi.pctOutdated, '%', true),
-                  heroClass)}
+                  'Outdated ÷ total deals',
+                  deltaFmt(kpi.pctOutdated, prevKpi && prevKpi.pctOutdated, '%', true))}
         ${kpiCard(I.check,  'Avg % Updated',
                   (kpi.avgPctUpdated * 100).toFixed(1) + '%',
-                  'mean across ' + kpi.reportingTeams + ' reporting team' + (kpi.reportingTeams === 1 ? '' : 's'),
+                  'Mean across ' + kpi.reportingTeams + ' reporting team' + (kpi.reportingTeams === 1 ? '' : 's'),
                   deltaFmt(kpi.avgPctUpdated, prevKpi && prevKpi.avgPctUpdated, '%', false))}
         ${kpiCard(I.layers, 'Total Deals',
                   fmt(kpi.totalDeals),
@@ -555,26 +555,28 @@
                   deltaFmt(kpi.totalDeals, prevKpi && prevKpi.totalDeals, '', false))}
       </div>
 
-      <div class="card mt card-pad hs-section">
-        <div class="hs-section-head">
-          <h3 class="hs-section-title">Needs attention</h3>
-          <span class="hs-section-sub">Top 3 worst stale ratios in ${escapeHtml(groupNames[_hubspotGroup])} · ≥ 5 deals, ≥ 30% stale</span>
+      <section class="d-attn mt">
+        <div class="d-subhead">
+          <h2 class="d-subtitle">Needs attention</h2>
+          <span class="d-subnote">Top 3 worst stale ratios in ${escapeHtml(groupNames[_hubspotGroup])} · ≥ 5 deals, ≥ 30% stale</span>
         </div>
-        <div class="t3-grid">${top3Html}</div>
-      </div>
+        <div class="d-attn-grid">${top3Html}</div>
+      </section>
 
-      <div class="card mt card-pad hs-toolbar">
+      <div class="card mt d-toolbar">
         <div class="chips">${filterChips}</div>
-        <label class="hs-empty-toggle">
+        <label class="d-empty">
           <input id="hsShowEmpty" type="checkbox" ${_hubspotShowEmpty ? 'checked' : ''}>
           Show ${emptyCount} team${emptyCount === 1 ? '' : 's'} with no deals
         </label>
       </div>
 
-      <div class="card mt hs-table-card">
-        <div class="hs-table-head">
-          <h3 class="hs-section-title">Per-team breakdown</h3>
-          <span class="hs-section-sub">${escapeHtml(groupNames[_hubspotGroup])} · sorted by ${_hubspotSortBy === 'pctUpdated' ? '% updated (worst first)' : 'selected column'}</span>
+      <div class="card mt d-tablecard">
+        <div class="card-head">
+          <div>
+            <h3>Per-team breakdown</h3>
+            <div class="sub">${escapeHtml(groupNames[_hubspotGroup])} · ${visible.length} team${visible.length === 1 ? '' : 's'} shown</div>
+          </div>
         </div>
         <div class="tbl-wrap"><table class="tbl tbl-sortable">
           <thead><tr>
@@ -592,7 +594,7 @@
               const divInfo = divisionForTeam(r.team);
               const teamClickable = !!divInfo;
               return `<tr${dim}${teamClickable ? ` class="row-team" data-team-name="${escapeHtml(r.team)}" tabindex="0" role="button" aria-label="Open ${escapeHtml(r.team)} division details"` : ''}>
-                <td style="${STK_TD}"><div class="agent-cell"><div class="agent-name">${escapeHtml(r.team || '-')}${teamClickable ? '<span class="team-chev" aria-hidden="true">›</span>' : ''}</div>${r._tot === 0 ? '<span class="pill" style="background:var(--paper);color:var(--muted);font-size:10px;margin-left:6px">No deals</span>' : ''}</div></td>
+                <td style="${STK_TD}"><div class="agent-cell"><span class="avatar" aria-hidden="true">${escapeHtml((r.team || '?').trim().charAt(0).toUpperCase() || '?')}</span><div class="agent-name">${escapeHtml(r.team || '-')}${teamClickable ? '<span class="team-chev" aria-hidden="true">›</span>' : ''}</div>${r._tot === 0 ? '<span class="pill no-deals">No deals</span>' : ''}</div></td>
                 <td class="num tnum">${fmt(tot)}</td>
                 ${HUBSPOT_COLS.map(c => {
                   if (c.k === 'pctUpdated') return pctCell(r.outdated ? r.outdated[c.k] : null);
