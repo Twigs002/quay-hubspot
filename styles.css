@@ -6,28 +6,20 @@
 
 :root {
   --blue-900: #1E2E59;
-  --blue-850: #243A6E;   /* mid navy — hero-band gradient stop */
-  --blue-800: #3D5BA6;   /* PRIMARY brand blue */
+  --blue-800: #3D5BA6;
   --blue-700: #4C6BB8;
-  --blue-600: #6480C4;
   --paper:    #EEF2F8;
   --paper-2:  #E3E9F3;
   --card:     #FFFFFF;
   --card-2:   #F6F8FC;
-  --yellow:      #FDC503;   /* brand yellow — the signature Quay 1 accent */
+  --yellow:      #FDC503;
   --yellow-deep: #B98A02;
-  --yellow-soft: #FDE08A;
-  --yellow-tint: #FFF6D6;
   --sky:         #98C5ED;
-  --sky-deep:    #2E6FB0;
   --sky-tint:    #E9F2FB;
   --ink:    #1A2746;
   --slate:  #4A566D;
   --muted:  #606C86;   /* was #8893A8 — now ~4.6:1 on white (WCAG AA small text) */
   --empty:  #9AA4B8;   /* recessed grey, "—" placeholders only (non-essential) */
-  /* Text colours for use on the navy hero band. */
-  --on-navy:     #EAF0FB;
-  --on-navy-dim: #A7B5D2;
   --green:  #277A54;   /* was #2F8F63 — nudged over AA on white */
   --green-tint:#E2F1EA;
   --amber:  #8A6800;   /* was #B98A02 — safe as text on white, matches pill-rental */
@@ -38,9 +30,6 @@
   --line-2: #EDF1F8;
   --r-sm: 8px;
   --r:    12px;
-  --r-kpi: 14px;   /* KPI cards sit a step tighter than content cards */
-  --r-lg:  18px;   /* content cards — matches quay-dashboard-v2 */
-  --shadow-lg: 0 12px 40px rgba(30,46,89,.16);
   --maxw:   1720px;                     /* shared content column */
   --gutter: clamp(20px, 3vw, 72px);     /* shared side gutter for all bands */
   --shadow-sm: 0 1px 2px rgba(30,46,89,.06), 0 1px 1px rgba(30,46,89,.04);
@@ -927,158 +916,255 @@ body {
 /* ── Filter chips + section titles: a hair more premium ─────── */
 .chip { box-shadow: 0 1px 1px rgba(30,46,89,.04); }
 .chip.active { box-shadow: 0 2px 8px -2px rgba(61,91,166,.5); }
+.hs-titlebar h3 { letter-spacing: -.01em; }
 
 @media (max-width: 520px) {
   .kpi-val { font-size: 28px; }
   .heat-cell { padding: 8px 11px; }
 }
 
-/* ==============================================================
-   DEALS PAGE — Quay 1 brand redesign
-   Navy hero band + signature yellow accents, brought in line with
-   the quay-dashboard-v2 brand system. Data/heat logic unchanged.
-   ============================================================== */
+/* ==================================================================
+   DEALS PAGE v2 — editorial redesign, mirroring quay-dashboard-v2
+   Clean white surfaces, serif-600 headings, blue eyebrows, hairline
+   tables with mini proportion bars (no heat fills), .spot risk cards.
+   All rules scoped to .deals-view so the Directory / Recruitment tabs
+   are untouched, and to override the older "premium pass" globals.
+   ================================================================== */
 
-/* ── Navy hero band (replaces the plain white titlebar card) ──── */
-.hs-hero {
-  position: relative;
-  display: flex; flex-wrap: wrap; gap: 22px 28px;
-  align-items: flex-end; justify-content: space-between;
-  padding: 26px 30px;
-  border-radius: var(--r-lg);
-  background:
-    radial-gradient(120% 160% at 100% 0%, rgba(152,197,237,.20) 0%, rgba(152,197,237,0) 42%),
-    linear-gradient(150deg, var(--blue-850) 0%, var(--blue-900) 72%);
-  color: #fff;
-  box-shadow: var(--shadow);
-  overflow: hidden;
+/* ── Rhythm ─────────────────────────────────────────────────── */
+.deals-view.tab-view > * + * { margin-top: 20px; }
+.deals-view .row { gap: 18px; }
+.deals-view .card { border-radius: var(--r-lg); box-shadow: var(--shadow-sm); }
+
+/* ── Page header (editorial, on the paper — no navy band) ─────── */
+.d-head {
+  display: flex; flex-wrap: wrap; gap: 16px 24px;
+  align-items: flex-start; justify-content: space-between;
+  padding: 6px 2px 0;
 }
-/* Signature Quay 1 yellow spine down the leading edge of the band. */
-.hs-hero::before {
-  content: ""; position: absolute; inset: 0 auto 0 0;
-  width: 5px; background: linear-gradient(var(--yellow), var(--yellow-deep));
+.d-head-main { min-width: 0; flex: 1 1 380px; }
+.d-eyebrow {
+  font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--blue-800); font-weight: 700;
 }
-.hs-hero-main { min-width: 0; flex: 1 1 340px; }
-.hs-eyebrow {
-  display: inline-block;
-  font-size: 11.5px; font-weight: 800; letter-spacing: .16em;
-  text-transform: uppercase; color: var(--yellow);
+.d-title {
+  margin: 9px 0 0;
+  font-family: var(--serif); font-size: 28px; font-weight: 600;
+  color: var(--ink); letter-spacing: -.015em; line-height: 1.05;
 }
-.hs-hero-title {
-  margin: 8px 0 0;
-  font-family: var(--serif);
-  font-size: 30px; font-weight: 800; line-height: 1.05;
-  letter-spacing: -.015em; color: #fff;
+.d-sub {
+  margin: 9px 0 0; max-width: 66ch;
+  font-size: 13px; color: var(--slate); line-height: 1.55;
 }
-.hs-hero-sub {
-  margin: 8px 0 0; max-width: 60ch;
-  font-size: 13px; line-height: 1.55; color: var(--on-navy-dim);
+.d-head-side { flex: none; padding-top: 4px; }
+/* Refresh badge → quiet bordered pill with a status dot. */
+.d-head-side .pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-width: 0; padding: 6px 13px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .01em;
+  background: var(--card); color: var(--slate); border: 1px solid var(--line);
 }
-.hs-hero-meta { margin-top: 14px; }
-.hs-hero-seg {
-  display: flex; flex-direction: column; gap: 8px;
-  align-items: flex-end; flex: 0 0 auto;
+.d-head-side .pill::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--muted); flex: none;
 }
-.hs-seg-label {
-  font-size: 10.5px; font-weight: 700; letter-spacing: .12em;
-  text-transform: uppercase; color: var(--on-navy-dim);
-}
-.hs-hero-error {
-  flex-basis: 100%;
-  margin-top: 4px; padding: 9px 12px; border-radius: var(--r-sm);
+.d-head-side .pill.ok::before   { background: var(--green); }
+.d-head-side .pill.warn::before { background: var(--amber); }
+.d-head-side .pill.bad::before  { background: var(--red); }
+
+.d-banner {
+  padding: 10px 14px; border-radius: var(--r-sm);
   font-size: 12.5px; font-weight: 600;
-  background: rgba(210,10,3,.16); color: #FFD9D4;
-  border: 1px solid rgba(255,138,128,.35);
+  background: var(--red-tint); color: var(--red); border: 1px solid #F1BCB8;
 }
-/* Refresh pill on navy reads brighter than the white-card variant. */
-.hs-hero-meta .pill { font-size: 11px; padding: 4px 11px; }
-.hs-hero-meta .pill.ok   { background: rgba(47,143,99,.22);  color: #A7ECC7; }
-.hs-hero-meta .pill.warn { background: rgba(253,197,3,.20);  color: var(--yellow-soft); }
-.hs-hero-meta .pill.bad  { background: rgba(210,10,3,.22);   color: #FFB4AC; }
 
-/* ── Segment control — on-navy variant ─────────────────────────── */
-.seg--on-navy {
-  background: rgba(255,255,255,.08);
-  border-color: rgba(255,255,255,.16);
+/* ── Deal-group switch → clean pill chips ─────────────────────── */
+.d-groups { display: flex; flex-wrap: wrap; gap: 8px; }
+.d-groups button {
+  border: 1px solid var(--line); background: var(--card-2);
+  color: var(--slate); border-radius: 999px; padding: 9px 16px;
+  font-size: 13px; font-weight: 700; letter-spacing: .01em;
+  display: inline-flex; align-items: center; gap: 7px;
+  transition: color .14s, background .14s, border-color .14s;
 }
-.seg--on-navy button { color: var(--on-navy-dim); }
-.seg--on-navy button:hover { color: #fff; }
-.seg--on-navy button.active {
-  background: #fff; color: var(--blue-900);
-  box-shadow: 0 2px 10px -2px rgba(0,0,0,.35);
-}
-/* Per-group stale% meta: bright on navy for inactive, semantic on the
-   white active chip. Never lets colour be the only signal — the label
-   text ("41% stale") carries the meaning. */
-.seg--on-navy button:not(.active) .seg-meta { color: var(--on-navy-dim); }
-.seg--on-navy button:not(.active) .seg-stale-ok   { color: #8FE3B8 !important; }
-.seg--on-navy button:not(.active) .seg-stale-warn { color: var(--yellow) !important; }
-.seg--on-navy button:not(.active) .seg-stale-bad  { color: #FF9C93 !important; }
-.seg--on-navy button.active .seg-meta { color: var(--muted); }
-.seg--on-navy button.active .seg-stale-ok   { color: var(--green) !important; }
-.seg--on-navy button.active .seg-stale-warn { color: var(--yellow-deep) !important; }
-.seg--on-navy button.active .seg-stale-bad  { color: var(--red) !important; }
+.d-groups button:hover { border-color: var(--blue-800); color: var(--blue-800); }
+.d-groups button.active { background: var(--blue-900); color: #fff; border-color: var(--blue-900); }
+.d-groups .seg-meta { font-weight: 600; font-size: 11.5px; color: var(--muted); }
+.d-groups button.active .seg-meta,
+.d-groups button.active .seg-stale-ok,
+.d-groups button.active .seg-stale-warn,
+.d-groups button.active .seg-stale-bad { color: rgba(255,255,255,.85) !important; }
 
-/* ── KPI cards — a touch more premium, brand-consistent ───────── */
-.row.kpis .kpi {
-  border-radius: var(--r-kpi);
-  transition: transform .14s, box-shadow .14s;
+/* ── KPI cards → clean white (kill gradient + top accent bar) ─── */
+.deals-view .kpi {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--r-kpi); box-shadow: var(--shadow-sm);
+  padding: 20px 22px; overflow: visible;
 }
-.row.kpis .kpi:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-/* Hero (% Outdated) icon chip inherits the RAG accent so the whole
-   card reads as one health signal (base chip gradient kept above). */
-.kpi--hero-ok   .kpi-ic { background: linear-gradient(150deg, #E4F4EC, #D2ECDF); color: var(--green); box-shadow: inset 0 0 0 1px rgba(47,143,99,.18); }
-.kpi--hero-warn .kpi-ic { background: linear-gradient(150deg, #FBEFCB, #F6E4A8); color: var(--amber); box-shadow: inset 0 0 0 1px rgba(185,138,2,.22); }
-.kpi--hero-bad  .kpi-ic { background: linear-gradient(150deg, #FDE0DC, #FBD0C9); color: var(--red);   box-shadow: inset 0 0 0 1px rgba(210,10,3,.16); }
+.deals-view .kpi::before { display: none; }
+.deals-view .kpi:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.deals-view .kpi { transition: transform .14s, box-shadow .14s; }
+.deals-view .kpi-top { display: flex; align-items: center; justify-content: space-between; }
+.deals-view .kpi-ic {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--sky-tint); border: 1px solid #CBE0F4; color: var(--blue-800);
+  box-shadow: none;
+}
+.deals-view .kpi-ic svg { width: 19px; height: 19px; }
+.deals-view .kpi-label {
+  margin-top: 18px; font-size: 13px; font-weight: 600;
+  color: var(--slate); text-transform: none; letter-spacing: .01em;
+}
+.deals-view .kpi-val {
+  margin-top: 6px; font-family: var(--serif); font-weight: 600;
+  font-size: 31px; color: var(--ink); letter-spacing: -.01em; line-height: 1.05;
+}
+.deals-view .kpi-foot { margin-top: 8px; font-size: 12px; color: var(--muted); }
+/* Delta pill (top-right of the card). */
+.deals-view .kpi-delta {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; border-radius: 999px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0;
+}
+.deals-view .kpi-delta--up   { color: var(--green); background: var(--green-tint); }
+.deals-view .kpi-delta--down { color: var(--red);   background: var(--red-tint); }
 
-/* ── Section headers with the signature yellow accent bar ─────── */
-.hs-section-head, .hs-table-head {
-  display: flex; align-items: baseline; gap: 10px 14px; flex-wrap: wrap;
-  margin-bottom: 14px;
+/* ── Needs attention → .spot-style risk cards with medals ─────── */
+.d-subhead { display: flex; align-items: baseline; gap: 10px 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.d-subtitle { margin: 0; font-family: var(--serif); font-size: 16px; font-weight: 700; color: var(--ink); letter-spacing: -.005em; }
+.d-subnote { font-size: 12.5px; color: var(--muted); }
+.d-attn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.d-attn-empty {
+  grid-column: 1 / -1; padding: 18px 20px; font-size: 13px; color: var(--muted);
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
 }
-.hs-table-head {
-  margin-bottom: 0;
-  padding: 18px 22px;
-  border-bottom: 1px solid var(--line);
+.d-spot {
+  display: flex; flex-direction: column;
+  padding: 18px 20px; border-radius: var(--r-lg);
+  border: 1px solid #EAD7CF; background: linear-gradient(180deg, #FCF6F3, #fff);
+  box-shadow: var(--shadow-sm); text-decoration: none; color: inherit;
+  transition: transform .14s, box-shadow .14s, border-color .14s;
 }
-.hs-section-title {
-  position: relative;
-  margin: 0; padding-left: 13px;
-  font-family: var(--serif);
-  font-size: 15px; font-weight: 800; letter-spacing: .01em;
-  text-transform: uppercase; color: var(--ink);
+a.d-spot:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: #E1BCAD; }
+.d-spot-top { display: flex; align-items: center; justify-content: space-between; }
+.d-spot .d-eyebrow { color: var(--amber); }
+.d-medal {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center; flex: none;
+  font-family: var(--serif); font-weight: 800; font-size: 13px; color: #fff;
 }
-.hs-section-title::before {
-  content: ""; position: absolute; left: 0; top: 1px; bottom: 1px;
-  width: 4px; border-radius: 3px;
-  background: linear-gradient(var(--yellow), var(--yellow-deep));
+.d-medal--1 { background: linear-gradient(180deg, #FDD23A, #E5AE00); color: #5A4500; }
+.d-medal--2 { background: linear-gradient(180deg, #AEB7BE, #8C969E); }
+.d-medal--3 { background: linear-gradient(180deg, #C08552, #9C6638); }
+.d-spot-name {
+  margin-top: 12px; font-family: var(--serif); font-size: 20px; font-weight: 700;
+  color: var(--ink); line-height: 1.1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.hs-section-sub { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.d-spot-stat { margin-top: 4px; font-size: 12.5px; color: var(--slate); }
+.d-spot-stat b { color: var(--ink); font-weight: 700; }
+.d-spot-bar { margin-top: 14px; height: 6px; border-radius: 999px; background: var(--paper-2); overflow: hidden; }
+.d-spot-fill { display: block; height: 100%; border-radius: 999px; }
+.d-spot-fill--ok   { background: var(--green); }
+.d-spot-fill--warn { background: var(--amber); }
+.d-spot-fill--bad  { background: var(--red); }
+.d-spot-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 11px; }
+.d-spot-pct { font-size: 12.5px; font-weight: 700; }
+.d-spot-pct--ok   { color: var(--green); }
+.d-spot-pct--warn { color: var(--amber); }
+.d-spot-pct--bad  { color: var(--red); }
+.d-spot-go { font-size: 11.5px; font-weight: 700; color: var(--blue-800); white-space: nowrap; }
 
 /* ── Toolbar (filter chips + show-empty) ──────────────────────── */
-.hs-toolbar {
-  display: flex; flex-wrap: wrap; gap: 12px;
-  align-items: center; justify-content: space-between;
+.d-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 14px 18px; }
+.deals-view .chip {
+  border: 1px solid var(--line); background: var(--card-2); color: var(--slate);
+  padding: 7px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700;
+  box-shadow: none;
 }
-.hs-empty-toggle {
-  display: inline-flex; gap: 7px; align-items: center;
-  margin-left: auto;
+.deals-view .chip:hover { border-color: var(--blue-800); color: var(--blue-800); }
+.deals-view .chip.active { background: var(--blue-900); color: #fff; border-color: var(--blue-900); box-shadow: none; }
+.deals-view .chip-count { background: var(--paper-2); color: var(--slate); }
+.deals-view .chip.active .chip-count { background: rgba(255,255,255,.2); color: #fff; }
+.d-empty {
+  display: inline-flex; gap: 8px; align-items: center; margin-left: auto;
   font-size: 12.5px; font-weight: 600; color: var(--slate); cursor: pointer;
 }
-.hs-empty-toggle input { accent-color: var(--blue-800); width: 15px; height: 15px; }
+.d-empty input { accent-color: var(--blue-800); width: 15px; height: 15px; }
 
-/* ── Table card: header sits inside the card, table below ─────── */
-.hs-table-card { padding: 0; }
-.hs-table-card .tbl-wrap { border-radius: 0 0 var(--r) var(--r); }
-
-/* Mobile: hero stacks, seg control returns to the left edge. */
-@media (max-width: 720px) {
-  .hs-hero { padding: 22px 20px; gap: 18px; }
-  .hs-hero-title { font-size: 25px; }
-  .hs-hero-seg { align-items: flex-start; }
+/* ── Table → clean hairline grid (kill boxed rules / zebra / heat) ─ */
+.d-tablecard { padding: 0; }
+.d-tablecard .card-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 18px 22px; border-bottom: 1px solid var(--line-2);
 }
-@media (max-width: 520px) {
-  .hs-hero { padding: 18px 16px 18px 18px; }
-  .hs-hero-title { font-size: 22px; }
-  .hs-table-head { padding: 14px 16px; }
+.d-tablecard .card-head h3 { margin: 0; font-family: var(--serif); font-size: 15.5px; font-weight: 700; color: var(--ink); }
+.d-tablecard .card-head .sub { margin-top: 2px; font-size: 12px; color: var(--muted); }
+
+.deals-view .tbl { font-size: 13.5px; }
+.deals-view .tbl thead th {
+  background: var(--card-2); color: var(--muted);
+  font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700;
+  padding: 12px 16px; border-bottom: 1px solid var(--line); border-right: 0;
+}
+.deals-view .tbl thead th[style*="sticky"] { background: var(--card-2) !important; box-shadow: none; }
+.deals-view .tbl tbody td {
+  padding: 12px 16px; border-bottom: 1px solid var(--line-2); border-right: 0;
+  color: var(--slate);
+}
+.deals-view .tbl tbody td[style*="sticky"] { background: var(--card) !important; box-shadow: none; }
+.deals-view .tbl tbody tr:nth-child(even):not(:hover):not(.tbl-total) td { background: transparent; }
+.deals-view .tbl tbody tr:nth-child(even):not(:hover):not(.tbl-total) td[style*="sticky"] { background: var(--card) !important; }
+.deals-view .tbl tbody tr:hover td { background: var(--card-2) !important; }
+.deals-view .tbl tbody tr:hover td[style*="sticky"] { background: var(--card-2) !important; }
+.deals-view .tbl-total td {
+  background: var(--card-2) !important; border-top: 1.5px solid var(--line);
+  font-weight: 700; color: var(--ink);
+}
+.deals-view .tbl-total td[style*="sticky"] { background: var(--card-2) !important; }
+
+/* Team cell */
+.deals-view .agent-cell { display: flex; align-items: center; gap: 11px; }
+.deals-view .avatar {
+  width: 30px; height: 30px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; font-size: 12px; font-weight: 700;
+  color: var(--blue-900); background: var(--sky-tint); border: 1px solid #CBE0F4;
+}
+.deals-view .agent-name { font-weight: 600; color: var(--ink); }
+.deals-view .team-chev { color: var(--muted); margin-left: 6px; font-size: 14px; transition: color .12s, transform .12s; }
+.deals-view tr.row-team:hover .team-chev { color: var(--blue-800); transform: translateX(2px); }
+.deals-view .no-deals {
+  margin-left: 6px; padding: 2px 8px; font-size: 10px; font-weight: 700;
+  background: var(--paper-2); color: var(--muted); min-width: 0;
+}
+
+/* Quiet stage cells + status dots + mini bars */
+.deals-view .cell-slash { color: var(--empty); margin: 0 1px; font-weight: 400; }
+.deals-view .cell-den { color: var(--muted); font-weight: 500; }
+.deals-view .stage-cell { color: var(--ink); font-weight: 600; }
+.deals-view .stage-cell--clean { color: var(--green); }
+.deals-view .stage-cell--bad { color: var(--red); font-weight: 700; }
+.deals-view .cell-mark { margin-left: 3px; }
+.deals-view .cell-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 8px; vertical-align: middle; background: var(--muted);
+}
+.deals-view .cell-dot--ok   { background: var(--green); }
+.deals-view .cell-dot--warn { background: var(--amber); }
+.deals-view .cell-dot--bad  { background: var(--red); }
+.deals-view .cell-bar { display: flex; align-items: center; gap: 9px; justify-content: flex-end; }
+.deals-view .cell-bar-val { min-width: 34px; text-align: right; font-weight: 700; font-size: 12.5px; color: var(--ink); }
+.deals-view .cell-bar .track { width: 58px; height: 6px; border-radius: 999px; background: var(--paper-2); overflow: hidden; flex: none; }
+.deals-view .cell-bar .fill { display: block; height: 100%; border-radius: 999px; background: var(--blue-800); }
+.deals-view .cell-bar .fill--ok   { background: var(--green); }
+.deals-view .cell-bar .fill--warn { background: var(--amber); }
+.deals-view .cell-bar .fill--bad  { background: var(--red); }
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 1180px) { .deals-view .row.kpis { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px)  { .d-attn-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px)  {
+  .deals-view .row.kpis { grid-template-columns: 1fr; }
+  .d-title { font-size: 24px; }
+  .d-head-side { padding-top: 0; }
 }
