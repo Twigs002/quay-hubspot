@@ -5,14 +5,12 @@
  * same credentials they use on the other Quay 1 systems.
  *
  * Team Insights surfaces management data (deal health, the division
- * directory, hiring), so access is restricted to super/admin staff - matching
+ * directory), so access is restricted to super/admin staff - matching
  * quay-leads' "superuser access only" gate.
  *
  * NOTE: this is a client-side UI gate. On a static host the raw data/*.json
  * files remain directly fetchable by URL; true data-at-rest protection would
- * require serving the data from Supabase behind RLS. High-sensitivity hiring
- * data is not persisted statically - the recruitment forms POST to the Apps
- * Script backend - so it is not exposed by those static files.
+ * require serving the data from Supabase behind RLS.
  */
 window.AUTH = (() => {
   const cfg = window.QUAY_CFG || {};
@@ -27,38 +25,25 @@ window.AUTH = (() => {
 
   const emailFor = (u) => `${(u || '').toLowerCase().trim()}@${cfg.AUTH_EMAIL_DOMAIN}`;
 
-  // Active super / admin / broker / payroll staff may sign in. Supers and
-  // admins get the full dashboard; brokers AND payroll are gated down to the
-  // Recruitment area in app.js. (Creating these logins is the user's job, done
-  // per account.)
+  // Only active super / admin staff may sign in. Team Insights surfaces
+  // management data (deal health, the division directory), so access is
+  // restricted to super/admin - matching quay-leads' "superuser access only"
+  // gate. (Creating these logins is the user's job, done per account.)
   function _gate(staff) {
     if (!staff) return { ok: false, error: 'No staff record for this login.' };
     if (staff.active === false) return { ok: false, error: 'This account is disabled.' };
-    // A payroll login is marked by designation 'payroll' (no DB migration
-    // needed) or the optional is_payroll flag; either grants Recruitment-only
-    // access, same as a broker.
-    const isPayroll = staff.designation === 'payroll' || !!staff.is_payroll;
-    if (!staff.is_super && !staff.is_admin && !staff.is_broker && !isPayroll) {
+    if (!staff.is_super && !staff.is_admin) {
       return { ok: false, error: 'This login has no dashboard access.' };
     }
-    const isSuper = !!staff.is_super, isAdmin = !!staff.is_admin,
-          isBroker = !!staff.is_broker;
+    const isSuper = !!staff.is_super, isAdmin = !!staff.is_admin;
     return { ok: true, user: {
       username: staff.id, name: staff.name,
-      // Real work email if the staff row carries one, else null. We do NOT
-      // fall back to the synthetic <username>@quay1.local login address:
-      // recruitment matches a candidate's requester_email against real
-      // @quay1.co.za addresses, and a synthetic value would never match (and
-      // would silently poison requester_email). Brokers therefore need a real
-      // staff.email or they match no candidates, which is the backend's safe
-      // default. The staff table has no email column today; see the Progress
-      // view note in app.js.
+      // Real work email if the staff row carries one, else null (the staff
+      // table has no email column today).
       email: staff.email || null,
-      isSuper, isAdmin, isBroker, isPayroll,
-      // Coarse role marker app.js uses to choose nav + view scope. Reaches
-      // 'payroll' only for a payroll login that is neither super nor admin nor
-      // broker, so a payroll user who is also an admin keeps full access.
-      role: isSuper ? 'super' : isAdmin ? 'admin' : isBroker ? 'broker' : 'payroll',
+      isSuper, isAdmin,
+      // Coarse role marker app.js uses to choose nav + view scope.
+      role: isSuper ? 'super' : 'admin',
     } };
   }
 
