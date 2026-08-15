@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-14T11:46:11.086325+00:00",
-  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 75341 deals processed",
+  "generated": "2026-08-15T02:14:28.778653+00:00",
+  "source": "fetch_hubspot.py aggregate \u00b7 outdated = next_activity_date is null OR in the past \u00b7 75384 deals processed",
   "groupNames": {
     "1": "HubSpot Deals | Residential",
     "2": "HubSpot Deals | Rentals",
@@ -57,12 +57,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 12,
+          "nurture": 0,
           "warm": 9,
           "hot": 1,
-          "outdated": 22,
+          "outdated": 10,
           "upToHot": 638,
-          "pctUpdated": 0.9655172413793104
+          "pctUpdated": 0.9843260188087775
         },
         "ownerIds": [
           "61949424"
@@ -87,12 +87,12 @@
           "inbound": 5,
           "reconv": 0,
           "rental": 0,
-          "nurture": 26,
-          "warm": 9,
-          "hot": 1,
-          "outdated": 49,
+          "nurture": 2,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 15,
           "upToHot": 108,
-          "pctUpdated": 0.5462962962962963
+          "pctUpdated": 0.8611111111111112
         },
         "ownerIds": [
           "61949593"
@@ -179,10 +179,10 @@
           "rental": 0,
           "nurture": 41,
           "warm": 9,
-          "hot": 1,
-          "outdated": 51,
+          "hot": 0,
+          "outdated": 50,
           "upToHot": 89,
-          "pctUpdated": 0.42696629213483145
+          "pctUpdated": 0.43820224719101125
         },
         "ownerIds": [
           "79270572"
@@ -221,13 +221,13 @@
       {
         "team": "Blitz",
         "total": {
-          "deals": 176,
+          "deals": 179,
           "calling": 1,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 155,
+          "nurture": 158,
           "warm": 11,
           "hot": 9
         },
@@ -237,12 +237,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 3,
+          "nurture": 7,
           "warm": 1,
           "hot": 0,
-          "outdated": 5,
-          "upToHot": 176,
-          "pctUpdated": 0.9715909090909091
+          "outdated": 9,
+          "upToHot": 179,
+          "pctUpdated": 0.9497206703910615
         },
         "ownerIds": [
           "87801132"
@@ -262,17 +262,17 @@
           "hot": 7
         },
         "outdated": {
-          "calling": 2,
+          "calling": 1,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 9,
+          "nurture": 0,
           "warm": 1,
           "hot": 1,
-          "outdated": 13,
+          "outdated": 3,
           "upToHot": 204,
-          "pctUpdated": 0.9362745098039216
+          "pctUpdated": 0.9852941176470589
         },
         "ownerIds": [
           "142837528"
@@ -343,26 +343,26 @@
         "total": {
           "deals": 411,
           "calling": 2,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 1,
           "nurture": 303,
-          "warm": 85,
+          "warm": 84,
           "hot": 20
         },
         "outdated": {
           "calling": 2,
-          "external": 0,
+          "external": 1,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 58,
-          "warm": 41,
-          "hot": 12,
-          "outdated": 113,
+          "nurture": 53,
+          "warm": 29,
+          "hot": 8,
+          "outdated": 93,
           "upToHot": 411,
-          "pctUpdated": 0.7250608272506083
+          "pctUpdated": 0.7737226277372263
         },
         "ownerIds": [
           "254689367"
@@ -387,12 +387,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 2,
-          "nurture": 8,
+          "nurture": 0,
           "warm": 28,
           "hot": 0,
-          "outdated": 38,
+          "outdated": 30,
           "upToHot": 933,
-          "pctUpdated": 0.9592711682743837
+          "pctUpdated": 0.9678456591639871
         },
         "ownerIds": [
           "253761461"
@@ -401,13 +401,13 @@
       {
         "team": "Dealers",
         "total": {
-          "deals": 743,
+          "deals": 742,
           "calling": 0,
           "external": 3,
           "inbound": 1,
           "reconv": 0,
           "rental": 0,
-          "nurture": 615,
+          "nurture": 614,
           "warm": 120,
           "hot": 4
         },
@@ -417,12 +417,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 4,
+          "nurture": 0,
           "warm": 0,
           "hot": 0,
-          "outdated": 4,
-          "upToHot": 743,
-          "pctUpdated": 0.9946164199192463
+          "outdated": 0,
+          "upToHot": 742,
+          "pctUpdated": 1.0
         },
         "ownerIds": [
           "192141162"
@@ -431,8 +431,8 @@
       {
         "team": "Dealmakers",
         "total": {
-          "deals": 590,
-          "calling": 12,
+          "deals": 591,
+          "calling": 13,
           "external": 2,
           "inbound": 1,
           "reconv": 0,
@@ -442,7 +442,7 @@
           "hot": 0
         },
         "outdated": {
-          "calling": 12,
+          "calling": 13,
           "external": 2,
           "inbound": 1,
           "reconv": 0,
@@ -450,9 +450,9 @@
           "nurture": 112,
           "warm": 1,
           "hot": 0,
-          "outdated": 128,
-          "upToHot": 590,
-          "pctUpdated": 0.7830508474576271
+          "outdated": 129,
+          "upToHot": 591,
+          "pctUpdated": 0.7817258883248731
         },
         "ownerIds": [
           "221066166"
@@ -477,12 +477,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 28,
-          "warm": 28,
-          "hot": 10,
-          "outdated": 66,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
           "upToHot": 822,
-          "pctUpdated": 0.9197080291970803
+          "pctUpdated": 1.0
         },
         "ownerIds": [
           "84022188",
@@ -492,14 +492,14 @@
       {
         "team": "Dutchmen",
         "total": {
-          "deals": 1185,
+          "deals": 1182,
           "calling": 1,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 951,
-          "warm": 213,
+          "nurture": 949,
+          "warm": 212,
           "hot": 20
         },
         "outdated": {
@@ -508,12 +508,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 94,
-          "warm": 37,
+          "nurture": 69,
+          "warm": 30,
           "hot": 5,
-          "outdated": 137,
-          "upToHot": 1185,
-          "pctUpdated": 0.8843881856540085
+          "outdated": 105,
+          "upToHot": 1182,
+          "pctUpdated": 0.9111675126903553
         },
         "ownerIds": [
           "142837416"
@@ -552,28 +552,28 @@
       {
         "team": "Farmers",
         "total": {
-          "deals": 302,
-          "calling": 2,
+          "deals": 307,
+          "calling": 1,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 235,
-          "warm": 55,
+          "nurture": 240,
+          "warm": 56,
           "hot": 10
         },
         "outdated": {
-          "calling": 2,
+          "calling": 1,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 48,
+          "nurture": 30,
           "warm": 5,
-          "hot": 2,
-          "outdated": 57,
-          "upToHot": 302,
-          "pctUpdated": 0.8112582781456954
+          "hot": 1,
+          "outdated": 37,
+          "upToHot": 307,
+          "pctUpdated": 0.8794788273615635
         },
         "ownerIds": [
           "571004737"
@@ -582,13 +582,13 @@
       {
         "team": "Furys",
         "total": {
-          "deals": 512,
+          "deals": 513,
           "calling": 6,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 5,
-          "nurture": 447,
+          "nurture": 448,
           "warm": 48,
           "hot": 6
         },
@@ -598,12 +598,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 5,
-          "nurture": 10,
-          "warm": 4,
-          "hot": 4,
-          "outdated": 29,
-          "upToHot": 512,
-          "pctUpdated": 0.943359375
+          "nurture": 1,
+          "warm": 2,
+          "hot": 2,
+          "outdated": 16,
+          "upToHot": 513,
+          "pctUpdated": 0.9688109161793372
         },
         "ownerIds": [
           "512880424"
@@ -658,8 +658,8 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 0,
-          "warm": 2,
+          "nurture": 1,
+          "warm": 1,
           "hot": 5,
           "outdated": 7,
           "upToHot": 870,
@@ -678,9 +678,9 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 535,
+          "nurture": 534,
           "warm": 51,
-          "hot": 33
+          "hot": 34
         },
         "outdated": {
           "calling": 0,
@@ -688,12 +688,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 19,
-          "warm": 6,
-          "hot": 3,
-          "outdated": 28,
+          "nurture": 0,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 0,
           "upToHot": 619,
-          "pctUpdated": 0.9547657512116317
+          "pctUpdated": 1.0
         },
         "ownerIds": [
           "85377840"
@@ -793,10 +793,10 @@
       {
         "team": "Hooligans",
         "total": {
-          "deals": 416,
+          "deals": 417,
           "calling": 0,
           "external": 0,
-          "inbound": 0,
+          "inbound": 1,
           "reconv": 0,
           "rental": 0,
           "nurture": 353,
@@ -806,15 +806,15 @@
         "outdated": {
           "calling": 0,
           "external": 0,
-          "inbound": 0,
+          "inbound": 1,
           "reconv": 0,
           "rental": 0,
           "nurture": 106,
           "warm": 9,
           "hot": 4,
-          "outdated": 119,
-          "upToHot": 416,
-          "pctUpdated": 0.7139423076923077
+          "outdated": 120,
+          "upToHot": 417,
+          "pctUpdated": 0.7122302158273381
         },
         "ownerIds": [
           "142837780"
@@ -823,15 +823,15 @@
       {
         "team": "Hout Baes",
         "total": {
-          "deals": 326,
+          "deals": 325,
           "calling": 2,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 1,
           "nurture": 68,
-          "warm": 174,
-          "hot": 81
+          "warm": 175,
+          "hot": 79
         },
         "outdated": {
           "calling": 2,
@@ -840,11 +840,11 @@
           "reconv": 0,
           "rental": 1,
           "nurture": 25,
-          "warm": 45,
-          "hot": 21,
-          "outdated": 94,
-          "upToHot": 326,
-          "pctUpdated": 0.7116564417177914
+          "warm": 40,
+          "hot": 9,
+          "outdated": 77,
+          "upToHot": 325,
+          "pctUpdated": 0.7630769230769231
         },
         "ownerIds": [
           "1763468269"
@@ -853,7 +853,7 @@
       {
         "team": "Hustlers",
         "total": {
-          "deals": 435,
+          "deals": 436,
           "calling": 0,
           "external": 0,
           "inbound": 0,
@@ -861,7 +861,7 @@
           "rental": 0,
           "nurture": 376,
           "warm": 55,
-          "hot": 4
+          "hot": 5
         },
         "outdated": {
           "calling": 0,
@@ -869,12 +869,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 50,
+          "nurture": 51,
           "warm": 8,
           "hot": 0,
-          "outdated": 58,
-          "upToHot": 435,
-          "pctUpdated": 0.8666666666666667
+          "outdated": 59,
+          "upToHot": 436,
+          "pctUpdated": 0.8646788990825688
         },
         "ownerIds": [
           "142508407"
@@ -899,12 +899,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 90,
-          "warm": 12,
-          "hot": 3,
-          "outdated": 105,
+          "nurture": 76,
+          "warm": 10,
+          "hot": 2,
+          "outdated": 88,
           "upToHot": 466,
-          "pctUpdated": 0.7746781115879828
+          "pctUpdated": 0.8111587982832618
         },
         "ownerIds": [
           "551111272"
@@ -943,28 +943,28 @@
       {
         "team": "Koeksisters",
         "total": {
-          "deals": 792,
+          "deals": 794,
+          "calling": 0,
+          "external": 1,
+          "inbound": 2,
+          "reconv": 0,
+          "rental": 1,
+          "nurture": 494,
+          "warm": 226,
+          "hot": 70
+        },
+        "outdated": {
           "calling": 0,
           "external": 1,
           "inbound": 1,
           "reconv": 0,
           "rental": 1,
-          "nurture": 494,
-          "warm": 226,
-          "hot": 69
-        },
-        "outdated": {
-          "calling": 0,
-          "external": 1,
-          "inbound": 0,
-          "reconv": 0,
-          "rental": 1,
           "nurture": 39,
           "warm": 16,
           "hot": 1,
-          "outdated": 58,
-          "upToHot": 792,
-          "pctUpdated": 0.9267676767676768
+          "outdated": 59,
+          "upToHot": 794,
+          "pctUpdated": 0.9256926952141058
         },
         "ownerIds": [
           "142835358"
@@ -1034,8 +1034,8 @@
       {
         "team": "Llamas",
         "total": {
-          "deals": 1334,
-          "calling": 15,
+          "deals": 1349,
+          "calling": 30,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
@@ -1045,17 +1045,17 @@
           "hot": 10
         },
         "outdated": {
-          "calling": 15,
+          "calling": 30,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 113,
-          "warm": 23,
-          "hot": 4,
-          "outdated": 155,
-          "upToHot": 1334,
-          "pctUpdated": 0.883808095952024
+          "nurture": 80,
+          "warm": 11,
+          "hot": 0,
+          "outdated": 121,
+          "upToHot": 1349,
+          "pctUpdated": 0.910303928836175
         },
         "ownerIds": [
           "2141538252"
@@ -1064,15 +1064,15 @@
       {
         "team": "Musketeers",
         "total": {
-          "deals": 852,
+          "deals": 851,
           "calling": 2,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 646,
-          "warm": 121,
-          "hot": 83
+          "nurture": 647,
+          "warm": 118,
+          "hot": 84
         },
         "outdated": {
           "calling": 0,
@@ -1080,12 +1080,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 5,
-          "warm": 15,
-          "hot": 52,
-          "outdated": 72,
-          "upToHot": 852,
-          "pctUpdated": 0.9154929577464789
+          "nurture": 1,
+          "warm": 4,
+          "hot": 53,
+          "outdated": 58,
+          "upToHot": 851,
+          "pctUpdated": 0.9318448883666275
         },
         "ownerIds": [
           "371434880"
@@ -1124,18 +1124,18 @@
       {
         "team": "Pirates",
         "total": {
-          "deals": 839,
-          "calling": 3,
+          "deals": 840,
+          "calling": 2,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 1,
-          "nurture": 808,
+          "nurture": 810,
           "warm": 21,
           "hot": 6
         },
         "outdated": {
-          "calling": 3,
+          "calling": 2,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
@@ -1143,9 +1143,9 @@
           "nurture": 12,
           "warm": 1,
           "hot": 0,
-          "outdated": 17,
-          "upToHot": 839,
-          "pctUpdated": 0.9797377830750894
+          "outdated": 16,
+          "upToHot": 840,
+          "pctUpdated": 0.9809523809523809
         },
         "ownerIds": [
           "57438698"
@@ -1154,8 +1154,8 @@
       {
         "team": "Power Rangers",
         "total": {
-          "deals": 740,
-          "calling": 0,
+          "deals": 741,
+          "calling": 1,
           "external": 10,
           "inbound": 1,
           "reconv": 11,
@@ -1165,7 +1165,7 @@
           "hot": 121
         },
         "outdated": {
-          "calling": 0,
+          "calling": 1,
           "external": 10,
           "inbound": 0,
           "reconv": 1,
@@ -1173,9 +1173,9 @@
           "nurture": 20,
           "warm": 1,
           "hot": 57,
-          "outdated": 89,
-          "upToHot": 740,
-          "pctUpdated": 0.8797297297297297
+          "outdated": 90,
+          "upToHot": 741,
+          "pctUpdated": 0.8785425101214575
         },
         "ownerIds": [
           "182959417"
@@ -1308,9 +1308,9 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 546,
+          "nurture": 545,
           "warm": 92,
-          "hot": 12
+          "hot": 13
         },
         "outdated": {
           "calling": 0,
@@ -1318,12 +1318,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 29,
-          "warm": 5,
-          "hot": 2,
-          "outdated": 36,
+          "nurture": 43,
+          "warm": 6,
+          "hot": 3,
+          "outdated": 52,
           "upToHot": 650,
-          "pctUpdated": 0.9446153846153846
+          "pctUpdated": 0.92
         },
         "ownerIds": [
           "84021524"
@@ -1378,12 +1378,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 0,
-          "warm": 10,
+          "nurture": 2,
+          "warm": 12,
           "hot": 13,
-          "outdated": 25,
+          "outdated": 29,
           "upToHot": 663,
-          "pctUpdated": 0.9622926093514329
+          "pctUpdated": 0.9562594268476622
         },
         "ownerIds": [
           "142516092"
@@ -1438,12 +1438,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 44,
+          "nurture": 41,
           "warm": 9,
           "hot": 8,
-          "outdated": 61,
+          "outdated": 58,
           "upToHot": 337,
-          "pctUpdated": 0.8189910979228486
+          "pctUpdated": 0.827893175074184
         },
         "ownerIds": [
           "223928394"
@@ -1452,10 +1452,10 @@
       {
         "team": "Swesties",
         "total": {
-          "deals": 165,
+          "deals": 166,
           "calling": 0,
           "external": 4,
-          "inbound": 1,
+          "inbound": 2,
           "reconv": 0,
           "rental": 0,
           "nurture": 146,
@@ -1465,15 +1465,15 @@
         "outdated": {
           "calling": 0,
           "external": 4,
-          "inbound": 1,
+          "inbound": 2,
           "reconv": 0,
           "rental": 0,
           "nurture": 52,
           "warm": 3,
           "hot": 1,
-          "outdated": 61,
-          "upToHot": 165,
-          "pctUpdated": 0.6303030303030303
+          "outdated": 62,
+          "upToHot": 166,
+          "pctUpdated": 0.6265060240963856
         },
         "ownerIds": [
           "735062128"
@@ -1512,7 +1512,7 @@
       {
         "team": "Tigers",
         "total": {
-          "deals": 439,
+          "deals": 438,
           "calling": 1,
           "external": 1,
           "inbound": 0,
@@ -1520,7 +1520,7 @@
           "rental": 3,
           "nurture": 360,
           "warm": 56,
-          "hot": 18
+          "hot": 17
         },
         "outdated": {
           "calling": 1,
@@ -1528,12 +1528,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 14,
-          "warm": 4,
-          "hot": 6,
-          "outdated": 26,
-          "upToHot": 439,
-          "pctUpdated": 0.9407744874715261
+          "nurture": 4,
+          "warm": 0,
+          "hot": 0,
+          "outdated": 6,
+          "upToHot": 438,
+          "pctUpdated": 0.9863013698630136
         },
         "ownerIds": [
           "290480467"
@@ -1572,13 +1572,13 @@
       {
         "team": "Tornadoes",
         "total": {
-          "deals": 388,
+          "deals": 389,
           "calling": 2,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 275,
+          "nurture": 276,
           "warm": 74,
           "hot": 37
         },
@@ -1588,12 +1588,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 0,
-          "nurture": 23,
+          "nurture": 24,
           "warm": 5,
           "hot": 6,
-          "outdated": 34,
-          "upToHot": 388,
-          "pctUpdated": 0.9123711340206185
+          "outdated": 35,
+          "upToHot": 389,
+          "pctUpdated": 0.910025706940874
         },
         "ownerIds": [
           "570999348"
@@ -1632,8 +1632,8 @@
       {
         "team": "Warriors",
         "total": {
-          "deals": 917,
-          "calling": 0,
+          "deals": 918,
+          "calling": 1,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
@@ -1643,7 +1643,7 @@
           "hot": 28
         },
         "outdated": {
-          "calling": 0,
+          "calling": 1,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
@@ -1651,9 +1651,9 @@
           "nurture": 2,
           "warm": 2,
           "hot": 0,
-          "outdated": 4,
-          "upToHot": 917,
-          "pctUpdated": 0.9956379498364231
+          "outdated": 5,
+          "upToHot": 918,
+          "pctUpdated": 0.9945533769063181
         },
         "ownerIds": [
           "61983888",
@@ -1753,8 +1753,8 @@
       {
         "team": "Wombats",
         "total": {
-          "deals": 508,
-          "calling": 0,
+          "deals": 509,
+          "calling": 1,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
@@ -1764,7 +1764,7 @@
           "hot": 8
         },
         "outdated": {
-          "calling": 0,
+          "calling": 1,
           "external": 0,
           "inbound": 0,
           "reconv": 0,
@@ -1772,9 +1772,9 @@
           "nurture": 57,
           "warm": 3,
           "hot": 2,
-          "outdated": 62,
-          "upToHot": 508,
-          "pctUpdated": 0.8779527559055118
+          "outdated": 63,
+          "upToHot": 509,
+          "pctUpdated": 0.8762278978388998
         },
         "ownerIds": [
           "142837564"
@@ -1848,8 +1848,8 @@
           "external": 0,
           "inbound": 0,
           "reconv": 0,
-          "rental": 2,
-          "nurture": 142,
+          "rental": 1,
+          "nurture": 143,
           "warm": 13,
           "hot": 2
         },
@@ -1858,8 +1858,8 @@
           "external": 0,
           "inbound": 0,
           "reconv": 0,
-          "rental": 1,
-          "nurture": 0,
+          "rental": 0,
+          "nurture": 1,
           "warm": 0,
           "hot": 0,
           "outdated": 1,
@@ -2007,12 +2007,12 @@
           "inbound": 0,
           "reconv": 0,
           "rental": 23,
-          "nurture": 104,
+          "nurture": 101,
           "warm": 9,
           "hot": 3,
-          "outdated": 139,
+          "outdated": 136,
           "upToHot": 507,
-          "pctUpdated": 0.7258382642998028
+          "pctUpdated": 0.7317554240631163
         },
         "ownerIds": [
           "153958216"
@@ -2067,10 +2067,10 @@
           "rental": 0,
           "nurture": 11,
           "warm": 1,
-          "hot": 8,
-          "outdated": 21,
+          "hot": 7,
+          "outdated": 20,
           "upToHot": 322,
-          "pctUpdated": 0.9347826086956522
+          "pctUpdated": 0.937888198757764
         },
         "ownerIds": [
           "460723833"
@@ -2345,10 +2345,10 @@
       {
         "team": "Vikings",
         "total": {
-          "deals": 558,
+          "deals": 559,
           "calling": 93,
           "external": 8,
-          "inbound": 89,
+          "inbound": 90,
           "reconv": 95,
           "rental": 10,
           "nurture": 136,
@@ -2358,15 +2358,15 @@
         "outdated": {
           "calling": 93,
           "external": 8,
-          "inbound": 89,
+          "inbound": 90,
           "reconv": 95,
           "rental": 10,
           "nurture": 136,
           "warm": 103,
           "hot": 23,
-          "outdated": 557,
-          "upToHot": 558,
-          "pctUpdated": 0.0017921146953405018
+          "outdated": 558,
+          "upToHot": 559,
+          "pctUpdated": 0.0017889087656529517
         },
         "ownerIds": [
           "85635359"
@@ -2611,38 +2611,38 @@
   "portalId": "8870419",
   "kpi": {
     "1": {
-      "totalDeals": 31468,
-      "outdatedLeads": 3974,
-      "pctOutdated": 0.1262870217363671,
-      "avgPctUpdated": 0.8299837800413511
+      "totalDeals": 31496,
+      "outdatedLeads": 3653,
+      "pctOutdated": 0.11598298196596393,
+      "avgPctUpdated": 0.844123632847497
     },
     "2": {
       "totalDeals": 6560,
-      "outdatedLeads": 2963,
-      "pctOutdated": 0.45167682926829267,
-      "avgPctUpdated": 0.5665781178125872
+      "outdatedLeads": 2959,
+      "pctOutdated": 0.4510670731707317,
+      "avgPctUpdated": 0.5672721754914659
     },
     "3": {
-      "totalDeals": 812,
-      "outdatedLeads": 811,
-      "pctOutdated": 0.9987684729064039,
-      "avgPctUpdated": 0.00035842293906810036
+      "totalDeals": 813,
+      "outdatedLeads": 812,
+      "pctOutdated": 0.998769987699877,
+      "avgPctUpdated": 0.00035778175313059033
     }
   },
   "_prev": {
-    "generated": "2026-08-14T10:09:37.119578+00:00",
+    "generated": "2026-08-14T11:46:11.086325+00:00",
     "kpi": {
       "1": {
-        "totalDeals": 31465,
-        "outdatedLeads": 4159,
-        "pctOutdated": 0.13217861115525187,
-        "avgPctUpdated": 0.8226182477395994
+        "totalDeals": 31468,
+        "outdatedLeads": 3974,
+        "pctOutdated": 0.1262870217363671,
+        "avgPctUpdated": 0.8299837800413511
       },
       "2": {
-        "totalDeals": 6557,
-        "outdatedLeads": 2971,
-        "pctOutdated": 0.4531035534543236,
-        "avgPctUpdated": 0.5657760358978531
+        "totalDeals": 6560,
+        "outdatedLeads": 2963,
+        "pctOutdated": 0.45167682926829267,
+        "avgPctUpdated": 0.5665781178125872
       },
       "3": {
         "totalDeals": 812,
