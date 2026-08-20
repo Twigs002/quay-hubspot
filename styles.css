@@ -322,7 +322,8 @@ button { font-family: inherit; cursor: pointer; }
   .topbar .bar-inner { gap: 10px; }
   .topbar-left { gap: 10px; min-width: 0; }
   .topbar-titles { min-width: 0; }
-  .topbar-titles h1, .topbar-titles p {
+  .topbar-titles p { display: none; }   /* drop subtitle on phones, matching the other apps */
+  .topbar-titles h1 {
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .main { padding-top: 16px; padding-bottom: 40px; }   /* sides via shared --gutter */
