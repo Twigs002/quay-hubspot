@@ -83,12 +83,12 @@ button { font-family: inherit; cursor: pointer; }
   width: 1px; height: var(--hdr-divider); background: rgba(255,255,255,.28); flex: none;
 }
 .topbar-titles h1 {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: var(--hdr-title); font-weight: 800; margin: 0; letter-spacing: .04em;
   color: #fff; text-transform: uppercase;
 }
 .topbar-titles p {
-  margin: 2px 0 0; font-size: 13px;
+  margin: 2px 0 0; font-size: 13px; font-weight: 500;
   color: rgba(255,255,255,.78);
 }
 .topbar { justify-content: space-between; }
@@ -314,7 +314,7 @@ button { font-family: inherit; cursor: pointer; }
   .t3-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {
-  :root { --hdr-logo: 40px; --hdr-pad-y: 12px; --hdr-title: 16px; --hdr-h: 64px; }
+  :root { --hdr-logo: 42px; --hdr-pad-y: 12px; --hdr-title: 16px; --hdr-h: 66px; }
   .topbar-divider { display: none; }
   .topbar-right .pill { display: none; }   /* badge mirrored in title card, save space */
   .signout-who { display: none; }          /* drop the name so "Sign out" never crowds the topbar */
