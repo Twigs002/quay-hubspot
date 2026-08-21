@@ -473,10 +473,29 @@ def run_aggregate():
     new_kpi = {gid: _kpi_for_group(teams) for gid, teams in new_groups.items()}
 
     # Snapshot the OUTGOING totals into _prev so the next render can
-    # show "vs last refresh" deltas. Carry the timestamp too.
+    # show "vs last refresh" deltas. Carry the timestamp too. We snapshot
+    # both the group-level KPI (drives the KPI-card deltas) and a compact
+    # per-team map (drives the per-team "Movement" column) keyed by team
+    # name → its outgoing % Updated / outdated / deals.
+    def _team_prev(groups):
+        snap = {}
+        for teams in (groups or {}).values():
+            for t in teams:
+                name = t.get("team")
+                if not name:
+                    continue
+                od = t.get("outdated") or {}
+                snap[name] = {
+                    "pctUpdated": od.get("pctUpdated"),
+                    "outdated":   od.get("outdated"),
+                    "deals":      (t.get("total") or {}).get("deals"),
+                }
+        return snap
+
     prev_block = {
         "generated": existing.get("generated"),
         "kpi":       existing.get("kpi") or {},
+        "teams":     _team_prev(existing.get("groups")),
     }
 
     existing["groups"]    = new_groups

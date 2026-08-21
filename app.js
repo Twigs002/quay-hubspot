@@ -48,6 +48,20 @@
     { k: 'hotStale',  label: 'Hot + stale',   test: (r) => (r.outdated && r.outdated.hot || 0) > 0 },
   ];
 
+  // ── Follow-up SLA ──────────────────────────────────────────────────
+  // A team "meets SLA" when at least this share of its leads carry a
+  // future next-activity date (r.outdated.pctUpdated ≥ target). This is
+  // the single editable knob: tweak it to retune the pass/fail line that
+  // drives the per-team pill and the "N/of teams meeting SLA" summary.
+  const SLA_TARGET_PCT_UPDATED = 0.70;   // 70% of leads must be up to date
+
+  // pass / fail / null(=no basis) for a team row against the SLA target.
+  const _slaState = (r) => {
+    const p = r && r.outdated ? r.outdated.pctUpdated : null;
+    if (p == null || !(r._tot > 0)) return null;   // empty team → not judged
+    return p >= SLA_TARGET_PCT_UPDATED ? 'pass' : 'fail';
+  };
+
   let _hubspot = null;
   let _hubspotLoading = false;
   let _hubspotGroup = '1';
@@ -234,6 +248,22 @@
       r._out = _num(r.outdated && r.outdated.outdated);
       r._stalePct = r._tot > 0 ? r._out / r._tot : 0;
     });
+
+    // ── Per-team movement (vs the previous refresh) ─────────────────
+    // The fetcher snapshots the OUTGOING per-team % Updated into
+    // `_prev.teams` (keyed by team name) each run, so we can show whether
+    // a team improved or slipped since the last refresh. If that block is
+    // absent (older data.json, or the Action hasn't run since this shipped)
+    // the column renders "n/a" until the next refresh populates it.
+    const prevTeams = (_hubspot._prev && _hubspot._prev.teams) || null;
+    const _movementFor = (r) => {
+      if (!prevTeams) return { state: 'na' };
+      const prev = prevTeams[r.team];
+      const prevPct = prev ? prev.pctUpdated : null;
+      const curPct  = r.outdated ? r.outdated.pctUpdated : null;
+      if (prevPct == null || curPct == null) return { state: 'na' };
+      return { state: 'ok', delta: curPct - prevPct };
+    };
 
     // Apply filter, then "hide empty teams" toggle, then sort.
     const filter = HUBSPOT_FILTERS.find(f => f.k === _hubspotFilter) || HUBSPOT_FILTERS[0];
@@ -428,6 +458,38 @@
       const share = (n / tot * 100).toFixed(0);
       return `<td class="num tnum" title="${n} outdated of ${tot} · ${share}% stale"><span class="cell-dot cell-dot--${cls}" aria-hidden="true"></span>${fmt(Math.round(n))}</td>`;
     };
+    // SLA pass/fail pill for a team. Colour + text label so the signal
+    // never rides on hue alone (WCAG 1.4.1). Neutral dash when the team
+    // has no deals to judge.
+    const slaTargetPct = Math.round(SLA_TARGET_PCT_UPDATED * 100);
+    const slaPill = (r) => {
+      const st = _slaState(r);
+      if (st == null) return '';
+      const cls   = st === 'pass' ? 'ok' : 'bad';
+      const label = st === 'pass' ? 'SLA ✓' : 'SLA ✗';
+      const tip   = st === 'pass'
+        ? `Meets follow-up SLA (≥ ${slaTargetPct}% of leads up to date)`
+        : `Below follow-up SLA (< ${slaTargetPct}% of leads up to date)`;
+      return `<span class="pill pill-sla ${cls}" title="${tip}">${label}</span>`;
+    };
+    // Movement cell: ▲/▼ change in % Updated vs the previous refresh.
+    // Up = improving (green), down = slipping (red), flat = neutral dash.
+    const movementCell = (r) => {
+      const m = _movementFor(r);
+      if (m.state === 'na') {
+        return `<td class="num"><span class="mv mv--na" title="No prior snapshot yet — enable on the next scheduled refresh">n/a</span></td>`;
+      }
+      const d = m.delta;
+      if (Math.abs(d) < 0.0005) {
+        return `<td class="num"><span class="mv mv--flat" title="No change vs previous refresh">—</span></td>`;
+      }
+      const up  = d > 0;
+      const cls = up ? 'mv--up' : 'mv--down';
+      const arrow = up ? '▲' : '▼';
+      const pts = (Math.abs(d) * 100).toFixed(1);
+      return `<td class="num"><span class="mv ${cls}" title="${up ? 'Up' : 'Down'} ${pts} pts in % Updated vs previous refresh">${arrow} ${pts}</span></td>`;
+    };
+
     const sumCol = (k) => visible.reduce((s, r) => s + _num(r.outdated && r.outdated[k]), 0);
 
     const STK_TH  = 'position:sticky;left:0;z-index:2;background:var(--paper-2);box-shadow:1px 0 0 var(--line-2)';
@@ -459,14 +521,22 @@
     const teamHeader = `<th style="${STK_TH};min-width:180px;text-align:left" data-hs-sort="team" aria-sort="${ariaSort('team')}" scope="col">Team${sortIndic('team')}</th>`;
     const totalHeader = headerNumeric('total', 'Total', 'Total deals for this team', 74);
 
-    const emptyRow = `<tr><td colspan="${HUBSPOT_COLS.length + 2}" class="muted" style="text-align:center;padding:36px 20px;line-height:1.55">
+    const emptyRow = `<tr><td colspan="${HUBSPOT_COLS.length + 3}" class="muted" style="text-align:center;padding:36px 20px;line-height:1.55">
       No data loaded yet - the dashboard refresh hasn't run.<br>
       Trigger it from the repo's <b>Actions → Fetch HubSpot Deals</b> tab,
       or wait for the next scheduled run (03:00 / 11:00 / 13:00 SAST).
     </td></tr>`;
-    const noVisibleRow = `<tr><td colspan="${HUBSPOT_COLS.length + 2}" class="muted" style="text-align:center;padding:36px 20px;line-height:1.55">
+    const noVisibleRow = `<tr><td colspan="${HUBSPOT_COLS.length + 3}" class="muted" style="text-align:center;padding:36px 20px;line-height:1.55">
       No teams match the current filter / hidden-empties setting.
     </td></tr>`;
+
+    // ── SLA roll-up ─────────────────────────────────────────────────
+    // Count teams with deals that clear the follow-up SLA. Drives the
+    // "N of M teams meeting SLA" line under the table heading.
+    const slaJudged = allRows.filter(r => _slaState(r) != null);
+    const slaPass   = slaJudged.filter(r => _slaState(r) === 'pass').length;
+    const slaTotal  = slaJudged.length;
+    const slaCls    = slaTotal === 0 ? '' : (slaPass / slaTotal >= 0.7 ? 'ok' : slaPass / slaTotal >= 0.4 ? 'warn' : 'bad');
 
     return `<div class="tab-view deals-view">
 
@@ -516,7 +586,7 @@
         <div class="card-head">
           <div>
             <h3>Per-team breakdown</h3>
-            <div class="sub">${escapeHtml(groupNames[_hubspotGroup])} · ${visible.length} team${visible.length === 1 ? '' : 's'} shown</div>
+            <div class="sub">${escapeHtml(groupNames[_hubspotGroup])} · ${visible.length} team${visible.length === 1 ? '' : 's'} shown${slaTotal > 0 ? ` · <span class="sla-summary ${slaCls}" title="Teams with a future next-activity date on at least ${slaTargetPct}% of their leads">${slaPass}/${slaTotal} meeting SLA (≥${slaTargetPct}%)</span>` : ''}</div>
           </div>
         </div>
         <div class="tbl-wrap"><table class="tbl tbl-sortable">
@@ -524,6 +594,7 @@
             ${teamHeader}
             ${totalHeader}
             ${HUBSPOT_COLS.map(c => headerCellForStage(c)).join('')}
+            <th class="num" style="min-width:84px" title="Change in % Updated vs the previous refresh — ▲ improving, ▼ slipping" scope="col">Movement</th>
             ${portalId ? `<th class="num" style="${STK_TH_R};min-width:96px;text-align:right" title="Open this team's deals in HubSpot" scope="col">HubSpot</th>` : ''}
           </tr></thead>
           <tbody>
@@ -535,7 +606,7 @@
               const divInfo = divisionForTeam(r.team);
               const teamClickable = !!divInfo;
               return `<tr${dim}${teamClickable ? ` class="row-team" data-team-name="${escapeHtml(r.team)}" tabindex="0" role="button" aria-label="Open ${escapeHtml(r.team)} division details"` : ''}>
-                <td style="${STK_TD}"><div class="agent-cell"><span class="avatar" aria-hidden="true">${escapeHtml((r.team || '?').trim().charAt(0).toUpperCase() || '?')}</span><div class="agent-name">${escapeHtml(r.team || '-')}${teamClickable ? '<span class="team-chev" aria-hidden="true">›</span>' : ''}</div>${r._tot === 0 ? '<span class="pill no-deals">No deals</span>' : ''}</div></td>
+                <td style="${STK_TD}"><div class="agent-cell"><span class="avatar" aria-hidden="true">${escapeHtml((r.team || '?').trim().charAt(0).toUpperCase() || '?')}</span><div class="agent-name">${escapeHtml(r.team || '-')}${teamClickable ? '<span class="team-chev" aria-hidden="true">›</span>' : ''}</div>${r._tot === 0 ? '<span class="pill no-deals">No deals</span>' : slaPill(r)}</div></td>
                 <td class="num tnum">${fmt(tot)}</td>
                 ${HUBSPOT_COLS.map(c => {
                   if (c.k === 'pctUpdated') return pctCell(r.outdated ? r.outdated[c.k] : null);
@@ -547,6 +618,7 @@
                   }
                   return `<td class="num tnum">${fmtCell(r.outdated ? r.outdated[c.k] : null, c.isPct)}</td>`;
                 }).join('')}
+                ${movementCell(r)}
                 ${portalId ? `<td class="num" style="${STK_TD_R}">${link ? `<a class="row-go" href="${link}" target="_blank" rel="noopener" title="Open in HubSpot" aria-label="Open ${escapeHtml(r.team || '')} deals in HubSpot"><span class="row-go-text">HubSpot</span><span class="row-go-arrow" aria-hidden="true">↗</span></a>` : '<span class="empty">-</span>'}</td>` : ''}
               </tr>`;
             }).join(''))}
@@ -562,6 +634,7 @@
                 }
                 return `<td class="num tnum">${fmt(sumCol(c.k))}</td>`;
               }).join('')}
+              <td class="num"></td>
               ${portalId ? `<td style="${STK_TOT_R}"></td>` : ''}
             </tr>` : ''}
           </tbody>
