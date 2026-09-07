@@ -1,16 +1,15 @@
 name: Fetch HubSpot Deals
 
-# Scheduled refresh: 3× daily at 03:00 / 11:00 / 13:00 SAST so the
-# dashboard reflects deal staleness across the working day (morning
-# stand-up, mid-shift, just-after-lunch checkpoint). SAST is UTC+2 with
-# no DST, so the UTC times are 01:00 / 09:00 / 11:00.
+# Scheduled refresh: one after-hours run per night at 18:30 SAST, once the
+# working day is over. SAST is UTC+2 with no DST, so the UTC time is 16:30.
+# Read-only aggregate pull, so no business-hours guard is needed.
+# NOTE: GitHub auto-disables scheduled workflows after 60 days of repo
+# inactivity — any push or manual dispatch re-enables them.
 # Manual dispatch still available for discovery + ad-hoc reruns.
 
 on:
   schedule:
-    - cron: '0 1 * * *'    # 03:00 SAST
-    - cron: '0 9 * * *'    # 11:00 SAST
-    - cron: '0 11 * * *'   # 13:00 SAST
+    - cron: '30 16 * * *'   # 18:30 SAST
   workflow_dispatch:
     inputs:
       mode:
