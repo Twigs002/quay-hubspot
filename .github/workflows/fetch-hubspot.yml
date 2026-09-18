@@ -75,10 +75,25 @@ jobs:
       - name: Commit + push updated JSON
         if: ${{ (github.event.inputs.mode || 'aggregate') == 'aggregate' }}
         run: |
+          set -euo pipefail
           git config --local user.name  "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add data/hubspot_outdated.json
-          git diff --staged --quiet && echo "No changes to commit" || \
-            git commit -m "auto-update HubSpot deals $(date -u +'%Y-%m-%d')"
-          git pull --rebase origin main
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "auto-update HubSpot deals $(date -u +'%Y-%m-%d')"
+          # Rebase-and-push with retries so a concurrent push (another run
+          # racing us) doesn't fail the job — re-pull latest main between
+          # attempts and try again.
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push; then
+              echo "Pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "Push attempt $attempt failed — retrying in 5s"
+            sleep 5
+          done
+          echo "ERROR: push failed after 3 attempts" >&2
+          exit 1

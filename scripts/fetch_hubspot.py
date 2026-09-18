@@ -137,15 +137,43 @@ def fetch_owners():
     return out
 
 
+# HubSpot caps the `properties` query param at 100 names per request.
+PROPS_PER_REQUEST = 100
+
+
 def fetch_deals_page(after=None, properties=None):
-    params = {"limit": 100}
-    if properties:
-        # HubSpot caps `properties` query length, so we request up to
-        # 100 names per request — usually enough to cover everything.
-        params["properties"] = ",".join(properties[:100])
-    if after:
-        params["after"] = after
-    return safe_get(f"{API}/crm/v3/objects/deals", params=params)
+    """Fetch one page of deals.
+
+    HubSpot only honours up to 100 names in the `properties` query param.
+    Rather than silently truncating an over-100 list (which under-fetches
+    fields without warning), we split it into batches: the first batch
+    establishes the page + paging cursor, and each further batch re-requests
+    the SAME page and merges its property values in by deal id. Aggregate
+    mode asks for only a handful of properties, so it always takes the
+    single-request fast path."""
+    def _page(props):
+        params = {"limit": 100}
+        if props:
+            params["properties"] = ",".join(props)
+        if after:
+            params["after"] = after
+        return safe_get(f"{API}/crm/v3/objects/deals", params=params)
+
+    if not properties:
+        return _page(None)
+
+    batches = [properties[i:i + PROPS_PER_REQUEST]
+               for i in range(0, len(properties), PROPS_PER_REQUEST)]
+    data = _page(batches[0])
+    if len(batches) > 1:
+        by_id = {d.get("id"): d for d in data.get("results", [])}
+        for batch in batches[1:]:
+            extra = _page(batch)
+            for d in extra.get("results", []):
+                tgt = by_id.get(d.get("id"))
+                if tgt is not None:
+                    tgt.setdefault("properties", {}).update(d.get("properties") or {})
+    return data
 
 
 # ---------------------------------------------------------------------------
@@ -337,13 +365,29 @@ def fetch_portal_id():
         return None
 
 
+# Sentinel returned by _parse_iso when a value IS present but cannot be
+# parsed — kept distinct from None ("no date present at all") so the caller
+# can tell a genuinely-empty next-activity field from a malformed one.
+_PARSE_FAILED = object()
+
+# SAST is UTC+2 year-round (no DST).
+SAST = _dt.timezone(_dt.timedelta(hours=2))
+
+
 def _parse_iso(ts):
+    """Parse an ISO-8601 timestamp.
+
+    Returns:
+      None            — no value present (empty / missing field)
+      _PARSE_FAILED   — a value was present but could not be parsed
+      datetime        — parsed successfully
+    """
     if not ts:
         return None
     try:
         return _dt.datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
     except Exception:
-        return None
+        return _PARSE_FAILED
 
 
 def run_aggregate():
@@ -353,9 +397,10 @@ def run_aggregate():
 
     # Outdated rule: a deal is out-of-date if it has NO next activity date
     # scheduled, OR if its next activity date is in the past (today or
-    # earlier in SAST). 'Today' is captured at UTC start-of-day for a
-    # stable cutoff during the run.
-    today_utc = _dt.datetime.now(_dt.timezone.utc).replace(
+    # earlier in SAST). The cutoff is SAST midnight so "today in SAST"
+    # counts as still-current; captured once for a stable comparison
+    # during the run.
+    today_sast = _dt.datetime.now(SAST).replace(
         hour=0, minute=0, second=0, microsecond=0)
 
     print("=== AGGREGATE · outdated = no next-activity date OR next-activity < today ===", flush=True)
@@ -379,6 +424,7 @@ def run_aggregate():
     seen = 0
     skipped_no_team = 0
     skipped_other_stage = 0
+    parse_failures = 0
     after = None
     page = 0
     while True:
@@ -403,9 +449,22 @@ def run_aggregate():
                 continue
             # Try the standard "notes_next_activity_date" first; some portals
             # surface it as "hs_next_activity_date" instead — accept either.
-            next_act = _parse_iso(p.get("notes_next_activity_date")
-                                   or p.get("hs_next_activity_date"))
-            is_outdated = (next_act is None) or (next_act < today_utc)
+            raw_next = (p.get("notes_next_activity_date")
+                        or p.get("hs_next_activity_date"))
+            next_act = _parse_iso(raw_next)
+            if next_act is _PARSE_FAILED:
+                # A value was present but unparseable — don't silently fold it
+                # into the "no date" bucket. Log it, count it, treat as
+                # outdated (conservative: we couldn't confirm a future date).
+                parse_failures += 1
+                print(f"  [WARN] unparseable next-activity date {raw_next!r} "
+                      f"on deal {d.get('id')} — counting as outdated", flush=True)
+                is_outdated = True
+            elif next_act is None:
+                # Genuinely no next activity scheduled -> outdated.
+                is_outdated = True
+            else:
+                is_outdated = next_act < today_sast
             tally = tallies.setdefault(team, {})
             cell  = tally.setdefault(col, {"total": 0, "outdated": 0})
             cell["total"] += 1
@@ -486,13 +545,18 @@ def run_aggregate():
     existing["generated"] = _dt.datetime.now(_dt.timezone.utc).isoformat()
     existing["source"]    = ("fetch_hubspot.py aggregate · "
                              "outdated = next_activity_date is null OR in the past · "
-                             f"{seen} deals processed")
+                             f"{seen} deals processed · {parse_failures} date-parse failures")
     json_path.write_text(json.dumps(existing, indent=2))
 
     rostered = sum(len(v) for v in teams_by_group.values())
     teams_with_data = sum(1 for t in tallies if any(v["total"] for v in tallies[t].values()))
     print(f"\nDone — {seen} deals processed, "
           f"{teams_with_data}/{rostered} roster teams ended up with at least one deal.", flush=True)
+    if parse_failures:
+        print(f"  [WARN] {parse_failures} deal(s) had an unparseable "
+              f"next-activity date and were counted as outdated.", flush=True)
+    else:
+        print("  0 next-activity date parse failures.", flush=True)
 
 
 # ---------------------------------------------------------------------------
