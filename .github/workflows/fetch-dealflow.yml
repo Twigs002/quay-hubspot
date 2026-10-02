@@ -1,0 +1,56 @@
+name: Fetch Dealflow Figures
+
+# Daily 05:00 SAST refresh of the Ryan Dashboard figures. SAST is UTC+2 with
+# no DST, so 05:00 SAST == 03:00 UTC. Read-only aggregate pull of the Dealflow
+# sheet; commits data/dealflow_figures.json back so GH Pages serves fresh
+# numbers each morning.
+#
+# Requires repo secret GOOGLE_SERVICE_ACCOUNT (the va-sheets-bot key JSON) and
+# the source sheet shared (reader) with that service account's email.
+#
+# NOTE: GitHub auto-disables scheduled workflows after 60 days of repo
+# inactivity; any push or manual dispatch re-enables them.
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # 05:00 SAST
+  workflow_dispatch:
+
+concurrency:
+  group: fetch-dealflow
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Write service account key
+        env:
+          GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+        run: |
+          printf '%s' "$GOOGLE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+
+      - name: Fetch Dealflow figures
+        env:
+          GOOGLE_SERVICE_ACCOUNT_FILE: ${{ runner.temp }}/sa.json
+        run: python scripts/fetch_dealflow.py
+
+      - name: Commit + push updated JSON
+        run: |
+          git config --local user.name  "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/dealflow_figures.json
+          git diff --staged --quiet && echo "No changes to commit" || \
+            git commit -m "auto-update Dealflow figures $(date -u +'%Y-%m-%d')"
+          git pull --rebase origin main
+          git push

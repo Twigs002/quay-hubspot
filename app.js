@@ -1,882 +1,405 @@
+/* Quay 1 — Dealflow Figures ("Ryan Dashboard")
+ *
+ * Standalone GH Pages dashboard of Quay 1 group sales & commission, rolled up
+ * from the Dealflow Raw Data sheet by scripts/fetch_dealflow.py into
+ * data/dealflow_figures.json (refreshed daily 05:00 SAST).
+ *
+ * Figures (locked with the user):
+ *   - periods keyed on acceptanceDate, ALL deals counted
+ *   - Gross = commissionExclVat (full commission excl VAT)
+ *   - Nett  = totalGrossComm  (what Quay 1 makes excluding outside referral)
+ *   - also: salesVolume (purchasePrice) and quay1 share (quay1GrossComm)
+ *
+ * Access is gated by the shared Supabase PIN login (super/admin only) — the
+ * same auth layer as quay-leads / quay-clock.
+ */
 (() => {
   'use strict';
 
-  // ─── Inline icons (vanilla SVG, mirrors quay-dashboard-v2's I object) ──
+  // ─── Inline icons ────────────────────────────────────────────────────
   const s = (inner) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
   const I = {
-    layers: s('<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/>'),
-    alert:  s('<path d="M12 3 2 20h20L12 3Z"/><path d="M12 9v5M12 17h.01"/>'),
-    target: s('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/>'),
-    check:  s('<path d="M20 6 9 17l-5-5"/>'),
+    coins:  s('<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18M7 6h1v4M16.71 13.88l.7.71-2.82 2.82"/>'),
+    wallet: s('<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>'),
+    house:  s('<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/>'),
+    file:   s('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/>'),
   };
 
-  // ─── Helpers ─────────────────────────────────────────────────────────
-  const escapeHtml = (str) => String(str ?? '')
+  // ─── Formatting ──────────────────────────────────────────────────────
+  const esc = (str) => String(str ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  const fmt = (n) => {
-    if (n == null || isNaN(n)) return '0';
-    return Math.round(Number(n)).toLocaleString('en-GB');
+  const n0 = (n) => (n == null || isNaN(n)) ? '0' : Math.round(+n).toLocaleString('en-GB');
+  const money = (n) => 'R ' + n0(n);
+  const moneyShort = (n) => {
+    n = +n || 0;
+    const a = Math.abs(n);
+    if (a >= 1e6) return 'R' + (n / 1e6).toFixed(a >= 1e7 ? 0 : 1) + 'm';
+    if (a >= 1e3) return 'R' + Math.round(n / 1e3) + 'k';
+    return 'R' + Math.round(n);
   };
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-  // ─── HubSpot Out-of-Date Deals view ──────────────────────────────────
-  // The 3 Dialfire-overlay columns (Avg Logged / Avg Answered / Avg NA)
-  // are intentionally not in this list yet - they would render as 14 columns
-  // of em-dashes until the Dialfire overlay lands. They'll come back as
-  // additional entries once that data is wired in.
-  const HUBSPOT_COLS = [
-    { k: 'calling',    label: 'Calling',      tip: 'Calling leads - outdated / total',     isStage: true },
-    { k: 'external',   label: 'External',     tip: 'External leads - outdated / total',    isStage: true },
-    { k: 'inbound',    label: 'Inbound',      tip: 'Inbound leads - outdated / total',     isStage: true },
-    { k: 'reconv',     label: 'Reconv',       tip: 'Reconverted leads - outdated / total', isStage: true },
-    { k: 'rental',     label: 'Rental',       tip: 'Rental leads - outdated / total',      isStage: true },
-    { k: 'nurture',    label: 'Nurture',      tip: 'Leads to nurture - outdated / total',  isStage: true },
-    { k: 'warm',       label: 'Warm',         tip: 'Warm leads - outdated / total',        isStage: true },
-    { k: 'hot',        label: 'Hot',          tip: 'Hot leads - outdated / total',         isStage: true },
-    { k: 'outdated',   label: 'Outdated',     tip: 'Total outdated leads across all stages' },
-    { k: 'upToHot',    label: 'Up to Hot',    tip: 'Total deals in stages up to Hot Lead' },
-    { k: 'pctUpdated', label: '% Updated',    tip: 'Share of leads with a future next-activity date', isPct: true },
-  ];
+  // Series colours — two tints of the Quay blue on one Rand axis. Dark = Nett
+  // (what we keep), light = Gross (the whole commission). Amber is reserved
+  // for the hero KPI accent, never a series.
+  const C_GROSS = '#6B90D8';
+  const C_NETT  = '#3D5BA6';
 
-  // Filter chips above the table - restrict the visible roster to a
-  // worth-acting-on subset. Director-mode triage.
-  const HUBSPOT_FILTERS = [
-    { k: 'all',       label: 'All teams',     test: () => true },
-    { k: 'stale50',   label: 'Stale > 50%',   test: (r) => r._stalePct >= 0.5 && r._tot > 0 },
-    { k: 'stale80',   label: 'Stale > 80%',   test: (r) => r._stalePct >= 0.8 && r._tot > 0 },
-    { k: 'hot',       label: 'Hot leads only',test: (r) => (r.total && r.total.hot || 0) > 0 },
-    { k: 'hotStale',  label: 'Hot + stale',   test: (r) => (r.outdated && r.outdated.hot || 0) > 0 },
-  ];
-
-  let _hubspot = null;
-  let _hubspotLoading = false;
-  let _hubspotGroup = '1';
-  let _hubspotSortBy = 'pctUpdated';
-  let _hubspotSortDir = 'asc';   // worst first
-  let _hubspotShowEmpty = false; // hide rows with 0 deals
-  let _hubspotFilter = 'all';
-
-  // ─── Divisions / Directory state ──────────────────────────────────────
-  // Sourced from data/divisions.json (generated by scripts/parse_divisions.py
-  // from the Divisions Area Breakdown.xlsx). Used to drill-down on a team
-  // row (brokers + specialists + suburbs) and to power the Directory tab.
-  let _divisions = null;
-  let _divisionsLoading = false;
-  let _tab = 'deals';                          // 'deals' | 'directory'
-  let _dirSearch = '';
-  let _dirSection = 'all';                     // section filter on Directory
-  let _drillTeam = null;                       // team name when modal open
-  // Signed-in user (set by enterApp once auth.js confirms the session):
-  // { username, name, email, isSuper, isAdmin, role }. The backend derives
-  // identity from the JWT.
+  // ─── State ───────────────────────────────────────────────────────────
+  let _data = null;
+  let _year = 'all';            // 'all' | 2024 | 2025 | ...
+  let _divSort = 'nett';        // division table sort key
   let _currentUser = null;
 
-  async function loadHubspot() {
-    if (_hubspotLoading) return;
-    _hubspotLoading = true;
-    try {
-      const r = await fetch('data/hubspot_outdated.json?cb=' + Date.now());
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      _hubspot = await r.json();
-    } catch (e) {
-      console.warn('[hubspot] load failed', e);
-      _hubspot = { error: String(e.message || e), generated: null, groups: { '1': [], '2': [], '3': [] } };
-    } finally {
-      _hubspotLoading = false;
-      render();
-    }
+  // ─── Data load ───────────────────────────────────────────────────────
+  async function loadData() {
+    const res = await fetch('data/dealflow_figures.json?cb=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
   }
 
-  async function loadDivisions() {
-    if (_divisionsLoading) return;
-    _divisionsLoading = true;
-    try {
-      const r = await fetch('data/divisions.json?cb=' + Date.now());
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      _divisions = await r.json();
-    } catch (e) {
-      console.warn('[divisions] load failed', e);
-      _divisions = { error: String(e.message || e), generated: null, sections: [] };
-    } finally {
-      _divisionsLoading = false;
-      render();
-    }
+  const years = () => (_data && _data.byYear ? _data.byYear.map(y => y.year) : []);
+  const yearRow = (y) => (_data.byYear || []).find(r => r.year === y) || null;
+
+  // Totals for the active scope (a specific year, or all-time).
+  function scopeTotals() {
+    if (_year === 'all') return _data.overall;
+    return yearRow(_year) || { count: 0, salesVolume: 0, gross: 0, nett: 0, quay1: 0 };
   }
 
-  // Build a normalized lookup: lowercased team name → { team, section }.
-  // Some sheet rows have trailing whitespace ("Wizards "), so we trim.
-  let _teamLookupCache = null;
-  function _teamLookup() {
-    if (_teamLookupCache) return _teamLookupCache;
-    const m = new Map();
-    if (_divisions && _divisions.sections) {
-      _divisions.sections.forEach(sec => {
-        sec.teams.forEach(t => {
-          const key = (t.name || '').toLowerCase().trim();
-          if (key) m.set(key, { team: t, section: sec.name });
-        });
+  // Months to plot for the active scope.
+  function scopeMonths() {
+    const all = _data.byMonth || [];
+    if (_year === 'all') return all;
+    return all.filter(m => m.ym.slice(0, 4) === String(_year));
+  }
+
+  function divisionsForScope() {
+    const dy = _data.byDivisionYear || {};
+    if (_year !== 'all') return (dy[String(_year)] || []).slice();
+    // All-time: merge every year's division rows.
+    const acc = {};
+    Object.values(dy).forEach(list => list.forEach(d => {
+      const t = acc[d.division] || (acc[d.division] =
+        { division: d.division, count: 0, salesVolume: 0, gross: 0, nett: 0, quay1: 0 });
+      t.count += d.count; t.salesVolume += d.salesVolume;
+      t.gross += d.gross; t.nett += d.nett; t.quay1 += d.quay1;
+    }));
+    return Object.values(acc);
+  }
+
+  // ─── SVG chart helpers ───────────────────────────────────────────────
+  // Nice axis ceiling + evenly-spaced ticks.
+  function niceTicks(max, count) {
+    if (max <= 0) return { top: 1, ticks: [0, 1] };
+    const raw = max / count;
+    const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const norm = raw / mag;
+    const step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
+    const top = Math.ceil(max / step) * step;
+    const ticks = [];
+    for (let v = 0; v <= top + 1e-6; v += step) ticks.push(v);
+    return { top, ticks };
+  }
+
+  const PLOT = { w: 860, h: 360, l: 70, r: 20, t: 24, b: 54 };
+  const px = (x) => PLOT.l + x * (PLOT.w - PLOT.l - PLOT.r);
+  const py = (v, top) => PLOT.t + (1 - v / top) * (PLOT.h - PLOT.t - PLOT.b);
+
+  function axisG(top) {
+    const { ticks } = niceTicks(top, 4);
+    const base = PLOT.h - PLOT.b;
+    let g = '';
+    ticks.forEach(v => {
+      const y = py(v, top);
+      g += `<line class="grid" x1="${PLOT.l}" y1="${y.toFixed(1)}" x2="${PLOT.w - PLOT.r}" y2="${y.toFixed(1)}"/>`;
+      g += `<text class="ax-y" x="${PLOT.l - 10}" y="${(y + 4).toFixed(1)}">${moneyShort(v)}</text>`;
+    });
+    g += `<line class="axis" x1="${PLOT.l}" y1="${base}" x2="${PLOT.w - PLOT.r}" y2="${base}"/>`;
+    return g;
+  }
+
+  // Grouped bars: Gross + Nett per year.
+  function annualChartSVG() {
+    const data = _data.byYear || [];
+    if (!data.length) return '';
+    const max = Math.max(...data.map(d => Math.max(d.gross, d.nett)), 1);
+    const { top } = niceTicks(max, 4);
+    const base = PLOT.h - PLOT.b;
+    const n = data.length;
+    const slot = (PLOT.w - PLOT.l - PLOT.r) / n;
+    const bw = Math.min(46, slot * 0.30);
+    let bars = '';
+    data.forEach((d, i) => {
+      const cx = PLOT.l + slot * (i + 0.5);
+      const pairs = [
+        { key: 'Gross', val: d.gross, col: C_GROSS, dx: -bw - 3 },
+        { key: 'Nett',  val: d.nett,  col: C_NETT,  dx: 3 },
+      ];
+      pairs.forEach(p => {
+        const y = py(p.val, top);
+        const h = Math.max(base - y, 0);
+        bars += `<rect class="bar" x="${(cx + p.dx).toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="${p.col}" data-tip="${esc(d.year + ' · ' + p.key + ': ' + money(p.val))}"/>`;
+        if (h > 16) bars += `<text class="bar-lbl" x="${(cx + p.dx + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}">${moneyShort(p.val)}</text>`;
       });
-    }
-    _teamLookupCache = m;
-    return m;
-  }
-  function divisionForTeam(name) {
-    const k = (name || '').toLowerCase().trim();
-    return _teamLookup().get(k) || null;
-  }
-
-  function render() {
-    const host = document.getElementById('content');
-    if (_tab === 'directory') {
-      if (_divisions == null && !_divisionsLoading) loadDivisions();
-      host.innerHTML = renderDirectory();
-      wireDirectory();
-    } else {
-      // Deals tab - load divisions in the background so the drill-down
-      // is ready when a team row is clicked.
-      if (_divisions == null && !_divisionsLoading) loadDivisions();
-      host.innerHTML = renderHubspot();
-      wireHubspot();
-    }
-    // Tab nav active state.
-    document.querySelectorAll('#tabNav .tab-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.tab === _tab);
+      bars += `<text class="ax-x" x="${cx.toFixed(1)}" y="${base + 22}">${d.year}</text>`;
     });
-    // Render the drill-down modal if open.
-    const modalHost = document.getElementById('modalHost');
-    if (modalHost) {
-      modalHost.innerHTML = _drillTeam ? renderTeamDrillDown() : '';
-      if (_drillTeam) wireTeamDrillDown();
-    }
-    // Mirror the refresh badge into the sticky topbar so the freshness
-    // signal stays visible when the user has scrolled past the title card.
-    const topbarSlot = document.getElementById('topbarRefresh');
-    if (topbarSlot && _hubspot && _hubspot.generated) {
-      const d = new Date(_hubspot.generated);
-      const hrs = (Date.now() - d.getTime()) / 3600000;
-      // Threshold tuned to the 3× daily cadence (03:00 / 11:00 / 13:00
-      // SAST). Anything older than ~9h between expected refreshes is
-      // warn-worthy; anything past a full day is bad.
-      const cls = hrs < 9 ? 'ok' : hrs < 24 ? 'warn' : 'bad';
-      const mins = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
-      const rel = mins < 60 ? mins + 'm ago'
-                : hrs  < 24 ? Math.round(hrs) + 'h ago'
-                : Math.round(hrs / 24) + 'd ago';
-      const abs = d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Johannesburg' }) + ' SAST';
-      const nextRun = _nextRefreshSAST();
-      const tip = `Last refresh: ${abs}${nextRun ? `\nNext scheduled: ${nextRun} SAST` : ''}`;
-      topbarSlot.innerHTML = `<span class="pill ${cls}" title="${escapeHtml(tip)}">Refreshed ${escapeHtml(rel)}</span>`;
-    } else if (topbarSlot) {
-      topbarSlot.innerHTML = '';
-    }
+    return `<svg class="chart" viewBox="0 0 ${PLOT.w} ${PLOT.h}" role="img" aria-label="Gross and nett commission by year">${axisG(top)}${bars}</svg>`;
   }
 
-  // The fetch-hubspot workflow runs at 03:00 / 11:00 / 13:00 SAST. Pick
-  // the next one ahead of now in local-SAST terms - used in the refresh
-  // pill tooltip so the operator sees when fresh data is due.
-  function _nextRefreshSAST() {
-    const SCHEDULE_H = [3, 11, 13];
-    // SAST is UTC+2, no DST. Compute "now" in SAST by adding 2h to UTC.
-    const utc = new Date();
-    const sast = new Date(utc.getTime() + 2 * 3600 * 1000);
-    const hourNow = sast.getUTCHours();
-    const minNow  = sast.getUTCMinutes();
-    const todayRunsAhead = SCHEDULE_H.filter(h => h > hourNow || (h === hourNow && minNow === 0));
-    if (todayRunsAhead.length) {
-      const h = todayRunsAhead[0];
-      return String(h).padStart(2, '0') + ':00 today';
-    }
-    return String(SCHEDULE_H[0]).padStart(2, '0') + ':00 tomorrow';
-  }
-
-  // ─── Helpers shared across the render ──────────────────────────────
-  const _num = (v) => { const n = Number(v); return isFinite(n) ? n : 0; };
-  const _stalePctOf = (r) => {
-    const t = _num(r.total && r.total.deals);
-    const o = _num(r.outdated && r.outdated.outdated);
-    return t > 0 ? o / t : 0;
-  };
-  // Compact integer formatter for tight cells ("29.4k" instead of "29431").
-  const _fmtK = (n) => {
-    const v = Math.abs(Number(n) || 0);
-    if (v >= 100000) return (v / 1000).toFixed(0) + 'k';
-    if (v >= 10000)  return (v / 1000).toFixed(1) + 'k';
-    return String(Math.round(Number(n) || 0));
-  };
-
-  function _hsKpiForGroup(rows) {
-    const total = rows.reduce((s, r) => s + _num(r.total && r.total.deals), 0);
-    const out   = rows.reduce((s, r) => s + _num(r.outdated && r.outdated.outdated), 0);
-    const pctRows = rows.filter(r => r.outdated && r.outdated.pctUpdated != null);
-    const avg = pctRows.length
-      ? pctRows.reduce((s, r) => s + _num(r.outdated.pctUpdated), 0) / pctRows.length
-      : 0;
-    return { totalDeals: total, outdatedLeads: out,
-             pctOutdated: total > 0 ? out / total : 0,
-             avgPctUpdated: avg, reportingTeams: pctRows.length };
-  }
-
-  function renderHubspot() {
-    if (_hubspot == null && !_hubspotLoading) loadHubspot();
-    if (_hubspot == null) {
-      return `<div class="tab-view"><div class="card card-pad" style="text-align:center;color:var(--muted);padding:60px 20px">Loading HubSpot figures…</div></div>`;
-    }
-
-    const groups     = (_hubspot.groups) || { '1': [], '2': [], '3': [] };
-    const groupNames = (_hubspot.groupNames) || { '1': 'Group 1', '2': 'Group 2', '3': 'Group 3' };
-    const allRows    = groups[_hubspotGroup] || [];
-    const portalId   = _hubspot.portalId || null;
-
-    // Decorate rows with cached _tot / _stalePct used by the filter, the
-    // top-3 callout, and the sort comparator.
-    allRows.forEach(r => {
-      r._tot = _num(r.total && r.total.deals);
-      r._out = _num(r.outdated && r.outdated.outdated);
-      r._stalePct = r._tot > 0 ? r._out / r._tot : 0;
-    });
-
-    // Apply filter, then "hide empty teams" toggle, then sort.
-    const filter = HUBSPOT_FILTERS.find(f => f.k === _hubspotFilter) || HUBSPOT_FILTERS[0];
-    let visible = allRows.filter(filter.test);
-    if (!_hubspotShowEmpty) visible = visible.filter(r => r._tot > 0);
-
-    // Sort comparator. Default 'pctUpdated' asc puts the worst-performing
-    // teams (with deals) at the top - that's the triage view a director
-    // opens the dashboard for.
-    visible = visible.slice().sort((a, b) => {
-      const k = _hubspotSortBy;
-      const av = (k === 'team'    ? (a.team || '').toLowerCase()
-               : k === 'total'   ? a._tot
-               : k === 'outdated' ? a._out
-               : k === 'pctUpdated' ? (a.outdated && a.outdated.pctUpdated != null ? a.outdated.pctUpdated : 2)  // empty rows last
-               : _num(a.outdated && a.outdated[k]));
-      const bv = (k === 'team'    ? (b.team || '').toLowerCase()
-               : k === 'total'   ? b._tot
-               : k === 'outdated' ? b._out
-               : k === 'pctUpdated' ? (b.outdated && b.outdated.pctUpdated != null ? b.outdated.pctUpdated : 2)
-               : _num(b.outdated && b.outdated[k]));
-      if (av < bv) return _hubspotSortDir === 'asc' ? -1 : 1;
-      if (av > bv) return _hubspotSortDir === 'asc' ?  1 : -1;
-      return 0;
-    });
-
-    const emptyCount  = allRows.filter(r => r._tot === 0).length;
-    const hiddenByFil = allRows.length - visible.length - (_hubspotShowEmpty ? 0 : emptyCount);
-
-    // ── Refresh badge ───────────────────────────────────────────────
-    const genDate = _hubspot.generated ? new Date(_hubspot.generated) : null;
-    const genAbs  = genDate
-      ? genDate.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Johannesburg' }) + ' SAST'
-      : null;
-    const relAge = (d) => {
-      if (!d) return null;
-      const mins = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
-      if (mins < 60) return mins + 'm ago';
-      const hrs = Math.round(mins / 60);
-      if (hrs  < 24) return hrs  + 'h ago';
-      return Math.round(hrs / 24) + 'd ago';
+  // Two lines: Gross + Nett month on month.
+  function monthChartSVG() {
+    const data = scopeMonths();
+    if (!data.length) return '';
+    const max = Math.max(...data.map(d => Math.max(d.gross, d.nett)), 1);
+    const { top } = niceTicks(max, 4);
+    const base = PLOT.h - PLOT.b;
+    const n = data.length;
+    const xAt = (i) => (n === 1 ? px(0.5) : px(i / (n - 1)));
+    const label = (d) => (_year === 'all' ? d.ym.slice(2).replace('-', "'").replace(/^(\d\d)'(\d\d)$/, "$2 '$1") : MONTHS[+d.ym.slice(5, 7) - 1]);
+    const line = (key, col) => {
+      let pts = data.map((d, i) => `${xAt(i).toFixed(1)},${py(d[key], top).toFixed(1)}`).join(' ');
+      let dots = data.map((d, i) =>
+        `<circle class="dot" cx="${xAt(i).toFixed(1)}" cy="${py(d[key], top).toFixed(1)}" r="4" fill="${col}" data-tip="${esc(d.ym + ' · ' + (key === 'gross' ? 'Gross' : 'Nett') + ': ' + money(d[key]))}"/>`).join('');
+      return `<polyline class="ln" points="${pts}" stroke="${col}"/>${dots}`;
     };
-    const ageClass = (() => {
-      if (!genDate) return 'bad';
-      const hrs = (Date.now() - genDate.getTime()) / 3600000;
-      if (hrs < 30) return 'ok';
-      if (hrs < 72) return 'warn';
-      return 'bad';
-    })();
-    const refreshBadge = genDate
-      ? `<span class="pill ${ageClass}" title="${escapeHtml(genAbs)}">Refreshed ${escapeHtml(relAge(genDate))}</span>`
-      : `<span class="pill bad" title="Workflow has never populated data/hubspot_outdated.json">Snapshot - never refreshed</span>`;
+    // x labels — thin out if crowded.
+    const every = Math.ceil(n / 14);
+    let xlabels = '';
+    data.forEach((d, i) => {
+      if (i % every === 0 || i === n - 1) {
+        xlabels += `<text class="ax-x" x="${xAt(i).toFixed(1)}" y="${base + 22}">${esc(label(d))}</text>`;
+      }
+    });
+    return `<svg class="chart" viewBox="0 0 ${PLOT.w} ${PLOT.h}" role="img" aria-label="Gross and nett commission month on month">${axisG(top)}${xlabels}${line('gross', C_GROSS)}${line('nett', C_NETT)}</svg>`;
+  }
 
-    // ── KPIs + delta vs previous run ────────────────────────────────
-    const kpi      = _hsKpiForGroup(allRows);
-    const prevKpi  = (_hubspot._prev && _hubspot._prev.kpi && _hubspot._prev.kpi[_hubspotGroup]) || null;
-    const deltaFmt = (cur, prev, unit, invertColour) => {
-      if (prev == null || cur == null) return '';
-      const d = cur - prev;
-      if (Math.abs(d) < 0.0005) return '';
-      const arrow = d > 0 ? '▲' : '▼';
-      // For "% Outdated" and "Outdated Leads", UP is bad. For "% Updated"
-      // and "Total Deals", UP is good. invertColour=true flips the
-      // green/red mapping for the bad-is-up metrics.
-      const up = d > 0;
-      const good = invertColour ? !up : up;
-      const cls = good ? 'kpi-delta kpi-delta--up' : 'kpi-delta kpi-delta--down';
-      const txt = unit === '%' ? `${Math.abs(d * 100).toFixed(1)} pts` : fmt(Math.round(Math.abs(d)));
-      return `<span class="${cls}" title="vs previous refresh">${arrow} ${txt}</span>`;
-    };
-    // Clean editorial KPI card, mirroring quay-dashboard-v2: icon chip
-    // top-left, delta pill top-right, muted label, big serif value, foot.
-    const kpiCard = (icon, label, val, foot, delta) => `<div class="card kpi">
-      <div class="kpi-top"><div class="kpi-ic">${icon}</div>${delta || ''}</div>
-      <div class="kpi-label">${escapeHtml(label)}</div>
-      <div class="kpi-val tnum">${val}</div>
-      <div class="kpi-foot">${escapeHtml(foot)}</div>
+  const legend = () => `
+    <div class="legend">
+      <span class="lg"><i style="background:${C_NETT}"></i>Nett <span class="muted">(what we keep)</span></span>
+      <span class="lg"><i style="background:${C_GROSS}"></i>Gross <span class="muted">(total commission)</span></span>
     </div>`;
 
-    // Hero KPI tint by current % outdated value.
-    const heroClass = (() => {
-      const p = kpi.pctOutdated * 100;
-      if (p >= 60) return 'kpi--hero-bad';
-      if (p >= 30) return 'kpi--hero-warn';
-      return 'kpi--hero-ok';
-    })();
-
-    // ── Group seg control: now includes health % per group ──────────
-    const segBtn = (k) => {
-      const gRows = groups[k] || [];
-      const gk    = _hsKpiForGroup(gRows);
-      const stale = gk.totalDeals > 0 ? (gk.outdatedLeads / gk.totalDeals) * 100 : 0;
-      const staleClass = stale >= 60 ? 'seg-stale-bad' : stale >= 30 ? 'seg-stale-warn' : 'seg-stale-ok';
-      const name  = groupNames[k] || ('Group ' + k);
-      // Drop the team count from the button - it's already in the table
-      // header below. Keep just `name · X% stale` so the segment header
-      // does one thing: signal which group is hottest.
-      return `<button class="${k === _hubspotGroup ? 'active' : ''}" data-hs-group="${k}" aria-pressed="${k === _hubspotGroup ? 'true' : 'false'}">
-        ${escapeHtml(name)}
-        ${gk.totalDeals > 0 ? `<span class="seg-meta ${staleClass}">· ${stale.toFixed(0)}% stale</span>` : ''}
-      </button>`;
-    };
-
-    const hubspotLinkFor = (r) => {
-      if (!portalId || !r.ownerIds || !r.ownerIds.length) return null;
-      // Filter the HubSpot deal-list to this team's owners. Field name
-      // 'hubspot_owner_id' is HubSpot's standard owner filter param.
-      return `https://app.hubspot.com/contacts/${encodeURIComponent(portalId)}/objects/0-3/views/all/list` +
-             `?query=&filters=%5B%7B%22property%22%3A%22hubspot_owner_id%22%2C%22operator%22%3A%22IN%22%2C%22values%22%3A%5B${r.ownerIds.map(encodeURIComponent).join('%2C')}%5D%7D%5D`;
-    };
-    // ── Filter chips ────────────────────────────────────────────────
-    const filterChips = HUBSPOT_FILTERS.map(f => {
-      const count = allRows.filter(r => r._tot > 0).filter(f.test).length;
-      // Always show the count - even 0 - so the user sees the filter is
-      // empty BEFORE clicking it. Mute zero counts so they recede.
-      const zero = count === 0 ? ' chip-count--zero' : '';
-      return `<button class="chip ${f.k === _hubspotFilter ? 'active' : ''}" data-hs-filter="${f.k}" aria-pressed="${f.k === _hubspotFilter ? 'true' : 'false'}">
-        ${escapeHtml(f.label)}<span class="chip-count${zero}">${count}</span>
-      </button>`;
+  // ─── Sections ────────────────────────────────────────────────────────
+  function controls() {
+    const opts = ['all', ...years()];
+    const btns = opts.map(y => {
+      const lbl = y === 'all' ? 'All years' : y;
+      return `<button class="chip${String(_year) === String(y) ? ' active' : ''}" data-year="${y}">${lbl}</button>`;
     }).join('');
-
-    // ── Cell formatters + colour ───────────────────────────────────
-    const fmtCell = (v, isPct) => {
-      if (v == null || v === '') return '<span class="empty">-</span>';
-      if (isPct) return (Number(v) * 100).toFixed(1) + '%';
-      const n = Number(v);
-      return isFinite(n) ? n.toFixed(n % 1 === 0 ? 0 : 1) : escapeHtml(String(v));
-    };
-    // Stage cell: "outdated/total" with green/red colour + accessibility
-    // marker so the meaning isn't carried only by hue. ✓ when none stale,
-    // ⚠ when all stale.
-    const stageCell = (outdatedN, totalN) => {
-      if (!totalN) return '<td class="num"><span class="empty">–</span></td>';
-      const out = Number(outdatedN || 0);
-      const tot = Number(totalN);
-      const allStale  = tot > 0 && out === tot;
-      const noneStale = out === 0;
-      // Calm treatment: numerator recedes to ink, denominator muted. Only the
-      // worst case (all stale) is flagged red + ⚠; a clean cell reads green.
-      const cls = allStale ? ' stage-cell--bad' : noneStale ? ' stage-cell--clean' : '';
-      const marker = allStale ? '<span class="cell-mark" aria-hidden="true">⚠</span>' : '';
-      const display = `${_fmtK(out)}<span class="cell-slash">/</span><span class="cell-den">${_fmtK(tot)}</span>${marker}`;
-      const title = `${out} outdated of ${tot} total`;
-      return `<td class="num tnum stage-cell${cls}" title="${title}">${display}</td>`;
-    };
-    const pctClass = (frac) => {
-      if (frac == null) return '';
-      const p = Number(frac) * 100;
-      if (p >= 85) return 'ok';
-      if (p >= 70) return 'warn';
-      return 'bad';
-    };
-    const outdatedClass = (outdatedN, totalN) => {
-      if (!totalN || totalN <= 0 || outdatedN == null) return '';
-      const share = outdatedN / totalN;
-      if (share >= 0.30) return 'bad';
-      if (share >= 0.15) return 'warn';
-      return 'ok';
-    };
-    // Continuous green→amber→red heat fill for a cell, à la the RAW DATA
-    // spreadsheet. `score` runs 0 (worst → red) to 1 (best → green). Text
-    // stays dark ink so the value never depends on hue alone (WCAG 1.3.1);
-    // the ✓/⚠ marker carries the same signal for colour-blind readers.
-    const heatBg = (score) => {
-      const s = Math.max(0, Math.min(1, Number(score)));
-      const hue   = 6 + (145 - 6) * s;          // 6°=red → 42°=amber → 145°=green
-      const sat   = 64 - 18 * Math.abs(s - 0.5) * 2;  // ease saturation at the midpoint
-      const light = 80 + 9 * s;                 // reds sit a touch deeper than greens
-      return `background:hsl(${hue.toFixed(0)} ${sat.toFixed(0)}% ${light.toFixed(0)}%)`;
-    };
-    // % Updated → an elegant mini proportion bar (à la quay-dashboard-v2's
-    // .cell-bar) instead of a heat fill: value + a thin RAG-coloured track.
-    const pctCell = (frac) => {
-      if (frac == null) return '<td class="num"><span class="empty">–</span></td>';
-      const cls = pctClass(frac);
-      const val = (Number(frac) * 100);
-      const w = Math.max(4, Math.min(100, val));
-      return `<td class="num" title="${val.toFixed(1)}% of leads with a future next-activity date">
-        <div class="cell-bar">
-          <span class="cell-bar-val tnum">${val.toFixed(0)}%</span>
-          <span class="track"><span class="fill fill--${cls}" style="width:${w}%"></span></span>
-        </div></td>`;
-    };
-    // Outdated total → plain number preceded by a small RAG status dot; the
-    // dot carries the stale-share signal without flooding the cell with colour.
-    const outdatedCell = (outdatedN, totalN) => {
-      if (outdatedN == null) return '<td class="num"><span class="empty">–</span></td>';
-      const n   = Number(outdatedN);
-      const tot = Number(totalN) || 0;
-      if (!tot) return `<td class="num tnum">${fmt(Math.round(n))}</td>`;
-      const cls = outdatedClass(n, tot);
-      const share = (n / tot * 100).toFixed(0);
-      return `<td class="num tnum" title="${n} outdated of ${tot} · ${share}% stale"><span class="cell-dot cell-dot--${cls}" aria-hidden="true"></span>${fmt(Math.round(n))}</td>`;
-    };
-    const sumCol = (k) => visible.reduce((s, r) => s + _num(r.outdated && r.outdated[k]), 0);
-
-    const STK_TH  = 'position:sticky;left:0;z-index:2;background:var(--paper-2);box-shadow:1px 0 0 var(--line-2)';
-    const STK_TD  = 'position:sticky;left:0;z-index:1;background:var(--card);box-shadow:1px 0 0 var(--line-2);white-space:nowrap';
-    const STK_TOT = 'position:sticky;left:0;z-index:1;background:#F7F8FC;box-shadow:1px 0 0 var(--line-2)';
-    // Pin the HubSpot-link column to the RIGHT edge too, so the one action
-    // button is always reachable and never scrolls off (the clipping bug).
-    const STK_TH_R  = 'position:sticky;right:0;z-index:2;background:var(--paper-2);box-shadow:-1px 0 0 var(--line-2)';
-    const STK_TD_R  = 'position:sticky;right:0;z-index:1;background:var(--card);box-shadow:-1px 0 0 var(--line-2)';
-    const STK_TOT_R = 'position:sticky;right:0;z-index:1;background:#F7F8FC;box-shadow:-1px 0 0 var(--line-2)';
-
-    // Sort indicator on the active column header.
-    const sortIndic = (k) => {
-      if (k !== _hubspotSortBy) return '<span class="sort-ind" aria-hidden="true"> ⇅</span>';
-      return _hubspotSortDir === 'asc'
-        ? '<span class="sort-ind sort-ind--active" aria-hidden="true"> ▲</span>'
-        : '<span class="sort-ind sort-ind--active" aria-hidden="true"> ▼</span>';
-    };
-    // aria-sort lets assistive tech announce sort state without relying
-    // on the glyph alone (WCAG 1.3.1).
-    const ariaSort = (k) => k === _hubspotSortBy
-      ? (_hubspotSortDir === 'asc' ? 'ascending' : 'descending')
-      : 'none';
-
-    const headerCellForStage = (c) =>
-      `<th class="num" style="min-width:${c.k === 'pctUpdated' ? 96 : 78}px" title="${escapeHtml(c.tip)}" data-hs-sort="${c.k}" aria-sort="${ariaSort(c.k)}" scope="col">${escapeHtml(c.label)}${sortIndic(c.k)}</th>`;
-    const headerNumeric = (k, label, tip, w) =>
-      `<th class="num" style="min-width:${w}px" title="${escapeHtml(tip)}" data-hs-sort="${k}" aria-sort="${ariaSort(k)}" scope="col">${escapeHtml(label)}${sortIndic(k)}</th>`;
-    const teamHeader = `<th style="${STK_TH};min-width:180px;text-align:left" data-hs-sort="team" aria-sort="${ariaSort('team')}" scope="col">Team${sortIndic('team')}</th>`;
-    const totalHeader = headerNumeric('total', 'Total', 'Total deals for this team', 74);
-
-    const emptyRow = `<tr><td colspan="${HUBSPOT_COLS.length + 2}" class="muted" style="text-align:center;padding:36px 20px;line-height:1.55">
-      No data loaded yet - the dashboard refresh hasn't run.<br>
-      Trigger it from the repo's <b>Actions → Fetch HubSpot Deals</b> tab,
-      or wait for the next scheduled run (03:00 / 11:00 / 13:00 SAST).
-    </td></tr>`;
-    const noVisibleRow = `<tr><td colspan="${HUBSPOT_COLS.length + 2}" class="muted" style="text-align:center;padding:36px 20px;line-height:1.55">
-      No teams match the current filter / hidden-empties setting.
-    </td></tr>`;
-
-    return `<div class="tab-view deals-view">
-
-      <header class="d-head">
-        <div class="d-head-main">
-          <span class="d-eyebrow">HubSpot · Deal Health</span>
-          <h1 class="d-title">Out-of-Date Deals</h1>
-          <p class="d-sub">Per-team lead freshness, mirroring the RAW DATA DEALS spreadsheet${genAbs ? ` · pulled ${escapeHtml(genAbs)}` : ''}</p>
-        </div>
-        <div class="d-head-side">${refreshBadge}</div>
-      </header>
-
-      <div class="d-groups" id="hsGroupSeg">
-        ${segBtn('1')}${segBtn('2')}${segBtn('3')}
-      </div>
-
-      ${_hubspot.error ? `<div class="d-banner">Data not loaded — ${escapeHtml(_hubspot.error)}. The GH Action will populate it on its next run.</div>` : ''}
-
-      <div class="row kpis mt">
-        ${kpiCard(I.alert,  'Outdated Leads',
-                  fmt(kpi.outdatedLeads),
-                  'Sum of stale leads across the group',
-                  deltaFmt(kpi.outdatedLeads, prevKpi && prevKpi.outdatedLeads, '', true))}
-        ${kpiCard(I.target, '% Outdated',
-                  (kpi.pctOutdated * 100).toFixed(1) + '%',
-                  'Outdated ÷ total deals',
-                  deltaFmt(kpi.pctOutdated, prevKpi && prevKpi.pctOutdated, '%', true))}
-        ${kpiCard(I.check,  'Avg % Updated',
-                  (kpi.avgPctUpdated * 100).toFixed(1) + '%',
-                  'Mean across ' + kpi.reportingTeams + ' reporting team' + (kpi.reportingTeams === 1 ? '' : 's'),
-                  deltaFmt(kpi.avgPctUpdated, prevKpi && prevKpi.avgPctUpdated, '%', false))}
-        ${kpiCard(I.layers, 'Total Deals',
-                  fmt(kpi.totalDeals),
-                  escapeHtml(groupNames[_hubspotGroup] || ('Group ' + _hubspotGroup)) + ' · ' + allRows.length + ' team' + (allRows.length === 1 ? '' : 's'),
-                  deltaFmt(kpi.totalDeals, prevKpi && prevKpi.totalDeals, '', false))}
-      </div>
-
-      <div class="card mt d-toolbar">
-        <div class="chips">${filterChips}</div>
-        <label class="d-empty">
-          <input id="hsShowEmpty" type="checkbox" ${_hubspotShowEmpty ? 'checked' : ''}>
-          Show ${emptyCount} team${emptyCount === 1 ? '' : 's'} with no deals
-        </label>
-      </div>
-
-      <div class="card mt d-tablecard">
-        <div class="card-head">
-          <div>
-            <h3>Per-team breakdown</h3>
-            <div class="sub">${escapeHtml(groupNames[_hubspotGroup])} · ${visible.length} team${visible.length === 1 ? '' : 's'} shown</div>
-          </div>
-        </div>
-        <div class="tbl-wrap"><table class="tbl tbl-sortable">
-          <thead><tr>
-            ${teamHeader}
-            ${totalHeader}
-            ${HUBSPOT_COLS.map(c => headerCellForStage(c)).join('')}
-            ${portalId ? `<th class="num" style="${STK_TH_R};min-width:96px;text-align:right" title="Open this team's deals in HubSpot" scope="col">HubSpot</th>` : ''}
-          </tr></thead>
-          <tbody>
-            ${allRows.length === 0 ? emptyRow : (visible.length === 0 ? noVisibleRow : visible.map(r => {
-              const tot      = r._tot;
-              const outdated = r.outdated ? r.outdated.outdated : null;
-              const dim = r._tot === 0 ? ' style="opacity:.55"' : '';
-              const link = hubspotLinkFor(r);
-              const divInfo = divisionForTeam(r.team);
-              const teamClickable = !!divInfo;
-              return `<tr${dim}${teamClickable ? ` class="row-team" data-team-name="${escapeHtml(r.team)}" tabindex="0" role="button" aria-label="Open ${escapeHtml(r.team)} division details"` : ''}>
-                <td style="${STK_TD}"><div class="agent-cell"><span class="avatar" aria-hidden="true">${escapeHtml((r.team || '?').trim().charAt(0).toUpperCase() || '?')}</span><div class="agent-name">${escapeHtml(r.team || '-')}${teamClickable ? '<span class="team-chev" aria-hidden="true">›</span>' : ''}</div>${r._tot === 0 ? '<span class="pill no-deals">No deals</span>' : ''}</div></td>
-                <td class="num tnum">${fmt(tot)}</td>
-                ${HUBSPOT_COLS.map(c => {
-                  if (c.k === 'pctUpdated') return pctCell(r.outdated ? r.outdated[c.k] : null);
-                  if (c.k === 'outdated')   return outdatedCell(outdated, tot);
-                  if (c.isStage) {
-                    const o = r.outdated ? r.outdated[c.k] : null;
-                    const t = r.total    ? r.total[c.k]    : null;
-                    return stageCell(o, t);
-                  }
-                  return `<td class="num tnum">${fmtCell(r.outdated ? r.outdated[c.k] : null, c.isPct)}</td>`;
-                }).join('')}
-                ${portalId ? `<td class="num" style="${STK_TD_R}">${link ? `<a class="row-go" href="${link}" target="_blank" rel="noopener" title="Open in HubSpot" aria-label="Open ${escapeHtml(r.team || '')} deals in HubSpot"><span class="row-go-text">HubSpot</span><span class="row-go-arrow" aria-hidden="true">↗</span></a>` : '<span class="empty">-</span>'}</td>` : ''}
-              </tr>`;
-            }).join(''))}
-            ${visible.length > 0 ? `<tr class="tbl-total" style="background:#F7F8FC;font-weight:700">
-              <td style="${STK_TOT}">Total · ${visible.length} team${visible.length === 1 ? '' : 's'}</td>
-              <td class="num tnum">${fmt(visible.reduce((s, r) => s + r._tot, 0))}</td>
-              ${HUBSPOT_COLS.map(c => {
-                if (c.isPct) return `<td class="num"><span class="empty">-</span></td>`;
-                if (c.isStage) {
-                  const oSum = visible.reduce((s, r) => s + _num(r.outdated && r.outdated[c.k]), 0);
-                  const tSum = visible.reduce((s, r) => s + _num(r.total && r.total[c.k]), 0);
-                  return `<td class="num tnum">${_fmtK(oSum)}<span class="cell-slash">/</span><span class="cell-den">${_fmtK(tSum)}</span></td>`;
-                }
-                return `<td class="num tnum">${fmt(sumCol(c.k))}</td>`;
-              }).join('')}
-              ${portalId ? `<td style="${STK_TOT_R}"></td>` : ''}
-            </tr>` : ''}
-          </tbody>
-        </table></div>
-        ${hiddenByFil > 0 && _hubspotFilter !== 'all' ? `<div class="muted" style="font-size:12.5px;padding:10px 16px 14px">${hiddenByFil} additional team${hiddenByFil === 1 ? '' : 's'} hidden by the current filter.</div>` : ''}
-      </div>
-    </div>`;
-  }
-
-  // ─── Directory tab ────────────────────────────────────────────────────
-  // Search-by-team / by-broker / by-suburb across the divisions JSON.
-  // Section filter narrows to one division category (e.g. Rentals).
-  function renderDirectory() {
-    if (_divisions == null && !_divisionsLoading) loadDivisions();
-    if (_divisions == null) {
-      return `<div class="tab-view"><div class="card card-pad" style="text-align:center;color:var(--muted);padding:60px 20px">Loading division directory…</div></div>`;
-    }
-    if (_divisions.error) {
-      return `<div class="tab-view"><div class="card card-pad" style="color:var(--red);text-align:center;padding:40px">
-        Couldn't load <code>data/divisions.json</code> - ${escapeHtml(_divisions.error)}.<br>
-        Run <code>python3 scripts/parse_divisions.py</code> to regenerate it.</div></div>`;
-    }
-
-    const sections = _divisions.sections || [];
-    const q = (_dirSearch || '').toLowerCase().trim();
-
-    // Score-and-filter teams. A team matches if its name, any broker /
-    // specialist name, or its suburbs contain the query. Section filter
-    // narrows further.
-    const matchTeam = (t) => {
-      if (!q) return true;
-      if ((t.name || '').toLowerCase().includes(q)) return true;
-      if ((t.suburbs || '').toLowerCase().includes(q)) return true;
-      const allContacts = (t.brokers || []).concat(t.specialists || []);
-      return allContacts.some(c =>
-        (c.name  || '').toLowerCase().includes(q) ||
-        (c.email || '').toLowerCase().includes(q));
-    };
-
-    const filteredSections = sections
-      .filter(s => _dirSection === 'all' || s.name === _dirSection)
-      .map(s => ({ ...s, teams: (s.teams || []).filter(matchTeam) }))
-      .filter(s => s.teams.length > 0);
-
-    const totalTeams = filteredSections.reduce((n, s) => n + s.teams.length, 0);
-    const totalAll   = sections.reduce((n, s) => n + (s.teams || []).length, 0);
-
-    const sectionOpts = ['<option value="all">All categories</option>']
-      .concat(sections.map(s =>
-        `<option value="${escapeHtml(s.name)}" ${_dirSection === s.name ? 'selected' : ''}>${escapeHtml(s.name)}</option>`
-      )).join('');
-
-    const renderTeamCard = (t) => {
-      const brokers = (t.brokers || []).filter(b => b.name);
-      const specs   = (t.specialists || []).filter(s => s.name && !/^Quay 1 Property Specialist/i.test(s.name));
-      const hasHubspot = !!t.hubspot_owner_id;
-      const brokerChip = (c) => {
-        // Guard against dirty source data: only treat a value as a phone when
-        // it actually reads like one (has digits, no '@', not a copy of the
-        // email). Prevents a broken tel:name@domain link when a row's phone
-        // cell was populated with the email by mistake.
-        const rawPhone = String(c.phone || '').trim();
-        const isPhone = rawPhone && !rawPhone.includes('@') && /\d/.test(rawPhone) &&
-                        rawPhone.toLowerCase() !== String(c.email || '').trim().toLowerCase();
-        const tel = isPhone ? `<a href="tel:${escapeHtml(rawPhone.replace(/\s/g, ''))}" class="dir-link" title="Call ${escapeHtml(c.name)}">${escapeHtml(rawPhone)}</a>` : '';
-        const mail = c.email ? `<a href="mailto:${escapeHtml(c.email)}" class="dir-link" title="Email ${escapeHtml(c.name)}">${escapeHtml(c.email)}</a>` : '';
-        return `<div class="dir-contact">
-          <div class="dir-contact-name">${escapeHtml(c.name)}</div>
-          <div class="dir-contact-meta">${mail}${mail && tel ? ' · ' : ''}${tel}</div>
-        </div>`;
-      };
-      return `<button class="dir-card" data-team-name="${escapeHtml(t.name)}" aria-label="Open ${escapeHtml(t.name)} division details">
-        <div class="dir-card-head">
-          <div>
-            <div class="dir-card-name">${escapeHtml(t.name)}</div>
-            <div class="dir-card-meta">
-              ${t.type ? `<span class="pill ${(/rental/i).test(t.type) ? 'pill-rental' : (/commercial/i).test(t.type) ? 'pill-commercial' : 'pill-sales'}">${escapeHtml(t.type.trim())}</span>` : ''}
-              ${hasHubspot ? `<span class="dir-meta-item">Owner ID ${escapeHtml(t.hubspot_owner_id)}</span>` : ''}
-              <span class="dir-meta-item">${brokers.length} broker${brokers.length === 1 ? '' : 's'}${specs.length ? ` · ${specs.length} specialist${specs.length === 1 ? '' : 's'}` : ''}</span>
-            </div>
-          </div>
-          <div class="dir-card-chev" aria-hidden="true">›</div>
-        </div>
-        ${t.suburbs ? `<div class="dir-suburbs">${escapeHtml(t.suburbs)}</div>` : ''}
-        ${brokers.length ? `<div class="dir-contacts">${brokers.slice(0, 2).map(brokerChip).join('')}${brokers.length > 2 ? `<div class="dir-more">+${brokers.length - 2} more</div>` : ''}</div>` : ''}
-      </button>`;
-    };
-
-    const sectionBlocks = filteredSections.map(s => `
-      <div class="dir-section">
-        <div class="dir-section-head">
-          <h3>${escapeHtml(s.name)}</h3>
-          <span class="dir-section-count">${s.teams.length} team${s.teams.length === 1 ? '' : 's'}</span>
-        </div>
-        <div class="dir-grid">${s.teams.map(renderTeamCard).join('')}</div>
-      </div>
-    `).join('');
-
-    return `<div class="tab-view">
-      <div class="card card-pad dir-titlebar">
-        <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;justify-content:space-between">
-          <div style="min-width:0;flex:1 1 320px">
-            <h3 style="margin:0;font-family:var(--serif);font-size:17px;color:var(--ink)">Divisions Directory</h3>
-            <div class="sub" style="margin-top:6px">
-              Brokers · specialists · suburbs · HubSpot owner IDs ·
-              ${totalAll} teams across ${sections.length} division${sections.length === 1 ? '' : 's'}
-            </div>
-          </div>
-        </div>
-        <div class="dir-controls">
-          <input id="dirSearch" type="search" placeholder="Search team, broker, or suburb…" value="${escapeHtml(_dirSearch || '')}" class="dir-search" autocomplete="off">
-          <select id="dirSection" class="dir-section-select">${sectionOpts}</select>
-        </div>
-        ${q || _dirSection !== 'all'
-          ? `<div class="dir-result-meta">${totalTeams} team${totalTeams === 1 ? '' : 's'} match${totalTeams === 1 ? 'es' : ''}${q ? ` "${escapeHtml(_dirSearch)}"` : ''}${_dirSection !== 'all' ? ` in ${escapeHtml(_dirSection)}` : ''}</div>`
-          : ''}
-      </div>
-      ${totalTeams === 0
-        ? `<div class="card card-pad" style="text-align:center;color:var(--muted);padding:48px 20px">No teams match the current search.</div>`
-        : sectionBlocks}
-    </div>`;
-  }
-
-  function wireDirectory() {
-    const search = document.getElementById('dirSearch');
-    if (search) {
-      search.addEventListener('input', (e) => {
-        _dirSearch = e.target.value;
-        // Re-render only the result region for a snappier feel - but we
-        // rebuild the whole tab to keep the result-meta line in sync.
-        render();
-        // Restore focus to the search (the re-render replaces the node).
-        const s2 = document.getElementById('dirSearch');
-        if (s2) { s2.focus(); s2.setSelectionRange(s2.value.length, s2.value.length); }
-      });
-    }
-    const sel = document.getElementById('dirSection');
-    if (sel) sel.addEventListener('change', (e) => { _dirSection = e.target.value; render(); });
-    document.querySelectorAll('.dir-card[data-team-name]').forEach(b => {
-      b.addEventListener('click', () => openTeamDrillDown(b.dataset.teamName));
-    });
-  }
-
-  // ─── Team drill-down modal ────────────────────────────────────────────
-  function openTeamDrillDown(teamName) {
-    _drillTeam = teamName;
-    render();
-  }
-  function closeTeamDrillDown() {
-    _drillTeam = null;
-    render();
-  }
-  function renderTeamDrillDown() {
-    const info = divisionForTeam(_drillTeam);
-    if (!info) {
-      // Team isn't in the divisions sheet (e.g. retired team or naming
-      // mismatch). Show a friendly empty-state so the click isn't silent.
-      return `
-        <div class="modal-back" data-modal-close></div>
-        <div class="modal" role="dialog" aria-label="${escapeHtml(_drillTeam)} not found">
-          <div class="modal-head">
-            <h3>${escapeHtml(_drillTeam)}</h3>
-            <button class="modal-close" data-modal-close aria-label="Close">✕</button>
-          </div>
-          <div class="modal-body">
-            <div class="muted" style="text-align:center;padding:32px 8px">
-              No division mapping found for <b>${escapeHtml(_drillTeam)}</b>.<br>
-              Check the team name in <code>data/divisions.json</code>.
-            </div>
-          </div>
-        </div>`;
-    }
-    const { team: t, section } = info;
-    const brokers = (t.brokers || []).filter(b => b.name);
-    const specs   = (t.specialists || []).filter(s => s.name && !/^Quay 1 Property Specialist/i.test(s.name));
-    const contactList = (label, list) => list.length
-      ? `<div class="modal-section">
-          <div class="modal-section-label">${label}</div>
-          <div class="modal-contacts">
-            ${list.map(c => `
-              <div class="modal-contact">
-                <div class="modal-contact-name">${escapeHtml(c.name)}</div>
-                <div class="modal-contact-row">
-                  ${c.email ? `<a class="dir-link" href="mailto:${escapeHtml(c.email)}">${escapeHtml(c.email)}</a>` : '<span class="muted">no email</span>'}
-                </div>
-                <div class="modal-contact-row">
-                  ${c.phone ? `<a class="dir-link" href="tel:${escapeHtml(c.phone.replace(/\s/g, ''))}">${escapeHtml(c.phone)}</a>` : '<span class="muted">no phone</span>'}
-                </div>
-              </div>`).join('')}
-          </div>
-        </div>` : '';
-
-    // Cross-reference with the deals JSON if loaded.
-    const dealsRow = (_hubspot && _hubspot.groups)
-      ? Object.values(_hubspot.groups).flat().find(r => (r.team || '').toLowerCase().trim() === _drillTeam.toLowerCase().trim())
-      : null;
-    const dealsSummary = dealsRow ? `
-      <div class="modal-section">
-        <div class="modal-section-label">HubSpot deals snapshot</div>
-        <div class="modal-deals">
-          <div><b>${fmt(dealsRow._tot || (dealsRow.total && dealsRow.total.deals) || 0)}</b><span>total</span></div>
-          <div><b>${fmt(dealsRow._out || (dealsRow.outdated && dealsRow.outdated.outdated) || 0)}</b><span>outdated</span></div>
-          <div><b>${dealsRow.outdated && dealsRow.outdated.pctUpdated != null ? (Number(dealsRow.outdated.pctUpdated) * 100).toFixed(0) + '%' : '-'}</b><span>% updated</span></div>
-        </div>
-      </div>` : '';
-
+    const gen = _data.generatedAt
+      ? 'Updated ' + new Date(_data.generatedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : 'Awaiting first sync';
     return `
-      <div class="modal-back" data-modal-close></div>
-      <div class="modal" role="dialog" aria-label="${escapeHtml(t.name)} details">
-        <div class="modal-head">
-          <div>
-            <h3>${escapeHtml(t.name)}</h3>
-            <div class="sub">${escapeHtml(section)}${t.type ? ` · ${escapeHtml(t.type.trim())}` : ''}</div>
-          </div>
-          <button class="modal-close" data-modal-close aria-label="Close">✕</button>
+      <div class="fig-controls">
+        <div>
+          <p class="d-eyebrow">QUAY 1 GROUP</p>
+          <h2 class="d-title">${_year === 'all' ? 'All-time figures' : _year + ' figures'}</h2>
         </div>
-        <div class="modal-body">
-          ${t.suburbs ? `
-            <div class="modal-section">
-              <div class="modal-section-label">Areas covered</div>
-              <div class="modal-suburbs">${escapeHtml(t.suburbs)}</div>
-            </div>` : ''}
-          ${contactList('Brokers', brokers)}
-          ${contactList('Property specialists', specs)}
-          ${dealsSummary}
-          ${(t.hubspot_email || t.hubspot_owner_id) ? `
-            <div class="modal-section modal-section--meta">
-              <div class="modal-section-label">HubSpot</div>
-              <div class="modal-meta-grid">
-                ${t.hubspot_email ? `<div><span>Team email</span><a class="dir-link" href="mailto:${escapeHtml(t.hubspot_email)}">${escapeHtml(t.hubspot_email)}</a></div>` : ''}
-                ${t.hubspot_owner_id ? `<div><span>Owner ID</span><code>${escapeHtml(t.hubspot_owner_id)}</code></div>` : ''}
-                ${t.hubspot_division ? `<div><span>Division</span>${escapeHtml(t.hubspot_division)}</div>` : ''}
-              </div>
-            </div>` : ''}
+        <div class="fig-controls-right">
+          <div class="chips" id="yearChips">${btns}</div>
+          <span class="fig-updated">${esc(gen)}</span>
         </div>
       </div>`;
   }
-  function wireTeamDrillDown() {
-    document.querySelectorAll('[data-modal-close]').forEach(el => {
-      el.addEventListener('click', closeTeamDrillDown);
-    });
-    document.addEventListener('keydown', _escClose, { once: true });
-  }
-  function _escClose(e) {
-    if (e.key === 'Escape' && _drillTeam) closeTeamDrillDown();
+
+  function kpis() {
+    const t = scopeTotals();
+    let nettFoot = _year === 'all' ? 'All time' : 'FY' + _year;
+    // YoY delta on nett when a specific year is chosen and a prior year exists.
+    if (_year !== 'all') {
+      const prev = yearRow(_year - 1);
+      if (prev && prev.nett > 0) {
+        const d = (t.nett - prev.nett) / prev.nett;
+        const up = d >= 0;
+        nettFoot = `FY${_year} · <span class="kpi-delta kpi-delta--${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${Math.abs(d * 100).toFixed(0)}% vs ${_year - 1}</span>`;
+      }
+    }
+    const tile = (ic, label, val, foot, hero) => `
+      <div class="card kpi${hero ? ' kpi--accent' : ''}">
+        <div class="kpi-top">
+          <span class="kpi-label">${label}</span>
+          <span class="kpi-ic">${ic}</span>
+        </div>
+        <div class="kpi-val">${val}</div>
+        <div class="kpi-foot">${foot}</div>
+      </div>`;
+    return `<div class="row kpis">
+      ${tile(I.coins,  'Nett commission',  money(t.nett),  nettFoot, true)}
+      ${tile(I.wallet, 'Gross commission', money(t.gross), 'Total commission excl VAT')}
+      ${tile(I.house,  'Sales volume',     money(t.salesVolume), 'Sum of purchase prices')}
+      ${tile(I.file,   'Deals',            n0(t.count), _year === 'all' ? 'All deals, all time' : 'Deals accepted in ' + _year)}
+    </div>`;
   }
 
-  function wireHubspot() {
-    document.querySelectorAll('#hsGroupSeg button[data-hs-group]').forEach(b => {
+  function annualCard() {
+    const data = _data.byYear || [];
+    const rows = data.map(d => `
+      <tr>
+        <td><b>${d.year}</b></td>
+        <td class="num tnum">${n0(d.count)}</td>
+        <td class="num tnum">${money(d.salesVolume)}</td>
+        <td class="num tnum">${money(d.gross)}</td>
+        <td class="num tnum"><b>${money(d.nett)}</b></td>
+        <td class="num tnum">${money(d.quay1)}</td>
+      </tr>`).join('');
+    const o = _data.overall;
+    const total = `
+      <tr class="tbl-total">
+        <td><b>All years</b></td>
+        <td class="num tnum">${n0(o.count)}</td>
+        <td class="num tnum">${money(o.salesVolume)}</td>
+        <td class="num tnum">${money(o.gross)}</td>
+        <td class="num tnum"><b>${money(o.nett)}</b></td>
+        <td class="num tnum">${money(o.quay1)}</td>
+      </tr>`;
+    return `
+      <section class="card card-pad mt">
+        <div class="card-head">
+          <h3 class="d-subtitle">Annual figures</h3>
+          ${legend()}
+        </div>
+        <div class="chart-wrap">${annualChartSVG()}</div>
+        <div class="tbl-wrap mt">
+          <table class="tbl">
+            <thead><tr>
+              <th>Year</th><th class="num">Deals</th><th class="num">Sales volume</th>
+              <th class="num">Gross</th><th class="num">Nett</th><th class="num">Quay 1 share</th>
+            </tr></thead>
+            <tbody>${rows}${total}</tbody>
+          </table>
+        </div>
+      </section>`;
+  }
+
+  function monthCard() {
+    return `
+      <section class="card card-pad mt">
+        <div class="card-head">
+          <h3 class="d-subtitle">Month on month ${_year === 'all' ? '· all months' : '· ' + _year}</h3>
+          ${legend()}
+        </div>
+        <div class="chart-wrap">${monthChartSVG() || '<p class="sub">No deals in this period.</p>'}</div>
+      </section>`;
+  }
+
+  function divisionCard() {
+    let divs = divisionsForScope();
+    divs.sort((a, b) => (b[_divSort] || 0) - (a[_divSort] || 0));
+    const maxNett = Math.max(...divs.map(d => d.nett), 1);
+    const col = (k, lbl) => `<th class="num sortable${_divSort === k ? ' sorted' : ''}" data-sort="${k}">${lbl}${_divSort === k ? ' <span class="sort-ind sort-ind--active">▼</span>' : ''}</th>`;
+    const rows = divs.map(d => `
+      <tr>
+        <td class="div-name">${esc(d.division)}</td>
+        <td class="num tnum">${n0(d.count)}</td>
+        <td class="num tnum">${money(d.salesVolume)}</td>
+        <td class="num tnum">${money(d.gross)}</td>
+        <td class="num tnum"><b>${money(d.nett)}</b></td>
+        <td class="bar-cell">
+          <span class="minibar"><span class="minibar-fill" style="width:${Math.max(2, (d.nett / maxNett) * 100).toFixed(1)}%"></span></span>
+        </td>
+      </tr>`).join('');
+    return `
+      <section class="card card-pad mt">
+        <div class="card-head">
+          <h3 class="d-subtitle">By division ${_year === 'all' ? '· all time' : '· ' + _year}</h3>
+          <span class="sub">${divs.length} division${divs.length === 1 ? '' : 's'}</span>
+        </div>
+        <div class="tbl-wrap mt">
+          <table class="tbl tbl-sortable">
+            <thead><tr>
+              <th>Division</th>${col('count', 'Deals')}${col('salesVolume', 'Sales volume')}${col('gross', 'Gross')}${col('nett', 'Nett')}
+              <th class="bar-col">Nett share</th>
+            </tr></thead>
+            <tbody>${rows || '<tr><td colspan="6" class="sub">No deals in this period.</td></tr>'}</tbody>
+          </table>
+        </div>
+      </section>`;
+  }
+
+  function footnote() {
+    const sc = _data.statusCounts || {};
+    const statusBits = Object.entries(sc)
+      .map(([k, v]) => `<span class="st-chip">${esc(k.replace(/_/g, ' ').toLowerCase())} <b>${n0(v)}</b></span>`).join('');
+    const undated = _data.undated && _data.undated.count ? _data.undated.count : 0;
+    return `
+      <section class="card card-pad mt fig-notes">
+        <h3 class="d-subtitle">Definitions &amp; notes</h3>
+        <ul class="notes-list">
+          <li><b>Gross</b> — total commission earned excl VAT (<code>commissionExclVat</code>).</li>
+          <li><b>Nett</b> — what Quay 1 makes excluding outside referral (<code>totalGrossComm</code>).</li>
+          <li><b>Quay 1 share</b> — Quay 1's portion of the commission (<code>quay1GrossComm</code>).</li>
+          <li>Figures are keyed on <b>acceptance date</b> and include <b>all deals</b> regardless of status.</li>
+          ${undated ? `<li>${n0(undated)} deal${undated === 1 ? '' : 's'} have no acceptance date and are excluded from the annual / monthly split.</li>` : ''}
+        </ul>
+        ${statusBits ? `<div class="st-row"><span class="sub">Deal status mix:</span> ${statusBits}</div>` : ''}
+      </section>`;
+  }
+
+  function emptyState() {
+    return `
+      <section class="card card-pad mt" style="text-align:center;padding:48px 24px">
+        <h3 class="d-subtitle" style="justify-content:center">Awaiting first data sync</h3>
+        <p class="sub" style="max-width:520px;margin:10px auto 0">
+          Figures will appear after the daily 05:00 refresh. If this persists, the source
+          Dealflow sheet still needs to be shared (read-only) with the automation service
+          account so the scheduled job can read it.
+        </p>
+      </section>`;
+  }
+
+  // ─── Render ──────────────────────────────────────────────────────────
+  function render() {
+    const root = document.getElementById('content');
+    if (!root) return;
+    if (!_data) { root.innerHTML = '<p class="sub">Loading…</p>'; return; }
+
+    const empty = _data.placeholder || !(_data.overall && _data.overall.count > 0);
+    root.className = 'main figures-view';
+    root.innerHTML = empty
+      ? controls() + emptyState()
+      : controls() + kpis() + annualCard() + monthCard() + divisionCard() + footnote();
+
+    // Year chips
+    root.querySelectorAll('#yearChips .chip').forEach(b =>
       b.addEventListener('click', () => {
-        _hubspotGroup = b.dataset.hsGroup;
+        const y = b.dataset.year;
+        _year = (y === 'all') ? 'all' : +y;
         render();
+      }));
+    // Division sort
+    root.querySelectorAll('th.sortable').forEach(th =>
+      th.addEventListener('click', () => { _divSort = th.dataset.sort; render(); }));
+
+    wireTooltip(root);
+  }
+
+  // Single shared HTML tooltip driven by [data-tip] on bars + dots.
+  function wireTooltip(root) {
+    let tip = document.getElementById('figTip');
+    if (!tip) {
+      tip = document.createElement('div');
+      tip.id = 'figTip'; tip.className = 'fig-tip'; tip.hidden = true;
+      document.body.appendChild(tip);
+    }
+    root.querySelectorAll('[data-tip]').forEach(el => {
+      el.addEventListener('mouseenter', (e) => {
+        tip.textContent = el.getAttribute('data-tip');
+        tip.hidden = false;
       });
-    });
-    document.querySelectorAll('button[data-hs-filter]').forEach(b => {
-      b.addEventListener('click', () => {
-        _hubspotFilter = b.dataset.hsFilter;
-        render();
+      el.addEventListener('mousemove', (e) => {
+        tip.style.left = (e.clientX + 12) + 'px';
+        tip.style.top = (e.clientY + 12) + 'px';
       });
-    });
-    const showEmpty = document.getElementById('hsShowEmpty');
-    if (showEmpty) showEmpty.addEventListener('change', (e) => {
-      _hubspotShowEmpty = !!e.target.checked;
-      render();
-    });
-    // Clickable team rows → drill-down modal. Use mousedown (not click)
-    // so a click that drags off the row doesn't fire, but stop propagation
-    // when the user clicks the "↗ open in HubSpot" link in the last col.
-    document.querySelectorAll('tr.row-team[data-team-name]').forEach(tr => {
-      const open = () => openTeamDrillDown(tr.dataset.teamName);
-      tr.addEventListener('click', (ev) => {
-        if (ev.target.closest('a, button')) return;
-        open();
-      });
-      tr.addEventListener('keydown', (ev) => {
-        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); open(); }
-      });
-    });
-    document.querySelectorAll('th[data-hs-sort]').forEach(th => {
-      th.style.cursor = 'pointer';
-      th.addEventListener('click', () => {
-        const k = th.dataset.hsSort;
-        if (_hubspotSortBy === k) {
-          _hubspotSortDir = _hubspotSortDir === 'asc' ? 'desc' : 'asc';
-        } else {
-          _hubspotSortBy = k;
-          // First sort on a stage / pct column = "worst first"
-          // (ascending pctUpdated, descending raw counts).
-          _hubspotSortDir = (k === 'pctUpdated' || k === 'team') ? 'asc' : 'desc';
-        }
-        render();
-      });
+      el.addEventListener('mouseleave', () => { tip.hidden = true; });
     });
   }
 
-  // ─── Boot + auth gate ─────────────────────────────────────────────────
-  // Team Insights is admin-only. app.js never loads data or renders a tab
-  // until auth.js confirms a super/admin Supabase session; it fails closed
-  // (shows the login gate) if the auth layer or session can't be verified.
-  function _wireTabsOnce() {
-    // Tab nav lives in index.html - wire it once after sign-in.
-    document.querySelectorAll('#tabNav .tab-btn').forEach(b => {
-      b.addEventListener('click', () => {
-        if (_tab === b.dataset.tab) return;
-        _tab = b.dataset.tab;
-        _drillTeam = null;   // close any open modal when switching tabs
-        render();
-      });
-    });
-  }
-
+  // ─── Auth wiring (ported from the HubSpot build) ──────────────────────
   function enterApp(user) {
-    _currentUser = user || null;   // { username, name, email, isSuper, isAdmin, role }
+    _currentUser = user || null;
     document.body.classList.remove('pre-auth');
-    // Shared cross-app switcher on the Quay 1 flag (superusers only; no-op else).
     if (window.QuayNav) window.QuayNav.mount({ isSuper: !!(user && user.isSuper), current: 'hubspot' });
     const gate = document.getElementById('loginGate');
     if (gate) gate.remove();
@@ -891,13 +414,12 @@
         location.reload();
       });
     }
-    _wireTabsOnce();
     render();
+    loadData()
+      .then(d => { _data = d; _year = years().length ? years()[years().length - 1] : 'all'; render(); })
+      .catch(() => { _data = { placeholder: true, overall: { count: 0 }, byYear: [] }; render(); });
   }
 
-  // PIN-pad sign-in, matched to the Performance Dashboard. Staff PINs are
-  // always 6 digits (admin-set-pin refuses anything else), so we auto-submit
-  // once six are entered.
   function showLoginGate(prefillError) {
     const gate  = document.getElementById('loginGate');
     const errEl = document.getElementById('loginError');
@@ -911,14 +433,9 @@
     let busy = false;
     const paintDots = () => {
       if (!dots) return;
-      Array.from(dots.children).forEach((d, i) =>
-        d.classList.toggle('filled', i < pin.length));
+      Array.from(dots.children).forEach((d, i) => d.classList.toggle('filled', i < pin.length));
     };
-    const setError = (msg) => {
-      if (!errEl) return;
-      errEl.textContent = msg || '';
-      errEl.hidden = !msg;
-    };
+    const setError = (msg) => { if (!errEl) return; errEl.textContent = msg || ''; errEl.hidden = !msg; };
 
     async function submit() {
       if (busy) return;
@@ -951,20 +468,17 @@
     const clr = keypad.querySelector('.key[data-clear]');
     if (clr) clr.addEventListener('click', () => { pin = ''; setError(''); paintDots(); });
 
-    // Physical keyboard support (desktop).
     document.addEventListener('keydown', (e) => {
-      if (!document.getElementById('loginGate')) return; // app already entered
+      if (!document.getElementById('loginGate')) return;
       if (e.key >= '0' && e.key <= '9') { setError(''); press(e.key); }
-      else if (e.key === 'Backspace' && document.activeElement !== userIn) {
-        pin = pin.slice(0, -1); paintDots();
-      } else if (e.key === 'Enter') { submit(); }
+      else if (e.key === 'Backspace' && document.activeElement !== userIn) { pin = pin.slice(0, -1); paintDots(); }
+      else if (e.key === 'Enter') { submit(); }
     });
 
     if (userIn) userIn.focus();
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
-    // Fail closed: if the auth layer didn't load, never reveal the app.
     if (!window.AUTH || !window.supabase) {
       showLoginGate('Could not reach the sign-in service. Refresh to try again.');
       return;

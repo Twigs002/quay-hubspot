@@ -1,0 +1,20 @@
+{
+  "generatedAt": null,
+  "source": "Dealflow Raw Data (Google Sheet)",
+  "dateBasis": "acceptanceDate",
+  "scope": "all deals",
+  "metricDefs": {
+    "salesVolume": "Sum of purchase prices (purchasePrice)",
+    "gross": "Total commission excl VAT (commissionExclVat)",
+    "nett": "What Quay 1 makes excluding outside referral (totalGrossComm)",
+    "quay1": "Quay 1 share of commission (quay1GrossComm)",
+    "outsideRef": "Commission paid to outside referrals (outsideRefCommExclVat)"
+  },
+  "overall": { "count": 0, "salesVolume": 0, "gross": 0, "nett": 0, "quay1": 0, "outsideRef": 0 },
+  "undated": { "count": 0, "salesVolume": 0, "gross": 0, "nett": 0, "quay1": 0, "outsideRef": 0 },
+  "byYear": [],
+  "byMonth": [],
+  "byDivisionYear": {},
+  "statusCounts": {},
+  "placeholder": true
+}
