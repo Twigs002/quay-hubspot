@@ -1259,3 +1259,121 @@ a.d-spot:hover { border-color: var(--brand-yellow); box-shadow: 0 6px 18px rgba(
 .deals-view .row-go:hover { border-color: var(--brand-yellow); color: var(--yellow-deep); background: #fff; }
 .deals-view .sort-ind--active { color: var(--yellow-deep); }
 .deals-view .tbl-total td { border-top: 2px solid var(--brand-blue); }
+
+/* ==================================================================
+   Dealflow Figures ("Ryan Dashboard") — appended view.
+   Reuses the shared card / kpi / tbl / chip system; mirrors the
+   .deals-view brand pass (uppercase titles, rounded surfaces, Quay
+   blue + amber). Charts are hand-rolled inline SVG. Light theme only.
+   ================================================================== */
+.figures-view .d-eyebrow {
+  color: var(--brand-blue); letter-spacing: .2em; font-size: 11px;
+  font-weight: 700; margin: 0 0 4px; text-transform: uppercase;
+}
+.figures-view .d-title {
+  font-weight: 700; text-transform: uppercase; letter-spacing: .01em;
+  font-size: clamp(22px, 2.6vw, 30px); margin: 0; color: var(--ink);
+}
+.figures-view .d-subtitle {
+  font-size: 13px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: #55607A; margin: 0;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.figures-view .card, .figures-view .kpi { border-radius: var(--r-lg); }
+.figures-view .kpi-label {
+  text-transform: uppercase; letter-spacing: .13em; font-size: 11px;
+  font-weight: 700; color: #6C7793;
+}
+.figures-view .kpi-val { font-weight: 700; letter-spacing: -.01em; }
+.figures-view .kpi-ic {
+  border-radius: 12px; background: #E9F2FB; border: 1px solid #CFE3F6;
+  color: var(--brand-blue);
+}
+.figures-view .chip { border-radius: 999px; padding: 8px 14px; }
+.figures-view .chip.active {
+  background: var(--brand-blue); border-color: var(--brand-blue); color: #fff;
+}
+
+/* ── Controls bar ───────────────────────────────────────────────── */
+.fig-controls {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 18px; flex-wrap: wrap; margin-bottom: 18px;
+}
+.fig-controls-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.fig-updated { font-size: 11.5px; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
+
+/* ── Accent (hero) KPI — Nett is the headline number ────────────── */
+.figures-view .kpi.kpi--accent {
+  background: linear-gradient(180deg, #fff 0%, #FFFBED 100%);
+  border-color: #F2DC8E;
+}
+.figures-view .kpi--accent .kpi-ic { background: var(--brand-yellow); border-color: var(--brand-yellow); color: #4A3800; }
+.figures-view .kpi--accent .kpi-val { color: var(--brand-blue); }
+
+/* ── Card head (title + legend / meta) ──────────────────────────── */
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+}
+
+/* ── Legend ──────────────────────────────────────────────────────── */
+.legend { display: flex; gap: 18px; flex-wrap: wrap; }
+.legend .lg { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; color: var(--slate); }
+.legend .lg i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+.legend .muted { font-weight: 500; }
+
+/* ── Charts ──────────────────────────────────────────────────────── */
+.chart-wrap { width: 100%; overflow-x: auto; margin-top: 12px; }
+.chart { width: 100%; height: auto; min-width: 520px; display: block; font-family: var(--sans); }
+.chart .grid { stroke: var(--line-2); stroke-width: 1; }
+.chart .axis { stroke: var(--line); stroke-width: 1; }
+.chart .ax-y { fill: var(--muted); font-size: 12px; text-anchor: end; }
+.chart .ax-x { fill: var(--slate); font-size: 12px; font-weight: 600; text-anchor: middle; }
+.chart .bar { transition: opacity .12s; }
+.chart .bar:hover { opacity: .82; }
+.chart .bar-lbl { fill: var(--slate); font-size: 11px; font-weight: 700; text-anchor: middle; }
+.chart .ln { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.chart .dot { stroke: #fff; stroke-width: 2; transition: r .1s; }
+.chart .dot:hover { r: 6; }
+
+/* ── Shared hover tooltip ───────────────────────────────────────── */
+.fig-tip {
+  position: fixed; z-index: 2000; pointer-events: none;
+  background: var(--ink); color: #fff; font-size: 12px; font-weight: 600;
+  padding: 6px 10px; border-radius: 8px; box-shadow: var(--shadow);
+  white-space: nowrap;
+}
+
+/* ── Tables: totals row + sortable heads + division mini-bars ───── */
+.figures-view .tbl thead th { text-transform: uppercase; letter-spacing: .12em; font-size: 10.5px; color: #6C7793; }
+.figures-view .tbl-total td { border-top: 2px solid var(--brand-blue); background: var(--card-2); }
+.tbl th.sortable { cursor: pointer; user-select: none; }
+.tbl th.sortable:hover { color: var(--brand-blue); }
+.tbl th.sorted { color: var(--brand-blue); }
+.div-name { font-weight: 700; color: var(--ink); }
+.bar-col { width: 160px; }
+.bar-cell { width: 160px; }
+.minibar { display: block; height: 10px; background: var(--paper-2); border-radius: 999px; overflow: hidden; }
+.minibar-fill { display: block; height: 100%; background: var(--brand-blue); border-radius: 999px; }
+
+/* ── Notes ───────────────────────────────────────────────────────── */
+.fig-notes .notes-list { margin: 12px 0 0; padding-left: 18px; }
+.fig-notes .notes-list li { font-size: 13px; color: var(--slate); line-height: 1.7; }
+.fig-notes code { background: var(--paper-2); padding: 1px 6px; border-radius: 5px; font-size: 12px; color: var(--ink); }
+.st-row { margin-top: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.st-chip {
+  display: inline-flex; gap: 6px; align-items: center; background: var(--paper);
+  border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px;
+  font-size: 11.5px; font-weight: 600; color: var(--slate); text-transform: capitalize;
+}
+.st-chip b { color: var(--ink); }
+
+@media (max-width: 600px) {
+  .fig-controls { flex-direction: column; align-items: stretch; }
+  .fig-controls-right { align-items: stretch; }
+  .fig-controls-right .chips { justify-content: flex-start; }
+}
+
+/* KPI values carry full Rand figures (sales volume can reach billions) —
+   size them to fit the tile so nothing clips against .card overflow. */
+.figures-view .kpi-val { font-size: clamp(21px, 2.1vw, 28px); letter-spacing: -.01em; white-space: nowrap; }

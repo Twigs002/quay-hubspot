@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quay 1 · Team Insights</title>
+  <title>Quay 1 · Dealflow Figures</title>
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <!-- Shared Quay 1 app switcher (superuser-only dropdown on the flag) -->
   <script src="https://twigs002.github.io/quay-dashboard-v2/quay-nav.js" defer></script>
@@ -18,7 +18,7 @@
   <div id="loginGate" class="login-gate">
     <div class="login-box">
       <img class="login-logo" src="assets/quay1-logo-white.png" alt="Quay 1 International Realty" width="200">
-      <h2 class="login-title">Team Insights</h2>
+      <h2 class="login-title">Dealflow Figures</h2>
       <p class="login-sub">Sign in with your username &amp; PIN — the same login you use on the other systems.</p>
       <input id="loginUser" class="login-user" type="text" autocomplete="username"
              autocapitalize="none" autocorrect="off" placeholder="username">
@@ -37,7 +37,7 @@
         <button class="key" data-d="7">7</button>
         <button class="key" data-d="8">8</button>
         <button class="key" data-d="9">9</button>
-        <button class="key alt" data-back>← Back</button>
+        <button class="key alt" data-back>&larr; Back</button>
         <button class="key" data-d="0">0</button>
         <button class="key alt" data-clear>Clear</button>
       </div>
@@ -52,8 +52,8 @@
              alt="Quay 1 International Realty" width="277" height="120">
         <div class="topbar-divider" aria-hidden="true"></div>
         <div class="topbar-titles">
-          <h1>Team Insights</h1>
-          <p>HubSpot deals · division directory · refreshed 3× daily</p>
+          <h1>Dealflow Figures</h1>
+          <p>Group sales &amp; commission · refreshed daily 05:00</p>
         </div>
       </div>
       <div class="topbar-right">
@@ -64,12 +64,6 @@
       </div>
     </div>
   </header>
-  <nav class="tab-nav" id="tabNav" aria-label="Dashboard sections">
-    <div class="bar-inner">
-      <button class="tab-btn active" data-tab="deals">Deals</button>
-      <button class="tab-btn" data-tab="directory">Directory</button>
-    </div>
-  </nav>
   <main id="content" class="main"></main>
   <div id="modalHost"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
